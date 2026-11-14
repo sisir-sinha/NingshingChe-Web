@@ -523,3 +523,53 @@ button {
   padding-top: calc(0.5rem + 0.18em);
   padding-bottom: calc(0.5rem - 0.06em);
 }
+
+/* ==========================================================================
+   Page transitions (see render() in src/router.ts)
+   ========================================================================== */
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(var(--page-out, -8px));
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--page-in, 18px));
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The header bar and the mini player are lifted out of the page snapshot so they hold still. */
+  .bar {
+    view-transition-name: site-bar;
+  }
+  .mini-player {
+    view-transition-name: mini-player;
+  }
+  #toast {
+    view-transition-name: toast;
+  }
+  ::view-transition-group(site-bar),
+  ::view-transition-group(mini-player),
+  ::view-transition-group(toast) {
+    animation-duration: 0.25s;
+  }
+  ::view-transition-old(root) {
+    animation: page-out 0.16s ease-in both;
+  }
+  ::view-transition-new(root) {
+    animation: page-in 0.36s cubic-bezier(0.2, 0.7, 0.2, 1) 0.14s both;
+  }
+  /* back / forward buttons: the page comes in from the other side */
+  [data-nav='back']::view-transition-old(root) {
+    --page-out: 8px;
+  }
+  [data-nav='back']::view-transition-new(root) {
+    --page-in: -18px;
+  }
+  /* browsers without view transitions, and pagination */
+  #main.page-enter {
+    animation: page-in 0.36s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}

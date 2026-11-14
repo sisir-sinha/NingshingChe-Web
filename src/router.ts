@@ -81,42 +81,66 @@ async function render(restoreY: number | null): Promise<void> {
   window.clearTimeout(spinner);
   if (id !== renderId) return; // a newer navigation won the race
 
+  const back = restoreY !== null;
   const swap = () => {
     if (typeof cleanup === 'function') cleanup();
     outlet.innerHTML = view.html;
     document.title = view.title;
     document.querySelector('meta[name="description"]')?.setAttribute('content', view.description ?? '');
     cleanup = view.mount?.(outlet);
+
+    // Scroll inside the swap so the incoming page is captured at its final position.
+    if (restoreY !== null) {
+      window.scrollTo(0, restoreY);
+    } else if (samePage) {
+      // Same page, new query (pagination): go back to the top of the list.
+      const anchor = outlet.querySelector<HTMLElement>('[data-scroll-anchor]');
+      if (anchor) anchor.scrollIntoView({ block: 'start' });
+      else window.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, 0);
+      outlet.focus({ preventScroll: true });
+    }
+    lastPath = path;
+    hooks.afterRender(path);
   };
 
-  const doc = document as Document & {
-    startViewTransition?: (cb: () => void) => { updateCallbackDone: Promise<void> };
-  };
+  /* Page transition
+     - browsers with the View Transitions API: the old page fades out while the new one
+       rises into place (direction flips on back/forward); the header stays put.
+     - other browsers: the new page fades and rises in with a CSS animation.
+     - "reduce motion" setting: no animation at all. */
+  interface Transition {
+    updateCallbackDone: Promise<void>;
+    ready: Promise<void>;
+    finished: Promise<void>;
+  }
+  const doc = document as Document & { startViewTransition?: (cb: () => void) => Transition };
+  const root = document.documentElement;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (doc.startViewTransition && !reduced && !samePage) {
-    // Cross-fade between pages where the browser supports it.
+  const enter = () => {
+    outlet.classList.remove('page-enter');
+    void outlet.offsetWidth; // restart the animation
+    outlet.classList.add('page-enter');
+    outlet.addEventListener('animationend', () => outlet.classList.remove('page-enter'), { once: true });
+  };
+
+  if (reduced) {
+    swap();
+  } else if (doc.startViewTransition && !samePage) {
+    root.dataset.nav = back ? 'back' : 'forward';
     try {
-      await doc.startViewTransition(swap).updateCallbackDone;
+      const t = doc.startViewTransition(swap);
+      // A skipped transition (tab hidden, window resized…) rejects these; the page is still swapped.
+      t.ready.catch(() => {});
+      t.finished.catch(() => {}).then(() => delete root.dataset.nav);
+      await t.updateCallbackDone;
     } catch {
       /* transition skipped — the DOM was still updated */
     }
   } else {
     swap();
-  }
-
-  lastPath = path;
-  hooks.afterRender(path);
-
-  if (restoreY !== null) {
-    window.scrollTo(0, restoreY);
-  } else if (samePage) {
-    // Same page, new query (pagination): go back to the top of the list.
-    const anchor = outlet.querySelector<HTMLElement>('[data-scroll-anchor]');
-    if (anchor) anchor.scrollIntoView({ block: 'start' });
-    else window.scrollTo(0, 0);
-  } else {
-    window.scrollTo(0, 0);
-    outlet.focus({ preventScroll: true });
+    enter();
   }
 }
 
