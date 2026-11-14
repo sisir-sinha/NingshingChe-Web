@@ -5,6 +5,7 @@ Vanilla TypeScript single-page app (no framework) for ningshingche.com.
 - **Routing:** History API (`pushState` / `popstate`) — clean URLs, no `#`. See `src/router.ts`.
 - **Sliders:** Swiper (hero, featured, videos, authors, PDF shelf).
 - **Icons:** Font Awesome via CDN (`index.html`).
+- **Typeface:** Mekholi, loaded from the Mekholi-Fonts GitHub Pages site (`@font-face` rules in `src/styles/base.css`).
 - **Build tool:** Vite. Light/dark theme, mobile-first layout.
 
 ## Run

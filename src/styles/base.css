@@ -1,4 +1,59 @@
 /* ==========================================================================
+   Mekholi typeface — SIL OFL 1.1, © Surajit Singha Sisir and Ningshing Che.
+   Each weight is a separate file; the browser downloads only those a page uses.
+   To self-host, copy the .woff2 files into public/fonts/ and change the URLs.
+   ========================================================================== */
+@font-face {
+  font-family: 'Mekholi';
+  src: url('https://sisir-sinha.github.io/Mekholi-Fonts/mekholi-family/fonts/web/Mekholi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mekholi';
+  src: url('https://sisir-sinha.github.io/Mekholi-Fonts/mekholi-family/fonts/web/Mekholi-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mekholi';
+  src: url('https://sisir-sinha.github.io/Mekholi-Fonts/mekholi-family/fonts/web/Mekholi-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mekholi';
+  src: url('https://sisir-sinha.github.io/Mekholi-Fonts/mekholi-family/fonts/web/Mekholi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mekholi';
+  src: url('https://sisir-sinha.github.io/Mekholi-Fonts/mekholi-family/fonts/web/Mekholi-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mekholi';
+  src: url('https://sisir-sinha.github.io/Mekholi-Fonts/mekholi-family/fonts/web/Mekholi-RegularItalic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Mekholi';
+  src: url('https://sisir-sinha.github.io/Mekholi-Fonts/mekholi-family/fonts/web/Mekholi-BoldItalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ==========================================================================
    Tokens
    ========================================================================== */
 :root {
@@ -24,8 +79,8 @@
   --radius: 14px;
   --radius-sm: 8px;
 
-  --font-body: 'Hind Siliguri', 'Noto Sans Bengali', 'Kalpurush', 'SolaimanLipi', system-ui, sans-serif;
-  --font-head: 'Noto Serif Bengali', 'Hind Siliguri', Georgia, serif;
+  --font-body: 'Mekholi', 'Kalpurush', 'Noto Serif Bengali', 'Noto Sans Bengali', 'SolaimanLipi', Georgia, serif;
+  --font-head: var(--font-body);
 
   --container: 1220px;
   --gutter: clamp(1rem, 4vw, 1.75rem);
@@ -453,4 +508,18 @@ button {
   .layout {
     display: block !important;
   }
+}
+
+/* Mekholi sits a little high on its line; nudge text in pills and buttons down to look centred. */
+.btn,
+.chip,
+.topic,
+.tag,
+.nav__link > span,
+.page {
+  padding-top: 0.18em;
+}
+.btn {
+  padding-top: calc(0.5rem + 0.18em);
+  padding-bottom: calc(0.5rem - 0.06em);
 }
