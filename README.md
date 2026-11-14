@@ -95,7 +95,7 @@ Put the audio files (MP3 recommended) in `public/data/music/`, or use full URLs 
 
 ## Navigation
 
-Main menu items are in `NAV` and the category row in `CATEGORIES`, both at the top of `src/components/header.ts`.
+Main menu items are in `NAV` (shown as a row under the logo) and the categories listed under "আরাকউ" in `CATEGORIES`, both at the top of `src/components/header.ts`.
 
 ## Privacy policy (`/privacy-policy`)
 

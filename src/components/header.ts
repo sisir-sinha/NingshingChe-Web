@@ -46,6 +46,7 @@ const NAV: NavItem[] = [
       { label: T.authors, href: `${B}/lekhok`, icon: 'fa-feather-pointed' },
       { label: T.pdfBooks, href: `${B}/pdf`, icon: 'fa-file-pdf' },
       { label: T.social, href: `${B}/social-activities`, icon: 'fa-people-group' },
+      ...CATEGORIES.map((c) => ({ label: c, href: categoryUrl(c) })),
     ],
   },
 ];
@@ -60,8 +61,12 @@ function submenu(item: NavItem, id: string): string {
       <ul class="submenu__grid">${kids.map(link).join('')}</ul>
     </div>`;
   }
+  const pages = kids.filter((c) => c.icon);
+  const cats = kids.filter((c) => !c.icon);
   return `<div class="submenu submenu--more" id="${id}">
-    <ul class="submenu__pages">${kids.map(link).join('')}</ul>
+    <ul class="submenu__pages">${pages.map(link).join('')}</ul>
+    <p class="submenu__label">${T.categories}</p>
+    <ul class="submenu__cats">${cats.map(link).join('')}</ul>
   </div>`;
 }
 
@@ -104,25 +109,6 @@ export function renderHeader(el: HTMLElement): void {
         </span>
       </a>
       <div class="scrim" id="nav-scrim" hidden></div>
-      <nav class="nav" id="nav" aria-label="${T.menu}">
-        <div class="nav__head">
-          <span class="brand">
-            <img class="brand__logo" src="${SITE.logo}" alt="" width="40" height="40">
-            <span class="brand__name">${SITE.name}</span>
-          </span>
-          <button type="button" class="icon-btn icon-btn--plain" id="nav-close" aria-label="${T.close}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-        </div>
-        <ul class="nav__list">${navHtml()}</ul>
-        <div class="nav__account" id="nav-account"></div>
-        <div class="nav__foot">
-          <a class="btn btn--primary" href="${B}/blog_submission"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> ${T.submitArticle}</a>
-          <div class="nav__social">
-            <a class="icon-btn" href="${SITE.facebook}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
-            <a class="icon-btn" href="${SITE.youtube}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
-            <a class="icon-btn" href="${SITE.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
-          </div>
-        </div>
-      </nav>
       <div class="bar__tools">
         <button type="button" class="search-trigger" id="search-open" aria-label="${T.search}">
           <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
@@ -135,14 +121,27 @@ export function renderHeader(el: HTMLElement): void {
         <div class="account" id="account"></div>
       </div>
     </div>
-  </div>
-  <nav class="catbar" aria-label="${T.categories}">
-    <div class="container catbar__inner">
-      <span class="catbar__label"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> ${T.categories}</span>
-      <ul class="catbar__list">${CATEGORIES.map((c) => `<li><a href="${categoryUrl(c)}">${esc(c)}</a></li>`).join('')}</ul>
-    </div>
+    <nav class="nav" id="nav" aria-label="${T.menu}">
+      <div class="nav__head">
+        <span class="brand">
+          <img class="brand__logo" src="${SITE.logo}" alt="" width="40" height="40">
+          <span class="brand__name">${SITE.name}</span>
+        </span>
+        <button type="button" class="icon-btn icon-btn--plain" id="nav-close" aria-label="${T.close}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <ul class="nav__list">${navHtml()}</ul>
+      <div class="nav__account" id="nav-account"></div>
+      <div class="nav__foot">
+        <a class="btn btn--primary" href="${B}/blog_submission"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> ${T.submitArticle}</a>
+        <div class="nav__social">
+          <a class="icon-btn" href="${SITE.facebook}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+          <a class="icon-btn" href="${SITE.youtube}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+          <a class="icon-btn" href="${SITE.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </nav>
     <div class="phee" aria-hidden="true"></div>
-  </nav>`;
+  </div>`;
 
   document.getElementById('overlays')!.innerHTML = `
   <div class="search" id="search" role="dialog" aria-modal="true" aria-label="${T.search}" hidden>
@@ -300,7 +299,7 @@ export function syncHeader(path: string): void {
   closeDrawer();
   closeSearch();
   closeAccount();
-  document.querySelectorAll<HTMLAnchorElement>('#nav a, .catbar a').forEach((a) => {
+  document.querySelectorAll<HTMLAnchorElement>('#nav a').forEach((a) => {
     let target = stripBase(a.pathname);
     try {
       target = decodeURIComponent(target);
@@ -313,7 +312,6 @@ export function syncHeader(path: string): void {
     if (current || within) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });
-  document.querySelector<HTMLElement>('.catbar [aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
   document.querySelectorAll<HTMLElement>('.nav__group').forEach((g) => {
     g.classList.toggle('has-current', Boolean(g.querySelector('[aria-current="page"]')));
   });

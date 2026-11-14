@@ -711,7 +711,7 @@ a.page:hover {
 .account__login:hover {
   background: rgba(255, 255, 255, 0.14);
 }
-@media (min-width: 1240px) {
+@media (min-width: 1100px) {
   .account__login {
     padding: 0 1rem;
     background: var(--gold);
