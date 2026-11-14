@@ -28,6 +28,7 @@ export function renderFooter(el: HTMLElement): void {
         <li><a href="${B}/lekhok">${T.authors}</a></li>
         <li><a href="${B}/featured">${T.featured}</a></li>
         <li><a href="${B}/pdf">${T.pdfBooks}</a></li>
+        <li><a href="${B}/privacy-policy">${T.privacy}</a></li>
       </ul>
     </nav>
     <div>
@@ -42,6 +43,6 @@ export function renderFooter(el: HTMLElement): void {
     </div>
   </div>
   <div class="footer__bar">
-    <div class="container">© ${bn(new Date().getFullYear())} ${SITE.name} | সাইট উন্নয়ন <a href="${SITE.developer.href}" target="_blank" rel="noopener">${SITE.developer.name}</a></div>
+    <div class="container">© ${bn(new Date().getFullYear())} ${SITE.name} | সাইট উন্নয়ন <a href="${SITE.developer.href}" target="_blank" rel="noopener">${SITE.developer.name}</a> | <a href="${B}/privacy-policy">${T.privacy}</a></div>
   </div>`;
 }

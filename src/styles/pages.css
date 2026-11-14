@@ -1421,3 +1421,106 @@
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Legal pages (privacy policy)
+   ========================================================================== */
+.legal {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+.legal__toc {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.legal__toc h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+}
+.legal__toc ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: decimal;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.legal__toc li + li {
+  margin-top: 0.1rem;
+}
+.legal__toc a {
+  display: block;
+  padding: 0.22rem 0;
+  color: var(--ink-2);
+}
+.legal__toc a:hover {
+  color: var(--link);
+  text-decoration: underline;
+}
+.legal__body {
+  max-width: 46rem;
+  min-width: 0;
+}
+.legal__body section {
+  scroll-margin-top: 8.5rem;
+}
+.legal__body section + section {
+  margin-top: 2.2rem;
+  padding-top: 1.8rem;
+  border-top: 1px solid var(--line);
+}
+.legal__body h2 {
+  font-size: clamp(1.25rem, 3.5vw, 1.55rem);
+}
+.legal__body h2:focus {
+  outline: none;
+}
+.legal__body h3 {
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+}
+.legal__dates {
+  margin-bottom: 2rem;
+  padding: 0.9rem 1.1rem;
+  border-left: 4px solid var(--saffron);
+  border-radius: 10px;
+  background: var(--saffron-soft);
+}
+.legal__dates p {
+  margin: 0;
+}
+.legal__sign {
+  margin-top: 2.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  text-align: center;
+}
+.legal__sign p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+}
+.auth__link {
+  color: var(--link);
+  font-weight: 600;
+  text-decoration: underline;
+}
+@media (min-width: 1024px) {
+  .legal {
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+  }
+  .legal__toc {
+    position: sticky;
+    top: 138px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+  }
+}
+@media print {
+  .legal__toc {
+    display: none;
+  }
+}

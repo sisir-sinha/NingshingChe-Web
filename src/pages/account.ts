@@ -225,6 +225,7 @@ export function registerPage({ query }: RouteContext): View {
         ${pictureField()}
         <p class="form__note form__note--error" data-form-note role="alert" hidden></p>
         <button class="btn btn--primary btn--lg btn--block" type="submit"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> ${T.createAccount}</button>
+        <p class="form__hint auth__demo">${T.agreePrivacy} <a class="auth__link" href="${B}/privacy-policy">${T.privacy}</a></p>
         <p class="form__hint auth__demo"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> ${T.demoAccounts}</p>
       </form>
       <p class="auth__switch">${T.haveAccount} <a href="${B}/login${keep}">${T.login}</a></p>`,

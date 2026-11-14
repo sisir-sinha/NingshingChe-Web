@@ -96,3 +96,7 @@ Put the audio files (MP3 recommended) in `public/data/music/`, or use full URLs 
 ## Navigation
 
 Main menu items are in `NAV` and the category row in `CATEGORIES`, both at the top of `src/components/header.ts`.
+
+## Privacy policy (`/privacy-policy`)
+
+The text is in `src/content/privacy.md` (headings, bullets, numbered lists, **bold** and links are supported). Linked from the footer and the register page.
