@@ -701,7 +701,7 @@ a.page:hover {
   height: 42px;
   min-width: 42px;
   border-radius: 999px;
-  color: #fff;
+  color: var(--ink-2);
   font-size: 1.1rem;
   transition: background-color 0.15s, color 0.15s;
 }
@@ -709,22 +709,23 @@ a.page:hover {
   display: none;
 }
 .account__login:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--surface-2);
 }
 @media (min-width: 1100px) {
   .account__login {
-    padding: 0 1rem;
-    background: var(--gold);
-    color: #3a1206;
+    padding: 0 1.1rem;
+    background: var(--accent);
+    color: var(--accent-ink);
     font-size: 0.92rem;
-    font-weight: 700;
+    font-weight: 600;
   }
   .account__login span {
     display: inline;
     padding-top: 0.18em;
   }
   .account__login:hover {
-    background: #ffc85c;
+    background: var(--accent);
+    filter: brightness(1.12);
   }
 }
 .account__btn {
@@ -735,12 +736,12 @@ a.page:hover {
   border-radius: 50%;
 }
 .account__btn .avatar {
-  box-shadow: 0 0 0 2px rgba(240, 176, 63, 0.85);
+  box-shadow: 0 0 0 1px var(--line);
   transition: box-shadow 0.15s;
 }
 .account__btn:hover .avatar,
 .account__btn[aria-expanded='true'] .avatar {
-  box-shadow: 0 0 0 3px #fff;
+  box-shadow: 0 0 0 2px var(--accent);
 }
 .account__menu {
   position: absolute;

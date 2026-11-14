@@ -5,8 +5,8 @@
 
 /* ---------- top bar ---------- */
 .topbar {
-  background: var(--maroon-deep);
-  color: #f3dcc4;
+  background: var(--surface-2);
+  color: var(--muted);
   font-size: 0.86rem;
 }
 .topbar__inner {
@@ -38,23 +38,21 @@
   border-radius: 6px;
 }
 .topbar__links a:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
 }
 
-/* ---------- header bar (brand + navigation + tools in one sticky row) ---------- */
+/* ---------- header bar: logo + tools, with the menu as a second row (plain, flat look) ---------- */
 .bar {
   position: sticky;
   top: 0;
   z-index: 50;
-  color: #fff;
-  background:
-    radial-gradient(90% 180% at 0% 0%, rgba(240, 176, 63, 0.2), transparent 55%),
-    linear-gradient(100deg, var(--maroon) 0%, #6a1020 100%);
+  color: var(--ink);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
   transition: box-shadow 0.2s;
 }
 .bar.is-stuck {
-  box-shadow: 0 10px 28px -14px rgba(20, 4, 6, 0.75);
+  box-shadow: 0 6px 18px -12px rgba(40, 20, 10, 0.35);
 }
 .bar__inner {
   display: flex;
@@ -81,7 +79,6 @@
   border-radius: 50%;
   background: #fff;
   object-fit: contain;
-  box-shadow: 0 0 0 2px rgba(240, 176, 63, 0.75);
 }
 .brand__text {
   display: flex;
@@ -97,7 +94,7 @@
 }
 .brand__tag {
   font-size: 0.76rem;
-  color: #f2d7b5;
+  color: var(--muted);
   line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
@@ -111,21 +108,26 @@
   height: 42px;
   min-width: 42px;
   border-radius: 999px;
-  color: #fff;
-  transition: background-color 0.15s;
+  color: var(--ink-2);
+  transition: background-color 0.15s, border-color 0.15s;
 }
 .search-trigger span,
 .search-trigger kbd {
   display: none;
 }
 .search-trigger:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--surface-2);
 }
 
-/* Forum + Music: highlighted entries (drawer) */
+/* Forum + Music stand out through their icon colour */
+.bar .icon-btn--plain:hover {
+  background: var(--surface-2);
+}
+.brand--footer .brand__tag {
+  color: #d9c4ad;
+}
 .nav__link--special .nav__icon {
-  background: linear-gradient(135deg, var(--gold), var(--saffron));
-  color: #3a1206;
+  color: var(--accent);
 }
 
 /* ---------- shared navigation pieces ---------- */
@@ -223,7 +225,6 @@
     flex-direction: column;
     background: var(--surface);
     color: var(--ink);
-    border-radius: 0 22px 22px 0;
     box-shadow: var(--shadow-md);
     transform: translateX(-104%);
     visibility: hidden;
@@ -238,18 +239,14 @@
     position: fixed;
     inset: 0;
     z-index: 1;
-    background: rgba(15, 6, 4, 0.6);
-    backdrop-filter: blur(3px);
+    background: rgba(15, 6, 4, 0.45);
   }
   .nav__head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.8rem 0.7rem 0.8rem 1.1rem;
-    color: #fff;
-    background:
-      conic-gradient(from 135deg at 50% 0, rgba(240, 176, 63, 0.16) 90deg, transparent 0) 0 0 / 28px 14px,
-      linear-gradient(120deg, var(--maroon-deep), var(--maroon));
+    padding: 0.7rem 0.7rem 0.7rem 1.1rem;
+    border-bottom: 1px solid var(--line);
   }
   .nav__list {
     flex: 1;
@@ -356,68 +353,53 @@
   }
   /* the menu is its own full-width row under the logo */
   .nav {
-    background: var(--maroon-deep);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--line);
   }
   .nav__list {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     width: 100%;
     max-width: calc(var(--container) + var(--gutter) * 2);
     margin-inline: auto;
-    padding: 5px calc(var(--gutter) - 0.85rem);
+    padding: 0 calc(var(--gutter) - 0.85rem);
   }
   .nav__list > li {
     position: relative;
   }
   .nav__link {
     width: auto;
-    height: 38px;
-    gap: 0.4rem;
+    height: 46px;
+    gap: 0.45rem;
     padding: 0 0.85rem;
-    border-radius: 999px;
-    color: #f5e2cc;
-    font-size: 0.95rem;
+    color: var(--ink-2);
+    font-size: 0.97rem;
     font-weight: 500;
     white-space: nowrap;
-    transition: background-color 0.15s, color 0.15s;
+    transition: color 0.15s, box-shadow 0.15s;
   }
   .nav__link:hover,
   .nav__group:hover > .nav__toggle,
   .nav__group.is-open > .nav__toggle {
-    background: rgba(255, 255, 255, 0.14);
-    color: #fff;
+    color: var(--accent);
   }
   .nav__link[aria-current='page'],
   .nav__group.has-current > .nav__toggle {
-    background: var(--gold);
-    color: #2a1505;
+    color: var(--accent);
     font-weight: 600;
-    box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 -2px 0 var(--accent);
   }
   .nav__caret {
     margin-left: 0.1rem;
   }
   .nav__link--special {
-    margin-inline: 2px;
-    padding-inline: 0.8rem 0.9rem;
-    color: #fff;
     font-weight: 600;
-    box-shadow: inset 0 0 0 1.5px rgba(240, 176, 63, 0.75);
-    background: linear-gradient(120deg, rgba(240, 176, 63, 0.3), rgba(217, 115, 13, 0.28));
+    color: var(--ink);
   }
   .nav__link--special .nav__icon {
     display: inline-block;
-    background: none;
     font-size: 0.9rem;
-    color: var(--gold);
-  }
-  .nav__link--special:hover {
-    background: linear-gradient(120deg, rgba(240, 176, 63, 0.5), rgba(217, 115, 13, 0.45));
-  }
-  .nav__link--special[aria-current='page'] .nav__icon {
-    color: inherit;
+    color: var(--accent);
   }
   .nav__group:hover > .nav__toggle .nav__caret {
     transform: rotate(180deg);
@@ -426,15 +408,15 @@
   /* dropdown panels */
   .submenu {
     position: absolute;
-    top: calc(100% + 16px);
+    top: calc(100% + 9px);
     left: 50%;
     width: 300px;
     padding: 1rem;
-    border-radius: 18px;
+    border-radius: 14px;
     border: 1px solid var(--line);
     background: var(--surface);
     color: var(--ink);
-    box-shadow: 0 24px 50px -20px rgba(30, 8, 6, 0.5);
+    box-shadow: var(--shadow-md);
     opacity: 0;
     visibility: hidden;
     transform: translate(-50%, 8px);
@@ -444,8 +426,8 @@
     /* invisible bridge so the pointer can travel from the pill to the panel */
     content: '';
     position: absolute;
-    inset: -18px 0 auto 0;
-    height: 18px;
+    inset: -11px 0 auto 0;
+    height: 11px;
   }
   .submenu::after {
     content: '';
@@ -486,9 +468,8 @@
 @media (min-width: 1100px) {
   .search-trigger {
     padding: 0 0.5rem 0 0.9rem;
-    background: rgba(28, 6, 9, 0.32);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-    color: #f5e2cc;
+    box-shadow: inset 0 0 0 1px var(--line);
+    color: var(--muted);
     font-size: 0.92rem;
   }
   .search-trigger span {
@@ -500,7 +481,7 @@
     min-width: 24px;
     height: 24px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.16);
+    background: var(--surface-2);
     font: 600 0.78rem/1 ui-monospace, monospace;
   }
 }

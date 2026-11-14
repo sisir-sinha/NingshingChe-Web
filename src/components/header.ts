@@ -140,7 +140,6 @@ export function renderHeader(el: HTMLElement): void {
         </div>
       </div>
     </nav>
-    <div class="phee" aria-hidden="true"></div>
   </div>`;
 
   document.getElementById('overlays')!.innerHTML = `
@@ -170,7 +169,7 @@ function initTheme(): void {
     const dark = document.documentElement.dataset.theme === 'dark';
     btn.innerHTML = `<i class="fa-solid ${dark ? 'fa-sun' : 'fa-moon'}" aria-hidden="true"></i>`;
     btn.setAttribute('aria-pressed', String(dark));
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#1a0c0e' : '#6d1322');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#1d1512' : '#ffffff');
   };
   btn.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
