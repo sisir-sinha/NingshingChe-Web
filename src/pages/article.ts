@@ -39,6 +39,7 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
   const latest = posts.filter((p) => p.id !== post.id).slice(0, 5);
   const popular = posts.filter((p) => p.featured && p.id !== post.id).slice(0, 5);
   const url = location.origin + href(post.path);
+  const user = currentUser(); // only signed-in readers can comment
 
   const html = `
   <article class="article">
@@ -104,20 +105,29 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
         <section class="comments" aria-labelledby="comments-title">
           <h2 class="section-title" id="comments-title">${T.allComments}${comments.length ? ` <small>(${bn(comments.length)})</small>` : ''}</h2>
           ${comments.length ? `<ul class="comment-list">${comments.map(commentItem).join('')}</ul>` : `<p class="comments__empty">${T.noComments}</p>`}
-          <h3 class="comments__form-title">${T.addComment}</h3>
+          ${
+            user
+              ? `          <h3 class="comments__form-title">${T.addComment}</h3>
           <form class="form" data-comment-form novalidate>
             <div class="form__row">
               <label class="field"><span>নাঙহান <b>*</b></span><input name="name" type="text" required autocomplete="name" placeholder="নিজর নাঙহান লিখিক"></label>
               <label class="field"><span>ঠিকানাহান <b>*</b></span><input name="address" type="text" required autocomplete="address-level2" placeholder="ঠিকানাহান লিখিক"></label>
             </div>
             <div class="form__row">
-              <label class="field"><span>ইমেইল <b>*</b></span><input name="email" type="email" required autocomplete="email" placeholder="নিজর ইমেইলগো বহিক"></label>
+              <label class="field"><span>ইমেইল <b>*</b></span><input name="email" type="email" required readonly value="${esc(user?.email ?? '')}"></label>
               <label class="field"><span>ফোন নম্বর <b>*</b></span><input name="phone" type="tel" required autocomplete="tel" placeholder="নিজর ফোন নম্বরগো বহিক"></label>
             </div>
             <label class="field"><span>মন্তব্য <b>*</b></span><textarea name="comment" rows="5" required placeholder="মন্তব্যহান লেখিক ..."></textarea></label>
             <p class="form__note" data-form-note hidden></p>
             <button class="btn btn--primary" type="submit"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${T.addComment}</button>
-          </form>
+          </form>`
+              : `<div class="forum-login">
+                  <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                  <p>${T.loginToComment}</p>
+                  <a class="btn btn--primary" href="${B}/login?next=${encodeURIComponent(post.path)}"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> ${T.login}</a>
+                  <a class="btn btn--ghost" href="${B}/register?next=${encodeURIComponent(post.path)}">${T.register}</a>
+                </div>`
+          }
         </section>
       </div>
 
@@ -204,9 +214,9 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
       root.querySelector('[data-print]')?.addEventListener('click', () => window.print());
 
       // Comment form
-      const form = root.querySelector<HTMLFormElement>('[data-comment-form]')!;
-      const note = form.querySelector<HTMLElement>('[data-form-note]')!;
-      form.addEventListener('submit', async (e) => {
+      const form = root.querySelector<HTMLFormElement>('[data-comment-form]');
+      const note = form?.querySelector<HTMLElement>('[data-form-note]');
+      if (form && note) form.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!form.checkValidity()) {
           form.classList.add('was-validated');
@@ -218,7 +228,9 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
         note.hidden = false;
         note.classList.remove('form__note--error');
         try {
-          await submitComment(post.id, new FormData(form), currentUser());
+          const me = currentUser();
+          if (!me) throw new Error('signed out');
+          await submitComment(post.id, new FormData(form), me);
           form.reset();
           form.classList.remove('was-validated');
           prefillFromAccount(form);

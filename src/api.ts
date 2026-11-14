@@ -204,18 +204,21 @@ export async function getComments(postId: string): Promise<Comment[]> {
 
 const field = (data: FormData, name: string) => String(data.get(name) ?? '').trim();
 
-/** Sends a comment for approval. It appears on the article once an editor publishes it. */
-export async function submitComment(postId: string, data: FormData, user: { id: string; picture: string } | null): Promise<void> {
+/**
+ * Sends a comment for approval. It appears on the article once an editor publishes it.
+ * Only signed-in readers can comment (the database refuses anyone else).
+ */
+export async function submitComment(postId: string, data: FormData, user: { id: string; email: string; picture: string }): Promise<void> {
   const { error } = await sb.from('comments').insert({
     blog_id: postId,
     name: field(data, 'name'),
     address: field(data, 'address'),
-    email: field(data, 'email'),
+    email: user.email,
     phone: field(data, 'phone'),
     content: field(data, 'comment'),
     status: 'Unpublish',
-    user_id: user?.id ?? null,
-    avatar_url: user?.picture && /^https?:/.test(user.picture) ? user.picture : '',
+    user_id: user.id,
+    avatar_url: /^https?:/.test(user.picture) ? user.picture : '',
   });
   if (error) throw new Error(error.message);
 }
