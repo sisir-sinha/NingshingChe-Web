@@ -105,7 +105,7 @@ The site reads and writes everything through Supabase; there are no content file
 | Comments | `comments` (sent as `Unpublish`, shown once published in the dashboard) |
 | Article submissions | `submitted_blogs` (sent as `Pending`) |
 | Forum | `forum_*` tables through the `forum_*` database functions |
-| Accounts | Supabase Auth (e-mail + password, Google) and `profiles`; pictures in the `avatars` storage bucket |
+| Accounts | Supabase Auth (e-mail + password, Google) and `profiles`; pictures are uploaded to ImgBB (`IMGBB_KEY` in `src/config.ts`) |
 | View counts | `content_view_record()` |
 
 - Connection settings: `src/config.ts` (project URL and **publishable** key — both public by design). Never add the database password or a secret key to this project.

@@ -5,10 +5,11 @@
  * - Google: the browser goes to Google and comes back signed in.
  * - Each account has a row in the `profiles` table (name, picture); the forum
  *   requires it, so it is created on first sign-in.
- * - Profile pictures are stored in the public `avatars` storage bucket, in a
- *   folder only the owner can write to.
+ * - Profile pictures are hosted on ImgBB; the profile row keeps the picture's
+ *   address and its ImgBB delete link (`avatar_url`, `imgbb_delete_url`).
  */
 import type { Session } from '@supabase/supabase-js';
+import { IMGBB_KEY } from './config';
 import { sb } from './supabase';
 import { B } from './utils';
 
@@ -29,7 +30,6 @@ export class AuthError extends Error {
 }
 
 const NEXT_KEY = 'nc-next';
-const PENDING_PICTURE = 'nc-pending-picture';
 const listeners = new Set<(user: User | null) => void>();
 let me: User | null = null;
 let profileReady: Promise<void> = Promise.resolve();
@@ -59,42 +59,37 @@ function translate(error: { message?: string; code?: string; status?: number }):
   return new AuthError('network');
 }
 
-function dataUrlToBlob(dataUrl: string): Blob {
-  const [head, body] = dataUrl.split(',');
-  const bytes = Uint8Array.from(atob(body ?? ''), (c) => c.charCodeAt(0));
-  return new Blob([bytes], { type: /data:(.*?);/.exec(head)?.[1] ?? 'image/jpeg' });
+interface Hosted {
+  url: string;
+  deleteUrl: string;
 }
 
-async function uploadPicture(userId: string, dataUrl: string): Promise<string> {
-  const path = `${userId}/avatar-${Date.now()}.jpg`;
-  const { error } = await sb.storage.from('avatars').upload(path, dataUrlToBlob(dataUrl), { contentType: 'image/jpeg', cacheControl: '31536000' });
-  if (error) throw new AuthError('image');
-  return sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+/** Sends a picture (a data: URL) to ImgBB and returns where it now lives. */
+async function uploadPicture(dataUrl: string, name: string): Promise<Hosted> {
+  const body = new FormData();
+  body.append('image', dataUrl.slice(dataUrl.indexOf(',') + 1)); // ImgBB takes the base64 part only
+  body.append('name', name);
+  try {
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(IMGBB_KEY)}`, { method: 'POST', body });
+    const json = (await res.json()) as { success?: boolean; data?: { url?: string; delete_url?: string } };
+    if (!res.ok || !json.success || !json.data?.url) throw new Error('imgbb');
+    return { url: json.data.url, deleteUrl: json.data.delete_url ?? '' };
+  } catch {
+    throw new AuthError('image');
+  }
 }
 
 /** Makes sure the account has its profile row, and takes name / picture from it. */
-async function syncProfile(base: User): Promise<void> {
+async function syncProfile(base: User, pictureDeleteUrl: string): Promise<void> {
   try {
     const { data } = await sb.from('profiles').select('name,avatar_url').eq('id', base.id).maybeSingle();
     let name = (data?.name as string | null) ?? '';
     let picture = (data?.avatar_url as string | null) ?? '';
-
-    // A picture chosen while registering waits here until the address is confirmed.
-    let pending = '';
-    try {
-      pending = localStorage.getItem(PENDING_PICTURE) ?? '';
-      localStorage.removeItem(PENDING_PICTURE);
-    } catch {
-      /* ignore */
-    }
-    if (pending.startsWith('data:image/') && !picture) picture = await uploadPicture(base.id, pending).catch(() => '');
-
     if (!data) {
+      // First sign-in: start the profile from what was given when registering (or by Google).
       name ||= base.name;
       picture ||= base.picture;
-      await sb.from('profiles').insert({ id: base.id, name, email: base.email, avatar_url: picture });
-    } else if (picture !== ((data.avatar_url as string | null) ?? '')) {
-      await sb.from('profiles').update({ avatar_url: picture }).eq('id', base.id);
+      await sb.from('profiles').insert({ id: base.id, name, email: base.email, avatar_url: picture, imgbb_delete_url: pictureDeleteUrl });
     }
     if (me?.id === base.id) {
       me = { ...me, name: name || me.name, picture: picture || me.picture };
@@ -113,7 +108,7 @@ function setSession(session: Session | null): void {
     profileReady = Promise.resolve();
   } else if (changed) {
     me = next;
-    profileReady = syncProfile(next);
+    profileReady = syncProfile(next, String(session?.user.user_metadata?.imgbb_delete_url ?? ''));
   }
   if (changed) emit();
 }
@@ -149,21 +144,19 @@ export function onAuthChange(fn: (user: User | null) => void): () => void {
  */
 export async function register(input: { name: string; email: string; password: string; picture: string }): Promise<User | 'confirm'> {
   const name = input.name.trim();
+  // The picture goes to ImgBB first; its address travels with the new account.
+  const hosted = input.picture.startsWith('data:image/') ? await uploadPicture(input.picture, `avatar-${Date.now()}`) : null;
   const { data, error } = await sb.auth.signUp({
     email: input.email.trim().toLowerCase(),
     password: input.password,
-    options: { data: { full_name: name, name }, emailRedirectTo: `${location.origin}${B}/` },
+    options: {
+      data: { full_name: name, name, ...(hosted ? { avatar_url: hosted.url, imgbb_delete_url: hosted.deleteUrl } : {}) },
+      emailRedirectTo: `${location.origin}${B}/`,
+    },
   });
   if (error) throw translate(error);
   // With confirmation on, an address that already has an account comes back with no identities.
   if (data.user && !data.session && (data.user.identities ?? []).length === 0) throw new AuthError('email-taken');
-  if (input.picture.startsWith('data:image/')) {
-    try {
-      localStorage.setItem(PENDING_PICTURE, input.picture);
-    } catch {
-      /* the picture can be added later from the profile page */
-    }
-  }
   if (!data.session) return 'confirm';
   setSession(data.session);
   await profileReady;
@@ -206,11 +199,19 @@ export async function updateProfile(changes: { name?: string; picture?: string }
   await profileReady;
   const name = changes.name?.trim() || me.name;
   let picture = me.picture;
-  if (changes.picture === '') picture = '';
-  else if (changes.picture?.startsWith('data:image/')) picture = await uploadPicture(me.id, changes.picture);
-  const { error } = await sb.from('profiles').upsert({ id: me.id, name, email: me.email, avatar_url: picture });
+  let hosted: Hosted | null = null;
+  if (changes.picture === '') {
+    picture = '';
+    hosted = { url: '', deleteUrl: '' };
+  } else if (changes.picture?.startsWith('data:image/')) {
+    hosted = await uploadPicture(changes.picture, `avatar-${me.id}`);
+    picture = hosted.url;
+  }
+  const { error } = await sb
+    .from('profiles')
+    .upsert({ id: me.id, name, email: me.email, ...(hosted ? { avatar_url: hosted.url, imgbb_delete_url: hosted.deleteUrl } : {}) });
   if (error) throw new AuthError('network');
-  void sb.auth.updateUser({ data: { full_name: name, name } });
+  void sb.auth.updateUser({ data: { full_name: name, name, avatar_url: picture } });
   me = { ...me, name, picture };
   emit();
   return me;
