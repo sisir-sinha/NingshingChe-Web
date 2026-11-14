@@ -1741,3 +1741,6 @@
 .playlist__list li[hidden] {
   display: none;
 }
+.music__layout > * {
+  min-width: 0; /* long song titles must not widen the page on phones */
+}
