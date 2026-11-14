@@ -1,0 +1,67 @@
+# নিংশিং চে — redesign
+
+Vanilla TypeScript single-page app (no framework) for ningshingche.com.
+
+- **Routing:** History API (`pushState` / `popstate`) — clean URLs, no `#`. See `src/router.ts`.
+- **Sliders:** Swiper (hero, featured, videos, authors, PDF shelf).
+- **Icons:** Font Awesome via CDN (`index.html`).
+- **Build tool:** Vite. Light/dark theme, mobile-first layout.
+
+## Run
+
+```bash
+npm install
+npm run dev        # development server  → http://localhost:5173
+npm run build      # type-check + production build into dist/
+npm start          # serve dist/ with SPA fallback → http://localhost:4173
+```
+
+## Routes
+
+| URL | Page |
+| --- | --- |
+| `/` (`?page=2`) | Home |
+| `/2025/06/slug.kehem` | Article (same URLs as the current site) |
+| `/category/:name`, `/tag/:name` | Listings |
+| `/featured` (also `/ফিচার্ড`), `/recent` | Listings |
+| `/author/:name`, `/lekhok` | Author profile, all authors |
+| `/pdf`, `/read_pdf/:id` | PDF shelf, reader |
+| `/search?q=` | Search |
+| `/about-us`, `/blog_submission`, `/social-activities` | Static pages |
+| anything else | 404 page |
+
+## Deploying (important for History API routing)
+
+The server must return `index.html` for every path that is not a real file,
+otherwise refreshing a deep link gives a 404.
+
+- **Node:** `npm start` (`server.mjs`, no dependencies).
+- **Apache:** `public/.htaccess` is copied into `dist/` automatically.
+- **Netlify / Cloudflare Pages:** `public/_redirects` is included.
+- **Nginx:** `location / { try_files $uri /index.html; }`
+- **Django (current backend):** add a catch-all URL pattern that renders `dist/index.html`.
+
+## Project layout
+
+```
+index.html              shell, fonts, Font Awesome CDN
+server.mjs              production static server with SPA fallback
+public/data/            content snapshot (JSON) taken from the live site
+src/main.ts             route table + bootstrap
+src/router.ts           History API router
+src/api.ts              data layer — the only file to change for a real API
+src/strings.ts          all interface text in one place
+src/sliders.ts          Swiper setup
+src/components/         header, footer, cards, sidebar widgets
+src/pages/              one module per page
+src/styles/             base / layout / components / pages CSS
+```
+
+## Connecting the backend
+
+`public/data` is a static snapshot (50 articles, 27 authors, 6 PDFs).
+Swap the functions in `src/api.ts` for real endpoints and keep the shapes in `src/types.ts`.
+
+The comment form and the article-submission form validate input but do **not**
+send anything yet: `submitComment()` and `submitArticle()` in `src/api.ts`
+are stubs that need your POST endpoints (and CSRF token).
