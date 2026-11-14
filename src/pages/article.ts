@@ -1,5 +1,8 @@
-import { prefillFromAccount } from '../auth';
-import { BackendMissingError, getAuthor, getCategories, getPostByPath, getPosts, submitComment } from '../api';
+import { currentUser, prefillFromAccount } from '../auth';
+import { getAuthor, getCategories, getComments, getPostByPath, getPosts, submitComment } from '../api';
+import { recordView } from '../supabase';
+import type { Comment } from '../types';
+import { avatar } from './account';
 import { chip, media, postCard, shareButtons } from '../components/cards';
 import { categoryWidget, postsWidget } from '../components/sidebar';
 import { SITE, T } from '../strings';
@@ -9,11 +12,26 @@ import { notFoundPage } from './static';
 
 const SIZES = ['s', 'm', 'l'] as const;
 
+function commentItem(c: Comment): string {
+  return `<li class="comment">
+    ${avatar({ name: c.name, picture: c.picture })}
+    <div class="comment__body">
+      <p class="comment__head"><strong>${esc(c.name)}</strong>${c.address ? ` <span>${esc(c.address)}</span>` : ''} <time>${esc(c.date)}</time></p>
+      <p class="comment__text">${esc(c.text)}</p>
+    </div>
+  </li>`;
+}
+
 export async function articlePage(ctx: RouteContext): Promise<View> {
   const post = await getPostByPath(ctx.path);
   if (!post) return notFoundPage();
 
-  const [posts, categories, author] = await Promise.all([getPosts(), getCategories(), getAuthor(post.author)]);
+  const [posts, categories, author, comments] = await Promise.all([
+    getPosts(),
+    getCategories(),
+    getAuthor(post.author),
+    getComments(post.id).catch(() => [] as Comment[]), // the article still opens if comments cannot be read
+  ]);
   const index = posts.findIndex((p) => p.id === post.id);
   const newer = posts[index - 1];
   const older = posts[index + 1];
@@ -84,8 +102,8 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
         </nav>
 
         <section class="comments" aria-labelledby="comments-title">
-          <h2 class="section-title" id="comments-title">${T.allComments}</h2>
-          <p class="comments__empty">${T.noComments}</p>
+          <h2 class="section-title" id="comments-title">${T.allComments}${comments.length ? ` <small>(${bn(comments.length)})</small>` : ''}</h2>
+          ${comments.length ? `<ul class="comment-list">${comments.map(commentItem).join('')}</ul>` : `<p class="comments__empty">${T.noComments}</p>`}
           <h3 class="comments__form-title">${T.addComment}</h3>
           <form class="form" data-comment-form novalidate>
             <div class="form__row">
@@ -195,19 +213,26 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
           form.querySelector<HTMLElement>(':invalid')?.focus();
           return;
         }
+        const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+        submit.disabled = true;
+        note.hidden = false;
+        note.classList.remove('form__note--error');
         try {
-          await submitComment(post.path, new FormData(form));
+          await submitComment(post.id, new FormData(form), currentUser());
           form.reset();
           form.classList.remove('was-validated');
-          toast('মন্তব্য পাঠানো হয়েছে');
+          prefillFromAccount(form);
+          note.textContent = T.commentSent;
+          toast(T.commentSent);
         } catch (err) {
-          note.hidden = false;
-          note.textContent =
-            err instanceof BackendMissingError
-              ? 'ডেমো সংস্করণ: মন্তব্য সার্ভারে পাঠানো হয়নি। src/api.ts ফাইলে submitComment() ফাংশনে API যুক্ত করুন।'
-              : 'মন্তব্য পাঠানো যায়নি। আবার চেষ্টা করুন।';
+          console.error(err);
+          note.classList.add('form__note--error');
+          note.textContent = T.commentFailed;
         }
+        submit.disabled = false;
       });
+
+      recordView('blog', post.id);
 
       return () => {
         window.removeEventListener('scroll', onScroll);

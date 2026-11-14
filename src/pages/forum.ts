@@ -1,7 +1,8 @@
 import { currentUser } from '../auth';
-import { FORUM_CATEGORIES, addReply, authorOf, createTopic, deleteReply, deleteTopic, getTopic, listTopics } from '../forum';
-import type { Reply, Topic } from '../forum';
+import { addReply, createTopic, deleteReply, deleteTopic, getForum, getTopic, toggleLike } from '../forum';
+import type { ForumPost, Reply, Topic } from '../forum';
 import { navigate, reload } from '../router';
+import { htmlToText } from '../sanitize';
 import { SITE, T } from '../strings';
 import type { RouteContext, View } from '../types';
 import { B, bn, esc, toast } from '../utils';
@@ -31,16 +32,23 @@ function loginPrompt(next: string): string {
   </div>`;
 }
 
+const who = (p: ForumPost) => ({ name: p.authorName, picture: p.authorPicture });
+const badge = (p: ForumPost) => (p.official ? ` <span class="chip chip--official"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> ${T.official}</span>` : '');
+
+/** Shows the database's refusal in plain words instead of failing silently. */
+function fail(err: unknown): void {
+  console.error(err);
+  toast(T.errGeneric);
+}
+
 function topicRow(t: Topic): string {
-  const a = authorOf(t);
-  const last = t.replies[t.replies.length - 1];
-  return `<li class="topic-row${t.pinned ? ' is-pinned' : ''}">
-    ${avatar(a)}
+  return `<li class="topic-row${t.official ? ' is-pinned' : ''}">
+    ${avatar(who(t))}
     <div class="topic-row__body">
-      <a class="topic-row__title" href="${B}/forum/${t.id}">${t.pinned ? `<i class="fa-solid fa-thumbtack" title="${T.pinned}" aria-label="${T.pinned}"></i> ` : ''}${esc(t.title)}</a>
-      <p class="topic-row__meta"><span class="chip">${esc(t.category)}</span> <span>${esc(a.name)}</span> · <span>${when(last?.createdAt ?? t.createdAt)}</span></p>
+      <a class="topic-row__title" href="${B}/forum/${t.id}">${esc(t.title)}</a>
+      <p class="topic-row__meta"><span class="chip">${esc(t.category)}</span> <span>${esc(t.authorName)}</span>${badge(t)} · <span>${when(t.lastAt)}</span> · <span><i class="fa-regular fa-eye" aria-hidden="true"></i> ${bn(t.views)}</span></p>
     </div>
-    <span class="topic-row__count" aria-label="${bn(t.replies.length)} ${T.replies}"><i class="fa-regular fa-comment" aria-hidden="true"></i> ${bn(t.replies.length)}</span>
+    <span class="topic-row__count" aria-label="${bn(t.replyCount)} ${T.replies}"><i class="fa-regular fa-comment" aria-hidden="true"></i> ${bn(t.replyCount)}</span>
   </li>`;
 }
 
@@ -48,7 +56,7 @@ function topicRow(t: Topic): string {
 
 export async function forumPage({ query }: RouteContext): Promise<View> {
   const active = query.get('c') ?? '';
-  const topics = await listTopics(active);
+  const { categories, topics } = await getForum(active);
   const user = currentUser();
   const filter = (label: string, value: string) =>
     `<a class="topic${value === active ? ' is-active' : ''}" href="${B}/forum${value ? `?c=${encodeURIComponent(value)}` : ''}"${value === active ? ' aria-current="true"' : ''}>${esc(label)}</a>`;
@@ -59,18 +67,18 @@ export async function forumPage({ query }: RouteContext): Promise<View> {
     html: `${pageHead(T.forum, 'fa-solid fa-comments', T.forum, T.forumSub)}
     <section class="container container--narrow forum section" data-scroll-anchor>
       <div class="forum__bar">
-        <div class="forum__filters">${filter(T.all, '')}${FORUM_CATEGORIES.map((c) => filter(c, c)).join('')}</div>
+        <div class="forum__filters">${filter(T.all, '')}${categories.map((c) => filter(c.title, c.slug)).join('')}</div>
         ${user ? `<button type="button" class="btn btn--primary" data-new-topic aria-expanded="false"><i class="fa-solid fa-plus" aria-hidden="true"></i> ${T.newTopic}</button>` : ''}
       </div>
       ${
         user
           ? `<form class="form form--card forum__new" data-topic-form novalidate hidden>
               <h2 class="auth__title">${T.newTopic}</h2>
-              <label class="field"><span>${T.topicTitle} <b>*</b></span><input name="title" type="text" required minlength="4" maxlength="140"></label>
+              <label class="field"><span>${T.topicTitle} <b>*</b></span><input name="title" type="text" required minlength="4" maxlength="160"></label>
               <label class="field"><span>${T.topicCategory}</span>
-                <select name="category">${FORUM_CATEGORIES.map((c) => `<option${c === active ? ' selected' : ''}>${esc(c)}</option>`).join('')}</select>
+                <select name="category">${categories.map((c) => `<option value="${esc(c.slug)}"${c.slug === active ? ' selected' : ''}>${esc(c.title)}</option>`).join('')}</select>
               </label>
-              <label class="field"><span>${T.topicBody} <b>*</b></span><textarea name="body" rows="6" required minlength="4" maxlength="5000"></textarea></label>
+              <label class="field"><span>${T.topicBody} <b>*</b></span><textarea name="body" rows="6" required maxlength="8000"></textarea></label>
               <div class="pill-row">
                 <button class="btn btn--primary" type="submit"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> ${T.postTopic}</button>
                 <button class="btn btn--ghost" type="button" data-cancel>${T.cancel}</button>
@@ -79,7 +87,6 @@ export async function forumPage({ query }: RouteContext): Promise<View> {
           : loginPrompt('/forum')
       }
       ${topics.length ? `<ul class="topic-list">${topics.map(topicRow).join('')}</ul>` : `<p class="forum__empty">${T.noTopics}</p>`}
-      <p class="form__hint auth__demo"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> ${T.demoForum}</p>
     </section>`,
     mount(root) {
       const form = root.querySelector<HTMLFormElement>('[data-topic-form]');
@@ -97,14 +104,21 @@ export async function forumPage({ query }: RouteContext): Promise<View> {
         const data = new FormData(form);
         const title = String(data.get('title') ?? '').trim();
         const body = String(data.get('body') ?? '').trim();
-        if (!form.checkValidity() || title.length < 4 || body.length < 4) {
+        if (!form.checkValidity() || title.length < 4 || !body) {
           form.classList.add('was-validated');
           form.querySelector<HTMLElement>(':invalid')?.focus();
           return;
         }
-        const topic = await createTopic({ title, body, category: String(data.get('category')) });
-        toast(T.posted);
-        navigate(`${B}/forum/${topic.id}`);
+        const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+        submit.disabled = true;
+        try {
+          const id = await createTopic({ title, body, category: String(data.get('category')) });
+          toast(T.posted);
+          navigate(`${B}/forum/${id}`);
+        } catch (err) {
+          submit.disabled = false;
+          fail(err);
+        }
       });
     },
   };
@@ -112,24 +126,33 @@ export async function forumPage({ query }: RouteContext): Promise<View> {
 
 /* ---------- /forum/:id ---------- */
 
-function post(p: Reply, kind: 'topic' | 'reply', mine: boolean): string {
-  const a = authorOf(p);
-  return `<article class="fpost${kind === 'topic' ? ' fpost--first' : ''}" id="p-${p.id}">
-    ${avatar(a)}
+function post(p: ForumPost, kind: 'topic' | 'reply', mine: boolean, extra = ''): string {
+  return `<article class="fpost${kind === 'topic' ? ' fpost--first' : ''}${kind === 'reply' && (p as Reply).parentId ? ' fpost--child' : ''}" id="p-${p.id}">
+    ${avatar(who(p))}
     <div class="fpost__body">
       <header class="fpost__head">
-        <strong>${esc(a.name)}</strong>
+        <strong>${esc(p.authorName)}</strong>${badge(p)}
         <time datetime="${new Date(p.createdAt).toISOString()}">${when(p.createdAt)}</time>
         ${mine ? `<button type="button" class="fpost__delete" data-delete="${kind}" data-id="${p.id}" aria-label="${T.deleteItem}"><i class="fa-regular fa-trash-can" aria-hidden="true"></i> ${T.deleteItem}</button>` : ''}
       </header>
-      <div class="fpost__text">${esc(p.body)}</div>
+      <div class="fpost__text prose">${p.body}</div>
+      ${extra}
     </div>
   </article>`;
 }
 
+const likeButton = (r: Reply) =>
+  `<button type="button" class="fpost__like${r.liked ? ' is-on' : ''}" data-like="${r.id}" aria-pressed="${r.liked}"><i class="fa-${r.liked ? 'solid' : 'regular'} fa-thumbs-up" aria-hidden="true"></i> <span>${bn(r.likes)}</span><span class="sr-only"> ${T.like}</span></button>`;
+
+/** Answers follow the reply they were written under. */
+function threaded(replies: Reply[]): Reply[] {
+  const roots = replies.filter((r) => !r.parentId || !replies.some((x) => x.id === r.parentId));
+  return roots.flatMap((r) => [r, ...replies.filter((x) => x.parentId === r.id)]);
+}
+
 export async function topicPage({ params }: RouteContext): Promise<View> {
-  const topic = await getTopic(params[0]);
-  if (!topic) {
+  const found = await getTopic(params[0]);
+  if (!found) {
     return {
       title: `${T.topicMissing} | ${SITE.name}`,
       html: `<section class="container state">
@@ -139,20 +162,22 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
       </section>`,
     };
   }
+  const { topic, replies } = found;
   const user = currentUser();
   const path = `/forum/${topic.id}`;
   return {
     title: `${topic.title} | ${T.forum} | ${SITE.name}`,
-    description: topic.body.slice(0, 160),
+    description: htmlToText(topic.body).slice(0, 160),
     html: `<section class="container container--narrow forum forum--topic section">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><a href="${B}/forum">${T.forum}</a></nav>
-      <a class="chip" href="${B}/forum?c=${encodeURIComponent(topic.category)}">${esc(topic.category)}</a>
+      <a class="chip" href="${B}/forum?c=${encodeURIComponent(topic.categorySlug)}">${esc(topic.category)}</a>
       <h1 class="forum__title">${esc(topic.title)}</h1>
-      ${post(topic, 'topic', topic.authorId === user?.id)}
-      <h2 class="section-title forum__count">${bn(topic.replies.length)} ${T.replies}</h2>
+      ${topic.cover ? `<img class="forum__cover" src="${esc(topic.cover)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ''}
+      ${post(topic, 'topic', Boolean(user) && topic.authorId === user?.id)}
+      <h2 class="section-title forum__count">${bn(replies.length)} ${T.replies}</h2>
       ${
-        topic.replies.length
-          ? `<div class="fpost-list">${topic.replies.map((r) => post(r, 'reply', r.authorId === user?.id)).join('')}</div>`
+        replies.length
+          ? `<div class="fpost-list">${threaded(replies).map((r) => post(r, 'reply', r.mine, likeButton(r))).join('')}</div>`
           : `<p class="forum__empty">${T.noReplies}</p>`
       }
       ${
@@ -160,7 +185,7 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
           ? `<form class="fpost fpost--form" data-reply-form novalidate>
               ${avatar(user)}
               <div class="fpost__body form">
-                <label class="field"><span class="sr-only">${T.reply}</span><textarea name="body" rows="4" required maxlength="5000" placeholder="${T.writeReply}"></textarea></label>
+                <label class="field"><span class="sr-only">${T.reply}</span><textarea name="body" rows="4" required maxlength="4000" placeholder="${T.writeReply}"></textarea></label>
                 <button class="btn btn--primary" type="submit"><i class="fa-solid fa-reply" aria-hidden="true"></i> ${T.reply}</button>
               </div>
             </form>`
@@ -169,16 +194,36 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
     </section>`,
     mount(root) {
       root.addEventListener('click', async (e) => {
-        const btn = (e.target as Element).closest<HTMLElement>('[data-delete]');
+        const target = e.target as Element;
+        const like = target.closest<HTMLButtonElement>('[data-like]');
+        if (like) {
+          like.disabled = true;
+          try {
+            const now = await toggleLike(like.dataset.like!);
+            like.classList.toggle('is-on', now.liked);
+            like.setAttribute('aria-pressed', String(now.liked));
+            like.querySelector('i')!.className = `fa-${now.liked ? 'solid' : 'regular'} fa-thumbs-up`;
+            like.querySelector('span')!.textContent = bn(now.likes);
+          } catch (err) {
+            fail(err);
+          }
+          like.disabled = false;
+          return;
+        }
+        const btn = target.closest<HTMLElement>('[data-delete]');
         if (!btn || !window.confirm(T.confirmDelete)) return;
-        if (btn.dataset.delete === 'topic') {
-          await deleteTopic(topic.id);
-          toast(T.deleted);
-          navigate(`${B}/forum`, { replace: true });
-        } else {
-          await deleteReply(topic.id, btn.dataset.id!);
-          toast(T.deleted);
-          reload();
+        try {
+          if (btn.dataset.delete === 'topic') {
+            await deleteTopic(topic.id);
+            toast(T.deleted);
+            navigate(`${B}/forum`, { replace: true });
+          } else {
+            await deleteReply(btn.dataset.id!);
+            toast(T.deleted);
+            reload();
+          }
+        } catch (err) {
+          fail(err);
         }
       });
       const form = root.querySelector<HTMLFormElement>('[data-reply-form]');
@@ -190,9 +235,16 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
           form.querySelector<HTMLElement>('textarea')!.focus();
           return;
         }
-        await addReply(topic.id, body);
-        toast(T.posted);
-        reload();
+        const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+        submit.disabled = true;
+        try {
+          await addReply(topic.id, body);
+          toast(T.posted);
+          reload();
+        } catch (err) {
+          submit.disabled = false;
+          fail(err);
+        }
       });
     },
   };

@@ -1,11 +1,11 @@
 /**
  * Site-wide settings that differ per deployment.
  *
- * GOOGLE_CLIENT_ID — the OAuth 2.0 "Web application" client ID from
- * https://console.cloud.google.com/apis/credentials. Add every address the
- * site is served from under "Authorised JavaScript origins"
- * (e.g. https://sisir-sinha.github.io and https://ningshingche.com).
- * Either paste the ID below or set VITE_GOOGLE_CLIENT_ID when building.
- * While it is empty the Google button is shown but explains that it is not set up.
+ * The site reads and writes everything through Supabase. Both values below are
+ * meant to be public: the publishable key only allows what the database's
+ * row-level security policies allow. Never put a secret/service-role key or the
+ * database password in this project.
  */
-export const GOOGLE_CLIENT_ID: string = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ?? '';
+export const SUPABASE_URL: string = (import.meta.env.VITE_SUPABASE_URL as string | undefined) ?? 'https://slcpvmpsynkqdozvlsii.supabase.co';
+export const SUPABASE_KEY: string =
+  (import.meta.env.VITE_SUPABASE_KEY as string | undefined) ?? 'sb_publishable_jqJACnQHmCMcGjt0kG6Sug_ddknIbAA';

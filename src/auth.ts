@@ -1,101 +1,141 @@
 /**
- * User accounts.
+ * User accounts, kept by Supabase Auth (the same accounts the Android app uses).
  *
- * IMPORTANT — this is a browser-only implementation: accounts are kept in
- * localStorage on the visitor's own device (passwords as salted PBKDF2 hashes).
- * It makes the whole sign-up / sign-in flow work on a static host, but it is
- * not a real account system: nothing is shared between devices and a Google
- * sign-in is not verified by a server.
- *
- * To go live, keep the exported function signatures and replace their bodies
- * with calls to your backend (or Firebase / Supabase): register(), login(),
- * loginWithGoogle(), updateProfile(), logout() and currentUser().
+ * - E-mail + password: the reader confirms the address from a mail Supabase sends.
+ * - Google: the browser goes to Google and comes back signed in.
+ * - Each account has a row in the `profiles` table (name, picture); the forum
+ *   requires it, so it is created on first sign-in.
+ * - Profile pictures are stored in the public `avatars` storage bucket, in a
+ *   folder only the owner can write to.
  */
-import { GOOGLE_CLIENT_ID } from './config';
+import type { Session } from '@supabase/supabase-js';
+import { sb } from './supabase';
+import { B } from './utils';
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  /** Image URL or data: URL; empty when the user has no picture */
+  /** Image URL; empty when the user has no picture */
   picture: string;
   provider: 'password' | 'google';
 }
 
-interface StoredUser extends User {
-  salt?: string;
-  hash?: string;
-}
-
+type Code = 'email-taken' | 'bad-credentials' | 'unconfirmed' | 'weak' | 'rate' | 'google' | 'image' | 'network';
 export class AuthError extends Error {
-  constructor(public code: 'email-taken' | 'bad-credentials' | 'use-google' | 'storage' | 'google' | 'image') {
+  constructor(public code: Code) {
     super(code);
   }
 }
 
-const USERS_KEY = 'nc-users';
-const SESSION_KEY = 'nc-session';
+const NEXT_KEY = 'nc-next';
+const PENDING_PICTURE = 'nc-pending-picture';
 const listeners = new Set<(user: User | null) => void>();
+let me: User | null = null;
+let profileReady: Promise<void> = Promise.resolve();
 
-function readUsers(): StoredUser[] {
+const emit = () => listeners.forEach((fn) => fn(me));
+
+function fromSession(session: Session | null): User | null {
+  const u = session?.user;
+  if (!u) return null;
+  const meta = (u.user_metadata ?? {}) as Record<string, string | undefined>;
+  return {
+    id: u.id,
+    email: u.email ?? '',
+    name: (meta.full_name || meta.name || (u.email ?? '').split('@')[0] || '').trim(),
+    picture: meta.avatar_url || meta.picture || '',
+    provider: u.app_metadata?.provider === 'google' ? 'google' : 'password',
+  };
+}
+
+function translate(error: { message?: string; code?: string; status?: number }): AuthError {
+  const text = `${error.code ?? ''} ${error.message ?? ''}`.toLowerCase();
+  if (text.includes('not confirmed')) return new AuthError('unconfirmed');
+  if (text.includes('invalid login') || text.includes('invalid_credentials')) return new AuthError('bad-credentials');
+  if (text.includes('already registered') || text.includes('user_already_exists')) return new AuthError('email-taken');
+  if (text.includes('weak') || text.includes('at least')) return new AuthError('weak');
+  if (text.includes('rate limit') || error.status === 429) return new AuthError('rate');
+  return new AuthError('network');
+}
+
+function dataUrlToBlob(dataUrl: string): Blob {
+  const [head, body] = dataUrl.split(',');
+  const bytes = Uint8Array.from(atob(body ?? ''), (c) => c.charCodeAt(0));
+  return new Blob([bytes], { type: /data:(.*?);/.exec(head)?.[1] ?? 'image/jpeg' });
+}
+
+async function uploadPicture(userId: string, dataUrl: string): Promise<string> {
+  const path = `${userId}/avatar-${Date.now()}.jpg`;
+  const { error } = await sb.storage.from('avatars').upload(path, dataUrlToBlob(dataUrl), { contentType: 'image/jpeg', cacheControl: '31536000' });
+  if (error) throw new AuthError('image');
+  return sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+}
+
+/** Makes sure the account has its profile row, and takes name / picture from it. */
+async function syncProfile(base: User): Promise<void> {
   try {
-    const list: unknown = JSON.parse(localStorage.getItem(USERS_KEY) ?? '[]');
-    return Array.isArray(list) ? (list as StoredUser[]) : [];
+    const { data } = await sb.from('profiles').select('name,avatar_url').eq('id', base.id).maybeSingle();
+    let name = (data?.name as string | null) ?? '';
+    let picture = (data?.avatar_url as string | null) ?? '';
+
+    // A picture chosen while registering waits here until the address is confirmed.
+    let pending = '';
+    try {
+      pending = localStorage.getItem(PENDING_PICTURE) ?? '';
+      localStorage.removeItem(PENDING_PICTURE);
+    } catch {
+      /* ignore */
+    }
+    if (pending.startsWith('data:image/') && !picture) picture = await uploadPicture(base.id, pending).catch(() => '');
+
+    if (!data) {
+      name ||= base.name;
+      picture ||= base.picture;
+      await sb.from('profiles').insert({ id: base.id, name, email: base.email, avatar_url: picture });
+    } else if (picture !== ((data.avatar_url as string | null) ?? '')) {
+      await sb.from('profiles').update({ avatar_url: picture }).eq('id', base.id);
+    }
+    if (me?.id === base.id) {
+      me = { ...me, name: name || me.name, picture: picture || me.picture };
+      emit();
+    }
   } catch {
-    return [];
+    /* the site still works signed in; the forum retries when posting */
   }
 }
 
-function writeUsers(users: StoredUser[]): void {
-  try {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  } catch {
-    throw new AuthError('storage');
+function setSession(session: Session | null): void {
+  const next = fromSession(session);
+  const changed = next?.id !== me?.id;
+  if (!next) {
+    me = null;
+    profileReady = Promise.resolve();
+  } else if (changed) {
+    me = next;
+    profileReady = syncProfile(next);
   }
+  if (changed) emit();
 }
 
-function publicUser(u: StoredUser): User {
-  return { id: u.id, name: u.name, email: u.email, picture: u.picture, provider: u.provider };
-}
-
-function setSession(id: string | null): void {
+/** Call once before the first page is drawn. Restores the session kept in this browser. */
+export async function initAuth(): Promise<void> {
   try {
-    if (id) localStorage.setItem(SESSION_KEY, id);
-    else localStorage.removeItem(SESSION_KEY);
+    const { data } = await sb.auth.getSession();
+    setSession(data.session);
   } catch {
-    throw new AuthError('storage');
+    me = null;
   }
-  const user = currentUser();
-  listeners.forEach((fn) => fn(user));
+  // Supabase asks that nothing is awaited inside this callback, hence the timeout.
+  sb.auth.onAuthStateChange((_event, session) => {
+    window.setTimeout(() => setSession(session), 0);
+  });
 }
 
-const normEmail = (email: string) => email.trim().toLowerCase();
-const hex = (bytes: Uint8Array) => [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
-const unhex = (text: string) => new Uint8Array((text.match(/../g) ?? []).map((h) => parseInt(h, 16)));
+export const currentUser = (): User | null => me;
 
-async function hashPassword(password: string, salt: Uint8Array): Promise<string> {
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: salt as BufferSource, iterations: 150_000 }, key, 256);
-  return hex(new Uint8Array(bits));
-}
-
-export function currentUser(): User | null {
-  let id: string | null = null;
-  try {
-    id = localStorage.getItem(SESSION_KEY);
-  } catch {
-    return null;
-  }
-  if (!id) return null;
-  const found = readUsers().find((u) => u.id === id);
-  return found ? publicUser(found) : null;
-}
-
-/** Public details of any account (used to show names and pictures next to forum posts). */
-export function findUser(id: string): User | null {
-  const found = readUsers().find((u) => u.id === id);
-  return found ? publicUser(found) : null;
-}
+/** Resolves once the signed-in reader's profile row exists (needed before posting in the forum). */
+export const whenProfileReady = (): Promise<void> => profileReady;
 
 /** Calls `fn` whenever someone signs in, signs out or edits their profile. */
 export function onAuthChange(fn: (user: User | null) => void): () => void {
@@ -103,53 +143,88 @@ export function onAuthChange(fn: (user: User | null) => void): () => void {
   return () => listeners.delete(fn);
 }
 
-export async function register(input: { name: string; email: string; password: string; picture: string }): Promise<User> {
-  const users = readUsers();
-  const email = normEmail(input.email);
-  if (users.some((u) => u.email === email)) throw new AuthError('email-taken');
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const user: StoredUser = {
-    id: crypto.randomUUID(),
-    name: input.name.trim(),
-    email,
-    picture: input.picture,
-    provider: 'password',
-    salt: hex(salt),
-    hash: await hashPassword(input.password, salt),
-  };
-  writeUsers([...users, user]);
-  setSession(user.id);
-  return publicUser(user);
+/**
+ * Creates an account. Returns the user when they are signed in at once, or
+ * 'confirm' when Supabase has sent a confirmation mail that must be opened first.
+ */
+export async function register(input: { name: string; email: string; password: string; picture: string }): Promise<User | 'confirm'> {
+  const name = input.name.trim();
+  const { data, error } = await sb.auth.signUp({
+    email: input.email.trim().toLowerCase(),
+    password: input.password,
+    options: { data: { full_name: name, name }, emailRedirectTo: `${location.origin}${B}/` },
+  });
+  if (error) throw translate(error);
+  // With confirmation on, an address that already has an account comes back with no identities.
+  if (data.user && !data.session && (data.user.identities ?? []).length === 0) throw new AuthError('email-taken');
+  if (input.picture.startsWith('data:image/')) {
+    try {
+      localStorage.setItem(PENDING_PICTURE, input.picture);
+    } catch {
+      /* the picture can be added later from the profile page */
+    }
+  }
+  if (!data.session) return 'confirm';
+  setSession(data.session);
+  await profileReady;
+  return me!;
 }
 
-export async function login(emailInput: string, password: string): Promise<User> {
-  const user = readUsers().find((u) => u.email === normEmail(emailInput));
-  if (!user) throw new AuthError('bad-credentials');
-  if (!user.hash || !user.salt) throw new AuthError('use-google');
-  if ((await hashPassword(password, unhex(user.salt))) !== user.hash) throw new AuthError('bad-credentials');
-  setSession(user.id);
-  return publicUser(user);
+export async function login(email: string, password: string): Promise<User> {
+  const { data, error } = await sb.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+  if (error || !data.session) throw translate(error ?? {});
+  setSession(data.session);
+  await profileReady;
+  return me!;
 }
 
+/** Sends the browser to Google; it returns to the site signed in. `next` is the page to open afterwards. */
+export async function loginWithGoogle(next: string): Promise<void> {
+  try {
+    sessionStorage.setItem(NEXT_KEY, next);
+  } catch {
+    /* falls back to the home page */
+  }
+  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${location.origin}${B}/` } });
+  if (error) throw new AuthError('google');
+}
+
+/** After coming back from Google: the page the reader wanted, once. */
+export function takeNext(): string | null {
+  try {
+    const next = sessionStorage.getItem(NEXT_KEY);
+    sessionStorage.removeItem(NEXT_KEY);
+    return me && next ? next : null;
+  } catch {
+    return null;
+  }
+}
+
+/** `picture`: a data: URL for a new picture, '' to remove it, undefined to leave it. */
 export async function updateProfile(changes: { name?: string; picture?: string }): Promise<User> {
-  const me = currentUser();
   if (!me) throw new AuthError('bad-credentials');
-  const users = readUsers().map((u) =>
-    u.id === me.id ? { ...u, name: changes.name?.trim() || u.name, picture: changes.picture ?? u.picture } : u,
-  );
-  writeUsers(users);
-  setSession(me.id); // notifies listeners
-  return currentUser()!;
+  await profileReady;
+  const name = changes.name?.trim() || me.name;
+  let picture = me.picture;
+  if (changes.picture === '') picture = '';
+  else if (changes.picture?.startsWith('data:image/')) picture = await uploadPicture(me.id, changes.picture);
+  const { error } = await sb.from('profiles').upsert({ id: me.id, name, email: me.email, avatar_url: picture });
+  if (error) throw new AuthError('network');
+  void sb.auth.updateUser({ data: { full_name: name, name } });
+  me = { ...me, name, picture };
+  emit();
+  return me;
 }
 
 export function logout(): void {
-  setSession(null);
-  window.google?.accounts.id.disableAutoSelect();
+  me = null;
+  profileReady = Promise.resolve();
+  emit();
+  void sb.auth.signOut();
 }
 
 /** Fills empty name / e-mail inputs inside `root` with the signed-in user's details. */
 export function prefillFromAccount(root: HTMLElement): void {
-  const me = currentUser();
   if (!me) return;
   const fill = (selector: string, value: string) =>
     root.querySelectorAll<HTMLInputElement>(selector).forEach((input) => {
@@ -159,9 +234,6 @@ export function prefillFromAccount(root: HTMLElement): void {
   fill('input[name="email"]', me.email);
 }
 
-/* ---------- profile picture ---------- */
-
-/** Crops the chosen image to a square and shrinks it so it is small enough to store. */
 export async function pictureFromFile(file: File, size = 256): Promise<string> {
   if (!file.type.startsWith('image/') || file.size > 8 * 1024 * 1024) throw new AuthError('image');
   let bitmap: ImageBitmap;
@@ -179,99 +251,4 @@ export async function pictureFromFile(file: File, size = 256): Promise<string> {
   ctx.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, size, size);
   bitmap.close();
   return canvas.toDataURL('image/jpeg', 0.85);
-}
-
-/* ---------- Google sign-in (Google Identity Services) ---------- */
-
-interface GoogleIdApi {
-  initialize(options: { client_id: string; callback: (response: { credential?: string }) => void; ux_mode?: 'popup' }): void;
-  renderButton(parent: HTMLElement, options: Record<string, string | number>): void;
-  disableAutoSelect(): void;
-}
-declare global {
-  interface Window {
-    google?: { accounts: { id: GoogleIdApi } };
-  }
-}
-
-export const googleConfigured = GOOGLE_CLIENT_ID.trim() !== '';
-
-let gsiScript: Promise<void> | undefined;
-function loadGoogleScript(): Promise<void> {
-  gsiScript ??= new Promise<void>((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = 'https://accounts.google.com/gsi/client';
-    s.async = true;
-    s.onload = () => resolve();
-    s.onerror = () => {
-      gsiScript = undefined;
-      reject(new AuthError('google'));
-    };
-    document.head.appendChild(s);
-  });
-  return gsiScript;
-}
-
-/** Reads the profile out of the ID token Google hands back (base64url-encoded JSON). */
-function decodeIdToken(token: string): { sub: string; email: string; name?: string; picture?: string } {
-  const part = token.split('.')[1] ?? '';
-  const bytes = Uint8Array.from(atob(part.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
-  return JSON.parse(new TextDecoder().decode(bytes));
-}
-
-export async function loginWithGoogle(idToken: string): Promise<User> {
-  let profile: ReturnType<typeof decodeIdToken>;
-  try {
-    profile = decodeIdToken(idToken);
-  } catch {
-    throw new AuthError('google');
-  }
-  if (!profile.email || !profile.sub) throw new AuthError('google');
-  const users = readUsers();
-  const email = normEmail(profile.email);
-  let user = users.find((u) => u.email === email);
-  if (user) {
-    // Same e-mail as an existing account: sign in to it and fill any gaps.
-    user.picture ||= profile.picture ?? '';
-    user.name ||= profile.name ?? email;
-  } else {
-    user = { id: `google-${profile.sub}`, name: profile.name ?? email.split('@')[0], email, picture: profile.picture ?? '', provider: 'google' };
-    users.push(user);
-  }
-  writeUsers(users);
-  setSession(user.id);
-  return publicUser(user);
-}
-
-/**
- * Draws Google's own "Continue with Google" button inside `el`.
- * `onDone` runs once the visitor is signed in, `onError` if anything fails.
- */
-export async function mountGoogleButton(el: HTMLElement, onDone: (user: User) => void, onError: (err: unknown) => void): Promise<void> {
-  try {
-    await loadGoogleScript();
-    const api = window.google?.accounts.id;
-    if (!api) throw new AuthError('google');
-    api.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      ux_mode: 'popup',
-      callback: (response) => {
-        if (!response.credential) return onError(new AuthError('google'));
-        loginWithGoogle(response.credential).then(onDone, onError);
-      },
-    });
-    if (!el.isConnected) return;
-    el.innerHTML = '';
-    api.renderButton(el, {
-      type: 'standard',
-      theme: document.documentElement.dataset.theme === 'dark' ? 'filled_black' : 'outline',
-      size: 'large',
-      shape: 'pill',
-      text: 'continue_with',
-      logo_alignment: 'center',
-      width: Math.min(400, Math.max(200, Math.floor(el.getBoundingClientRect().width))),
-    });
-  } catch (err) {
-    onError(err);
-  }
 }

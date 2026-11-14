@@ -37,9 +37,11 @@ export function categoryIcon(name: string): string {
 }
 
 /** Icon tile for the category slider on the home page. */
-export function categoryTile(name: string, count: number): string {
+export function categoryTile(name: string, count: number, icon = ''): string {
+  // The icon picked in the dashboard wins; the list above is the fallback.
+  const fa = /^[a-z0-9-]+$/.test(icon) && icon !== 'layer-group' ? `fa-${icon}` : categoryIcon(name);
   return `<a class="cat-tile" href="${categoryUrl(name)}">
-    <span class="cat-tile__icon"><i class="fa-solid ${categoryIcon(name)}" aria-hidden="true"></i></span>
+    <span class="cat-tile__icon"><i class="fa-solid ${fa}" aria-hidden="true"></i></span>
     <span class="cat-tile__name">${esc(name)}</span>
     <span class="cat-tile__count">${bn(count)} ${T.articles}</span>
   </a>`;

@@ -4,7 +4,7 @@ import { artHtml, clock, loadTracks, next, play, prev, seek, setMiniHidden, setV
 import type { PlayerState } from '../player';
 import { SITE, T } from '../strings';
 import type { View } from '../types';
-import { bn, esc } from '../utils';
+import { bn, debounce, esc, fold } from '../utils';
 import { pageHead } from './listing';
 
 const SONG_CATEGORY = 'ইমার ঠারর এলা';
@@ -43,12 +43,16 @@ export async function musicPage(): Promise<View> {
           </div>
           <div class="playlist">
             <h2 class="section-title">${T.playlist} <small>(${bn(tracks.length)})</small></h2>
-            <ol class="playlist__list">
+            <label class="playlist__search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+              <input type="search" data-song-search placeholder="${T.searchSongs}" aria-label="${T.searchSongs}">
+            </label>
+            <p class="forum__empty" data-song-none hidden>${T.noSongsFound}</p>
+            <ol class="playlist__list" data-song-list>
               ${tracks
                 .map(
-                  (t, i) => `<li><button type="button" class="track" data-track="${i}">
+                  (t, i) => `<li data-find="${esc(fold(`${t.title} ${t.artist} ${t.album}`))}"><button type="button" class="track" data-track="${i}">
                     <span class="track__num"><span>${bn(i + 1)}</span><i class="fa-solid fa-play" aria-hidden="true"></i></span>
-                    ${artHtml(t)}
+                    ${artHtml(t, '', true)}
                     <span class="track__text"><strong>${esc(t.title)}</strong><small>${esc(t.artist)}</small></span>
                     <span class="track__time">${t.duration ? clock(t.duration) : ''}</span>
                   </button></li>`,
@@ -124,6 +128,23 @@ export async function musicPage(): Promise<View> {
         seek((Number(seekEl.value) / 1000) * s.duration);
       });
       $<HTMLInputElement>('[data-volume]').addEventListener('input', (e) => setVolume(Number((e.target as HTMLInputElement).value) / 100));
+
+      // Filter the list as the reader types.
+      const items = [...root.querySelectorAll<HTMLElement>('[data-find]')];
+      const none = $('[data-song-none]');
+      $<HTMLInputElement>('[data-song-search]').addEventListener(
+        'input',
+        debounce((e: Event) => {
+          const q = fold((e.target as HTMLInputElement).value.trim());
+          let shownCount = 0;
+          for (const li of items) {
+            const hit = !q || (li.dataset.find ?? '').includes(q);
+            li.hidden = !hit;
+            if (hit) shownCount++;
+          }
+          none.hidden = shownCount > 0;
+        }, 120),
+      );
 
       setMiniHidden(true);
       const off = subscribe(paint);

@@ -12,6 +12,7 @@
     "start": "node server.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
     "swiper": "^14.4.0"
   },
   "devDependencies": {

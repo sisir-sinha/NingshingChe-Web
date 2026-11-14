@@ -106,7 +106,7 @@ export async function homePage(ctx: RouteContext): Promise<View> {
   <section class="container section cats" aria-labelledby="cats-title">
     ${sectionHead(T.categories, { id: 'cats-title', nav: 'cats' })}
     <div class="swiper" data-slider="cats">
-      <div class="swiper-wrapper">${categories.map((c) => `<div class="swiper-slide">${categoryTile(c.name, c.count)}</div>`).join('')}</div>
+      <div class="swiper-wrapper">${categories.map((c) => `<div class="swiper-slide">${categoryTile(c.name, c.count, c.icon)}</div>`).join('')}</div>
     </div>
   </section>
 

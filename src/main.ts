@@ -16,6 +16,7 @@ import { musicPage } from './pages/music';
 import { pdfListPage, pdfPage } from './pages/pdf';
 import { aboutPage, errorPage, notFoundPage, socialPage, submitPage } from './pages/static';
 import { deleteAccountPage, privacyPage } from './pages/privacy';
+import { initAuth, takeNext } from './auth';
 import { initMiniPlayer } from './player';
 import { route, setNotFound, startRouter } from './router';
 import { T } from './strings';
@@ -33,7 +34,7 @@ route(/^\/tag\/(.+)$/, tagPage);
 route(/^\/author\/(.+)$/, authorPage);
 route(/^\/lekhok$/, authorsPage);
 route(/^\/pdf$/, pdfListPage);
-route(/^\/read_pdf\/(\d+)$/, pdfPage);
+route(/^\/read_pdf\/([\w-]+)$/, pdfPage);
 route(/^\/search$/, searchPage);
 route(/^\/about-us$/, aboutPage);
 route(/^\/social-activities$/, socialPage);
@@ -65,8 +66,14 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-startRouter(document.getElementById('main')!, {
-  loading: skeletonFor,
-  error: errorPage,
-  afterRender: syncHeader,
+// Restore the reader's session first so the first page already knows who is signed in.
+void initAuth().then(() => {
+  // Back from Google sign-in: open the page the reader was heading to.
+  const next = takeNext();
+  if (next && next !== location.pathname) history.replaceState(null, '', next);
+  startRouter(document.getElementById('main')!, {
+    loading: skeletonFor,
+    error: errorPage,
+    afterRender: syncHeader,
+  });
 });

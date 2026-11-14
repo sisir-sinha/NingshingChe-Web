@@ -5,6 +5,9 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+  # Once a day: refresh the sitemap from the database (the pages themselves always read live data).
+  schedule:
+    - cron: "15 21 * * *"
 
 permissions:
   contents: read

@@ -72,26 +72,9 @@ The comment form and the article-submission form validate input but do **not**
 send anything yet: `submitComment()` and `submitArticle()` in `src/api.ts`
 are stubs that need your POST endpoints (and CSRF token).
 
-## User accounts (login / register / profile)
+## Accounts, forum, music
 
-Routes: `/login`, `/register` (name, e-mail, password, confirm password, profile picture), `/profile`.
-
-- **Demo storage.** `src/auth.ts` keeps accounts in the visitor's browser (`localStorage`, passwords as salted PBKDF2 hashes). There is no server, so an account exists only on the device where it was created. To go live, keep the exported functions (`register`, `login`, `loginWithGoogle`, `updateProfile`, `logout`, `currentUser`) and replace their bodies with calls to your backend, Firebase Auth or Supabase. Then remove the "demo" line on the register page (`T.demoAccounts`).
-- **Google login.** Create an OAuth 2.0 *Web application* client ID at <https://console.cloud.google.com/apis/credentials>, add each site address (e.g. `https://sisir-sinha.github.io`, `https://ningshingche.com`) under *Authorised JavaScript origins*, then paste the ID into `src/config.ts` (or build with `VITE_GOOGLE_CLIENT_ID=...`). Until then the Google button only shows a "not set up" message. A real backend must verify the Google ID token itself.
-
-## Forum (`/forum`, `/forum/<id>`)
-
-Signed-in users can start topics, reply, and delete their own posts. `src/forum.ts` stores everything in the visitor's browser (`localStorage`) — a demo, like the accounts. Replace the bodies of `listTopics`, `getTopic`, `createTopic`, `addReply`, `deleteTopic`, `deleteReply` with API calls to make it shared. Forum sections are listed in `FORUM_CATEGORIES`.
-
-## Music (`/music`)
-
-The playlist is `public/data/music.json`:
-
-```json
-[{ "id": "song-1", "title": "…", "artist": "…", "src": "/data/music/song-1.mp3", "cover": "/data/music/song-1.jpg", "duration": 215 }]
-```
-
-Put the audio files (MP3 recommended) in `public/data/music/`, or use full URLs in `src`/`cover`. `cover` and `duration` (seconds) are optional. The three `sample-*.wav` files are generated placeholder tones — delete them when real songs are added. Playback continues across pages with a mini player (`src/player.ts`).
+All three use Supabase — see “Supabase (live data)” at the end of this file. Code: `src/auth.ts`, `src/forum.ts`, `src/player.ts`.
 
 ## Navigation
 
@@ -108,3 +91,25 @@ The text is in `src/content/privacy.md` (headings, bullets, numbered lists, **bo
 ## Custom domain
 
 The site is served from **https://ningshingche.com** (GitHub Pages custom domain, set in *Settings → Pages*; `public/CNAME` records it). The workflow reads the base path from GitHub on every run, so the same build works on the domain root and on `github.io/<repo>/` — but a new run is needed after the domain is added or removed (push a commit or use *Run workflow*). `npm run build` also writes `sitemap.xml` and `robots.txt` (`scripts/sitemap.mjs`, address from `SITE_URL`).
+
+## Supabase (live data)
+
+The site reads and writes everything through Supabase; there are no content files in this repository any more.
+
+| What | Where in Supabase |
+|---|---|
+| Articles, categories, authors | `blogs` (status `Publish`), `categories`, `authors` |
+| Home slider / featured / special picks | `blogs.is_slider`, `is_feature`, `is_special_article` |
+| PDF books, videos, sidebar banner | `pdf_books`, `videos`, `settings.ad_image_url` / `ad_link_url` |
+| Music | `music_tracks` |
+| Comments | `comments` (sent as `Unpublish`, shown once published in the dashboard) |
+| Article submissions | `submitted_blogs` (sent as `Pending`) |
+| Forum | `forum_*` tables through the `forum_*` database functions |
+| Accounts | Supabase Auth (e-mail + password, Google) and `profiles`; pictures in the `avatars` storage bucket |
+| View counts | `content_view_record()` |
+
+- Connection settings: `src/config.ts` (project URL and **publishable** key — both public by design). Never add the database password or a secret key to this project.
+- Access rules live in the database (row-level security). `src/sanitize.ts` cleans all HTML that comes from the database before it is shown.
+- Changes made in the dashboard appear on the site on the next page load. The sitemap is rebuilt from the database on every deploy and once a day by the scheduled workflow.
+- SQL that was applied for the website is kept in `supabase/`.
+- In Supabase → Authentication → URL Configuration, set **Site URL** to `https://ningshingche.com` and add `https://ningshingche.com/**` to **Redirect URLs**.

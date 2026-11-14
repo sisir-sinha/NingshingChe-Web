@@ -1,4 +1,4 @@
-import { AuthError, currentUser, googleConfigured, login, logout, mountGoogleButton, pictureFromFile, register, updateProfile } from '../auth';
+import { AuthError, currentUser, login, loginWithGoogle, logout, pictureFromFile, register, updateProfile } from '../auth';
 import type { User } from '../auth';
 import { navigate } from '../router';
 import { SITE, T } from '../strings';
@@ -20,10 +20,12 @@ function errorText(err: unknown): string {
     return {
       'email-taken': T.errTaken,
       'bad-credentials': T.errCredentials,
-      'use-google': T.errUseGoogle,
-      storage: T.errStorage,
+      unconfirmed: T.errUnconfirmed,
+      weak: T.errShort,
+      rate: T.errRate,
       google: T.errGoogle,
       image: T.errImage,
+      network: T.errGeneric,
     }[err.code];
   }
   console.error(err);
@@ -127,13 +129,18 @@ function wirePicture(root: HTMLElement, showError: (msg: string) => void): () =>
   return () => value;
 }
 
-function wireGoogle(root: HTMLElement, showError: (msg: string) => void, done: (user: User) => void): void {
-  const slot = root.querySelector<HTMLElement>('[data-google]')!;
-  if (!googleConfigured) {
-    slot.querySelector('[data-google-fallback]')!.addEventListener('click', () => showError(T.errGoogleSetup));
-    return;
-  }
-  void mountGoogleButton(slot, done, (err) => showError(errorText(err)));
+/** The Google button sends the browser to Google; it comes back signed in and opens `next`. */
+function wireGoogle(root: HTMLElement, showError: (msg: string) => void, next: string): void {
+  const button = root.querySelector<HTMLButtonElement>('[data-google-fallback]')!;
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    try {
+      await loginWithGoogle(next);
+    } catch (err) {
+      button.disabled = false;
+      showError(errorText(err));
+    }
+  });
 }
 
 function busy(form: HTMLFormElement, on: boolean): void {
@@ -177,7 +184,7 @@ export function loginPage({ query }: RouteContext): View {
         note.hidden = false;
       };
       wireEyes(root);
-      wireGoogle(root, showError, (user) => signedIn(user, to));
+      wireGoogle(root, showError, to);
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         note.hidden = true;
@@ -226,7 +233,6 @@ export function registerPage({ query }: RouteContext): View {
         <p class="form__note form__note--error" data-form-note role="alert" hidden></p>
         <button class="btn btn--primary btn--lg btn--block" type="submit"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> ${T.createAccount}</button>
         <p class="form__hint auth__demo">${T.agreePrivacy} <a class="auth__link" href="${B}/privacy-policy">${T.privacy}</a></p>
-        <p class="form__hint auth__demo"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> ${T.demoAccounts}</p>
       </form>
       <p class="auth__switch">${T.haveAccount} <a href="${B}/login${keep}">${T.login}</a></p>`,
     ),
@@ -240,7 +246,7 @@ export function registerPage({ query }: RouteContext): View {
         note.hidden = false;
       };
       wireEyes(root);
-      wireGoogle(root, showError, (user) => signedIn(user, to));
+      wireGoogle(root, showError, to);
       const picture = wirePicture(root, showError);
 
       const checkMatch = () => confirm.setCustomValidity(confirm.value && confirm.value !== pw.value ? T.errMismatch : '');
@@ -267,6 +273,17 @@ export function registerPage({ query }: RouteContext): View {
             password: pw.value,
             picture: picture() ?? '',
           });
+          if (user === 'confirm') {
+            // Supabase has sent a confirmation mail; the account works once it is opened.
+            form.innerHTML = `<div class="auth__sent" role="status">
+              <i class="fa-solid fa-envelope-circle-check" aria-hidden="true"></i>
+              <h2>${T.confirmTitle}</h2>
+              <p>${T.confirmText}</p>
+              <p><strong>${esc(String(data.get('email')))}</strong></p>
+              <a class="btn btn--primary" href="${B}/login">${T.login}</a>
+            </div>`;
+            return;
+          }
           signedIn(user, to);
         } catch (err) {
           showError(errorText(err));

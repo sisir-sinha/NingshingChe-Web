@@ -1,5 +1,6 @@
-import { prefillFromAccount } from '../auth';
-import { BackendMissingError, getAuthors, submitArticle } from '../api';
+import { currentUser, prefillFromAccount } from '../auth';
+import { getAuthors, submitArticle } from '../api';
+import { textToHtml } from '../sanitize';
 import { authorCard } from '../components/cards';
 import { SITE, T } from '../strings';
 import type { View } from '../types';
@@ -100,16 +101,12 @@ export function submitPage(): View {
             <label class="field"><span>ইমেইল <b>*</b></span><input name="email" type="email" required autocomplete="email" placeholder="নিজর ইমেইল বহিক"></label>
             <label class="field"><span>ফোন নম্বর <b>*</b></span><input name="phone" type="tel" required autocomplete="tel" placeholder="নিজর ফোন নম্বরগো বহিক"></label>
           </div>
-          <label class="field"><span>লেখকর ছবি</span><input name="picture_file" type="file" accept=".jpg,.jpeg,.png"></label>
           <label class="field"><span>লেখক পরিচিতি <b>*</b></span><textarea name="writer_info" rows="5" required placeholder="লেখক পরিচিতি লেখিক ..."></textarea></label>
         </fieldset>
         <fieldset>
           <legend><span>২</span> আর্টিকল</legend>
           <label class="field"><span>আর্টিকলর টাইটেল <b>*</b></span><input name="content_title" type="text" required placeholder="আর্টিকলর টাইটেল লিখিক"></label>
-          <p class="form__hint">লেখা হান অথবা ফাইলগ দে</p>
-          <label class="field"><span>আর্টিকল</span><textarea name="content" rows="10" placeholder="নিজর আর্টিকলহান লেখিক ..."></textarea></label>
-          <div class="form__or"><span>অথবা</span></div>
-          <label class="field"><span>আর্টিকল ফাইল <small>(.doc, .pdf, .zip)</small></span><input name="file" type="file" accept=".doc,.docx,.pdf,.zip"></label>
+          <label class="field"><span>আর্টিকল <b>*</b></span><textarea name="content" rows="14" required placeholder="নিজর আর্টিকলহান লেখিক ..."></textarea></label>
         </fieldset>
         <p class="form__note" data-form-note hidden></p>
         <button class="btn btn--primary btn--lg" type="submit"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> আর্টিকল পাঠুইক</button>
@@ -123,30 +120,28 @@ export function submitPage(): View {
         e.preventDefault();
         note.hidden = true;
         const data = new FormData(form);
-        const hasText = String(data.get('content') ?? '').trim().length > 0;
-        const file = data.get('file');
-        const hasFile = file instanceof File && file.size > 0;
-        if (!form.checkValidity() || (!hasText && !hasFile)) {
+        if (!form.checkValidity()) {
           form.classList.add('was-validated');
-          if (form.checkValidity()) {
-            note.hidden = false;
-            note.textContent = 'আর্টিকল লেখিক, নাইলে ফাইল আগো দে।';
-          }
-          (form.querySelector<HTMLElement>(':invalid') ?? form.querySelector<HTMLElement>('[name="content"]'))?.focus();
+          form.querySelector<HTMLElement>(':invalid')?.focus();
           return;
         }
+        const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+        submit.disabled = true;
+        note.hidden = false;
+        note.classList.remove('form__note--error');
         try {
-          await submitArticle(data);
+          await submitArticle(data, textToHtml(String(data.get('content') ?? '')), currentUser()?.id ?? null);
           form.reset();
           form.classList.remove('was-validated');
-          toast('আর্টিকল পাঠানো হয়েছে');
+          prefillFromAccount(root);
+          note.textContent = T.articleSent;
+          toast(T.articleSent);
         } catch (err) {
-          note.hidden = false;
-          note.textContent =
-            err instanceof BackendMissingError
-              ? 'ডেমো সংস্করণ: লেখাটি সার্ভারে পাঠানো হয়নি। src/api.ts ফাইলে submitArticle() ফাংশনে API যুক্ত করুন।'
-              : 'লেখা পাঠানো যায়নি। আবার চেষ্টা করুন।';
+          console.error(err);
+          note.classList.add('form__note--error');
+          note.textContent = T.articleFailed;
         }
+        submit.disabled = false;
       });
     },
   };

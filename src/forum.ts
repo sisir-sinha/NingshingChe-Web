@@ -1,125 +1,146 @@
 /**
- * Forum data.
- *
- * Like src/auth.ts this is a browser-only store (localStorage): a visitor sees
- * the welcome topic plus whatever was posted on their own device. Keep the
- * exported function signatures and swap the bodies for API calls to go live.
+ * Forum, stored in Supabase (shared with the Android app).
+ * Reading is open to everyone; posting needs a signed-in reader. The rules
+ * (who may post, edit or delete what, length limits) are enforced by the
+ * database functions, not by this file.
  */
-import { currentUser, findUser } from './auth';
-import { SITE } from './strings';
+import { whenProfileReady } from './auth';
+import { sanitizeHtml, textToHtml } from './sanitize';
+import { deviceId, sb } from './supabase';
 
-export interface ForumAuthor {
-  id: string;
-  name: string;
-  picture: string;
+export interface ForumCategory {
+  slug: string;
+  title: string;
+  description: string;
+  count: number;
 }
-export interface Reply {
+export interface ForumPost {
   id: string;
+  /** Sanitised HTML */
   body: string;
   authorId: string;
   authorName: string;
+  authorPicture: string;
   createdAt: number;
+  official: boolean;
 }
-export interface Topic extends Reply {
+export interface Topic extends ForumPost {
   title: string;
+  excerpt: string;
   category: string;
-  pinned?: boolean;
-  replies: Reply[];
+  categorySlug: string;
+  replyCount: number;
+  views: number;
+  lastAt: number;
+  cover: string;
+}
+export interface Reply extends ForumPost {
+  parentId: string;
+  likes: number;
+  liked: boolean;
+  mine: boolean;
 }
 
-export const FORUM_CATEGORIES = ['সাধারণ আলোচনা', 'ভাষা ও সাহিত্য', 'ইতিহাস ও সংস্কৃতি', 'এলা ও মিউজিক', 'প্রশ্ন ও সাহায্য'] as const;
+type Row = Record<string, unknown>;
+const text = (v: unknown) => (typeof v === 'string' ? v : '');
+const time = (v: unknown) => (typeof v === 'string' ? Date.parse(v) || 0 : 0);
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const KEY = 'nc-forum';
-const STAFF = 'ningshingche';
-
-const WELCOME: Topic = {
-  id: 'welcome',
-  title: 'ফোরামে স্বাগতম — আলোচনার নিয়মাবলি',
-  category: FORUM_CATEGORIES[0],
-  body: 'নিংশিং চে ফোরামে সবাইকে স্বাগতম।\n\nএখানে ইমার ঠার, সাহিত্য, ইতিহাস, সংস্কৃতি ও এলা নিয়ে প্রশ্ন করতে ও মত জানাতে পারবেন।\n\n১. পরস্পরের প্রতি শ্রদ্ধাশীল থাকুন।\n২. বিষয়ের সাথে মিল রেখে সঠিক বিভাগ বেছে নিন।\n৩. ব্যক্তিগত আক্রমণ, বিজ্ঞাপন বা স্প্যাম করবেন না।',
-  authorId: STAFF,
-  authorName: SITE.name,
-  createdAt: Date.UTC(2026, 0, 1),
-  pinned: true,
-  replies: [],
-};
-
-function read(): Topic[] {
-  try {
-    const list: unknown = JSON.parse(localStorage.getItem(KEY) ?? 'null');
-    if (Array.isArray(list)) return list as Topic[];
-  } catch {
-    /* fall through to the default */
-  }
-  return [structuredClone(WELCOME)];
-}
-
-function write(topics: Topic[]): void {
-  localStorage.setItem(KEY, JSON.stringify(topics));
-}
-
-const lastActivity = (t: Topic) => t.replies[t.replies.length - 1]?.createdAt ?? t.createdAt;
-
-export function authorOf(post: Reply): ForumAuthor {
-  if (post.authorId === STAFF) return { id: STAFF, name: SITE.name, picture: SITE.logo };
-  const user = findUser(post.authorId);
-  return { id: post.authorId, name: user?.name ?? post.authorName, picture: user?.picture ?? '' };
-}
-
-export async function listTopics(category = ''): Promise<Topic[]> {
-  return read()
-    .filter((t) => !category || t.category === category)
-    .sort((a, b) => Number(b.pinned ?? false) - Number(a.pinned ?? false) || lastActivity(b) - lastActivity(a));
-}
-
-export async function getTopic(id: string): Promise<Topic | null> {
-  return read().find((t) => t.id === id) ?? null;
-}
-
-function me() {
-  const user = currentUser();
-  if (!user) throw new Error('not signed in');
-  return user;
-}
-
-export async function createTopic(input: { title: string; body: string; category: string }): Promise<Topic> {
-  const user = me();
-  const topic: Topic = {
-    id: crypto.randomUUID().slice(0, 8),
-    title: input.title.trim(),
-    body: input.body.trim(),
-    category: (FORUM_CATEGORIES as readonly string[]).includes(input.category) ? input.category : FORUM_CATEGORIES[0],
-    authorId: user.id,
-    authorName: user.name,
-    createdAt: Date.now(),
-    replies: [],
+function toTopic(r: Row): Topic {
+  return {
+    id: text(r.id),
+    title: text(r.title),
+    body: sanitizeHtml(text(r.body)),
+    excerpt: text(r.excerpt).trim(),
+    category: text(r.category_title),
+    categorySlug: text(r.category_slug),
+    authorId: text(r.author_id),
+    authorName: text(r.author_name),
+    authorPicture: text(r.author_avatar_url),
+    createdAt: time(r.created_at),
+    lastAt: time(r.last_reply_at) || time(r.created_at),
+    replyCount: Number(r.replies_count) || 0,
+    views: Number(r.views_count) || 0,
+    official: r.is_official === true,
+    cover: text(r.cover_image_url),
   };
-  write([...read(), topic]);
-  return topic;
 }
 
-export async function addReply(topicId: string, body: string): Promise<Reply> {
-  const user = me();
-  const topics = read();
-  const topic = topics.find((t) => t.id === topicId);
-  if (!topic) throw new Error('topic not found');
-  const reply: Reply = { id: crypto.randomUUID().slice(0, 8), body: body.trim(), authorId: user.id, authorName: user.name, createdAt: Date.now() };
-  topic.replies.push(reply);
-  write(topics);
-  return reply;
+function toReply(r: Row): Reply {
+  return {
+    id: text(r.id),
+    body: sanitizeHtml(text(r.body)),
+    authorId: text(r.author_id),
+    authorName: text(r.author_name),
+    authorPicture: text(r.author_avatar_url),
+    createdAt: time(r.created_at),
+    official: r.is_official === true,
+    parentId: text(r.parent_id),
+    likes: Number(r.like_count) || 0,
+    liked: r.my_reaction === 'like',
+    mine: r.is_mine === true,
+  };
 }
 
-/** Only the author can delete their own topic or reply. */
+async function call(fn: string, args: Record<string, unknown>): Promise<Row> {
+  const { data, error } = await sb.rpc(fn, args);
+  if (error) throw new Error(error.message);
+  return (data ?? {}) as Row;
+}
+
+/** The forum front page, or one category when `slug` is given. */
+export async function getForum(slug = ''): Promise<{ categories: ForumCategory[]; topics: Topic[] }> {
+  const overview = await call('forum_overview', { p_limit: 60, p_order: 'recent' });
+  const categories = ((overview.categories as Row[] | undefined) ?? []).map<ForumCategory>((c) => ({
+    slug: text(c.slug),
+    title: text(c.title),
+    description: text(c.description),
+    count: Number(c.discussions) || 0,
+  }));
+  let list = (overview.latest as Row[] | undefined) ?? [];
+  if (slug && categories.some((c) => c.slug === slug)) {
+    const one = await call('forum_category', { p_slug: slug, p_limit: 60, p_offset: 0 });
+    list = (one.discussions as Row[] | undefined) ?? [];
+  }
+  return { categories, topics: list.map(toTopic) };
+}
+
+export async function getTopic(id: string): Promise<{ topic: Topic; replies: Reply[] } | null> {
+  if (!UUID.test(id)) return null;
+  try {
+    const data = await call('forum_discussion', { p_id: id, p_count_view: true, p_device_id: deviceId() });
+    if (!data.discussion) return null;
+    return { topic: toTopic(data.discussion as Row), replies: ((data.replies as Row[] | undefined) ?? []).map(toReply) };
+  } catch {
+    return null;
+  }
+}
+
+/** Starts a discussion and returns its id. `body` is plain text. */
+export async function createTopic(input: { title: string; body: string; category: string }): Promise<string> {
+  await whenProfileReady();
+  const data = await call('forum_create_discussion', { p_category_slug: input.category, p_title: input.title, p_body: textToHtml(input.body) });
+  return text((data.discussion as Row | undefined)?.id);
+}
+
+export async function addReply(topicId: string, body: string, parentId = ''): Promise<void> {
+  await whenProfileReady();
+  await call('forum_reply', { p_id: topicId, p_body: textToHtml(body), p_parent_id: parentId || null, p_device_id: deviceId() });
+}
+
+export async function deleteReply(replyId: string): Promise<void> {
+  await call('forum_delete_reply', { p_id: replyId });
+}
+
+/** Only the reader who started a discussion can remove it (the database checks). */
 export async function deleteTopic(topicId: string): Promise<void> {
-  const user = me();
-  write(read().filter((t) => !(t.id === topicId && t.authorId === user.id)));
+  const { data, error } = await sb.from('forum_discussions').delete().eq('id', topicId).select('id');
+  if (error) throw new Error(error.message);
+  if (!data?.length) throw new Error('not allowed');
 }
 
-export async function deleteReply(topicId: string, replyId: string): Promise<void> {
-  const user = me();
-  const topics = read();
-  const topic = topics.find((t) => t.id === topicId);
-  if (!topic) return;
-  topic.replies = topic.replies.filter((r) => !(r.id === replyId && r.authorId === user.id));
-  write(topics);
+/** Likes a reply, or takes the like back. Returns the new count. */
+export async function toggleLike(replyId: string): Promise<{ likes: number; liked: boolean }> {
+  const data = await call('forum_react', { p_reply_id: replyId, p_kind: 'like', p_device_id: deviceId() });
+  return { likes: Number(data.likes) || 0, liked: data.mine === 'like' };
 }

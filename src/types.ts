@@ -31,7 +31,7 @@ export interface Author {
 }
 
 export interface PdfBook {
-  id: number;
+  id: string;
   title: string;
   published: string;
   cover: string;
@@ -52,6 +52,17 @@ export interface Site {
 export interface Category {
   name: string;
   count: number;
+  /** Font Awesome icon name chosen in the dashboard, without the "fa-" prefix */
+  icon?: string;
+}
+
+export interface Comment {
+  id: string;
+  name: string;
+  address: string;
+  text: string;
+  date: string;
+  picture: string;
 }
 
 /** What a page module hands back to the router. */

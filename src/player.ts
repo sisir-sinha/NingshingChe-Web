@@ -3,17 +3,18 @@
  * playing while the reader moves between pages; a small bar at the bottom of the
  * screen controls it away from the Music page.
  *
- * Tracks come from public/data/music.json:
- *   [{ "id": "...", "title": "...", "artist": "...", "src": "/data/music/file.mp3", "cover": "", "duration": 123 }]
- * `src` and `cover` may be site paths (as above) or full URLs.
+ * Tracks come from the `music_tracks` table in Supabase (the same list the app plays).
  */
 import { SITE, T } from './strings';
+import { recordView, sb } from './supabase';
 import { B, esc, img } from './utils';
 
 export interface Track {
   id: string;
   title: string;
   artist: string;
+  /** Album or collection name, may be empty */
+  album: string;
   src: string;
   cover?: string;
   /** seconds — only used to show a length before the file has loaded */
@@ -51,10 +52,29 @@ export function subscribe(fn: (s: PlayerState) => void): () => void {
 }
 
 export function loadTracks(): Promise<Track[]> {
-  loading ??= fetch(`${B}/data/music.json`)
-    .then((r) => (r.ok ? (r.json() as Promise<Track[]>) : []))
-    .catch(() => [])
-    .then((list) => (tracks = list));
+  loading ??= (async () => {
+    try {
+      const { data, error } = await sb
+        .from('music_tracks')
+        .select('id,title,artist,album,bn_title,bn_artist,bn_album,thumbnail_url,audio_url,duration_seconds,sort_order,created_at')
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false });
+      if (error) throw new Error(error.message);
+      tracks = (data ?? []).map((t) => ({
+        id: String(t.id),
+        title: String(t.bn_title || t.title || ''),
+        artist: String(t.bn_artist || t.artist || ''),
+        album: String(t.bn_album || t.album || ''),
+        src: String(t.audio_url ?? ''),
+        cover: String(t.thumbnail_url ?? ''),
+        duration: Number(t.duration_seconds) || 0,
+      }));
+    } catch {
+      loading = undefined; // try again on the next visit to the page
+      tracks = [];
+    }
+    return tracks;
+  })();
   return loading;
 }
 
@@ -66,6 +86,7 @@ function select(i: number): void {
   index = (i + tracks.length) % tracks.length;
   const t = tracks[index];
   audio.src = url(t.src);
+  recordView('music', t.id);
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: t.title,
@@ -171,7 +192,8 @@ export function initMiniPlayer(): void {
   });
 }
 
-export function artHtml(t: Track | undefined, cls = ''): string {
+/** `lazy` for long lists: the picture is fetched only when it scrolls into view. */
+export function artHtml(t: Track | undefined, cls = '', lazy = false): string {
   const cover = t ? coverUrl(t) : '';
-  return `<span class="art ${cls}">${cover ? `<img src="${esc(cover)}" alt="">` : '<i class="fa-solid fa-music" aria-hidden="true"></i>'}</span>`;
+  return `<span class="art ${cls}">${cover ? `<img src="${esc(cover)}" alt=""${lazy ? ' loading="lazy" decoding="async"' : ''} referrerpolicy="no-referrer">` : '<i class="fa-solid fa-music" aria-hidden="true"></i>'}</span>`;
 }
