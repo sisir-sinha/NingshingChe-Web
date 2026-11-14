@@ -12,6 +12,39 @@ export function media(src: string, alt: string, width: number, eager = false): s
   } decoding="async" onerror="${FALLBACK}"></span>`;
 }
 
+const CATEGORY_ICONS: Record<string, string> = {
+  'ইতিহাস': 'fa-landmark',
+  'বিজ্ঞান ও প্রযুক্তি': 'fa-flask',
+  'রকমারি': 'fa-shapes',
+  'ভুমিকা': 'fa-book-open',
+  'সম্পাদকীয়': 'fa-pen-nib',
+  'কবিতা': 'fa-feather',
+  'জীবনী': 'fa-user-pen',
+  'ধর্ম': 'fa-hands-praying',
+  'স্মৃতিচারণ': 'fa-clock-rotate-left',
+  'সমাজ ও সংস্কৃতি': 'fa-people-group',
+  'সাহিত্য': 'fa-book',
+  'পর্যালোচনা': 'fa-magnifying-glass-chart',
+  'সংস্কৃতি': 'fa-masks-theater',
+  'পৌরাণিক কাহিনী': 'fa-dragon',
+  'ইমার ঠারর এলা': 'fa-music',
+  'পৌ': 'fa-newspaper',
+};
+
+/** Font Awesome icon for a category (a folder for ones not listed above). */
+export function categoryIcon(name: string): string {
+  return CATEGORY_ICONS[name.normalize('NFC')] ?? 'fa-folder-open';
+}
+
+/** Icon tile for the category slider on the home page. */
+export function categoryTile(name: string, count: number): string {
+  return `<a class="cat-tile" href="${categoryUrl(name)}">
+    <span class="cat-tile__icon"><i class="fa-solid ${categoryIcon(name)}" aria-hidden="true"></i></span>
+    <span class="cat-tile__name">${esc(name)}</span>
+    <span class="cat-tile__count">${bn(count)} ${T.articles}</span>
+  </a>`;
+}
+
 export function chip(category: string): string {
   return `<a class="chip" href="${categoryUrl(category)}">${esc(category)}</a>`;
 }

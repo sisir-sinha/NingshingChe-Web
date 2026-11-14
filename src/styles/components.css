@@ -650,6 +650,7 @@ a.page:hover {
 .swiper:not(.swiper-initialized) .swiper-slide {
   flex: 0 0 min(80%, 320px);
 }
+[data-slider='cats'],
 [data-slider='featured'],
 [data-slider='authors'],
 [data-slider='pdfs'] {

@@ -216,25 +216,68 @@
   color: var(--muted);
 }
 
-.topics {
-  margin-top: 1.25rem;
+/* category slider (home) */
+.cats {
+  padding-bottom: 0;
 }
-.topics__scroll {
+/* before Swiper starts, tiles keep a sensible width */
+[data-slider='cats']:not(.swiper-initialized) .swiper-slide {
+  flex-basis: 140px;
+}
+.cat-tile {
   display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  padding: 0.25rem var(--gutter) 0.6rem;
-  margin-inline: calc(var(--gutter) * -1);
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - 2.5rem), transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - 2.5rem), transparent 100%);
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  height: 100%;
+  padding: 1.1rem 0.5rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+  transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
 }
-.topics__scroll::-webkit-scrollbar {
-  display: none;
+.cat-tile__icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 0.55rem;
+  border-radius: 50%;
+  background: var(--saffron-soft);
+  color: var(--accent);
+  font-size: 1.3rem;
+  transition: background-color 0.18s, color 0.18s, transform 0.18s;
 }
-.topics__scroll .topic {
-  scroll-snap-align: start;
+.cat-tile__name {
+  font-family: var(--font-head);
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.cat-tile__count {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+.cat-tile:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.cat-tile:hover .cat-tile__icon {
+  background: var(--accent);
+  color: var(--accent-ink);
+  transform: scale(1.06);
+}
+.cat-tile:hover .cat-tile__name {
+  color: var(--accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cat-tile,
+  .cat-tile__icon {
+    transition: none;
+    transform: none !important;
+  }
 }
 
 .band {

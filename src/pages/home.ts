@@ -1,5 +1,5 @@
 import { getAuthors, getCategories, getPosts, getSite, pick } from '../api';
-import { authorCard, chip, media, pagination, paginate, postCard, sectionHead } from '../components/cards';
+import { authorCard, categoryTile, chip, media, pagination, paginate, postCard, sectionHead } from '../components/cards';
 import { categoryWidget, postsWidget, widget } from '../components/sidebar';
 import { destroyAll, slider } from '../sliders';
 import { SITE, T } from '../strings';
@@ -103,9 +103,10 @@ export async function homePage(ctx: RouteContext): Promise<View> {
     </aside>
   </section>
 
-  <section class="container topics" aria-label="${T.categories}">
-    <div class="topics__scroll">
-      ${categories.map((c) => `<a class="topic" href="${categoryUrl(c.name)}">${esc(c.name)} <span>${bn(c.count)}</span></a>`).join('')}
+  <section class="container section cats" aria-labelledby="cats-title">
+    ${sectionHead(T.categories, { id: 'cats-title', nav: 'cats' })}
+    <div class="swiper" data-slider="cats">
+      <div class="swiper-wrapper">${categories.map((c) => `<div class="swiper-slide">${categoryTile(c.name, c.count)}</div>`).join('')}</div>
     </div>
   </section>
 
@@ -175,6 +176,16 @@ export async function homePage(ctx: RouteContext): Promise<View> {
           loop: hero.length > 1,
           autoplay: { delay: 6000, pauseOnMouseEnter: true, disableOnInteraction: false },
           pagination: { el: root.querySelector<HTMLElement>('[data-dots="hero"]'), clickable: true },
+        }),
+        slider(root, 'cats', {
+          slidesPerView: 2.3,
+          spaceBetween: 10,
+          breakpoints: {
+            420: { slidesPerView: 3.2, spaceBetween: 12 },
+            700: { slidesPerView: 5, slidesPerGroup: 2, spaceBetween: 14 },
+            1000: { slidesPerView: 7, slidesPerGroup: 3, spaceBetween: 16 },
+            1240: { slidesPerView: 8, slidesPerGroup: 3, spaceBetween: 16 },
+          },
         }),
         slider(root, 'featured', {
           slidesPerView: 1.12,
