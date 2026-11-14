@@ -179,7 +179,7 @@ You can change your display name and profile picture at any time from your profi
 
 Users may request the deletion of their Ningshing Che accounts and associated personal information.
 
-To request account deletion, contact us using the email address provided in the Contact Information section.
+To request account deletion, contact us using the email address provided in the Contact Information section. The full steps are on the [Delete Your Ningshing Che Account](/delete-account) page.
 
 Please include the email address associated with your account so that we can identify the relevant account.
 

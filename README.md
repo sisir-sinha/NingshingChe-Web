@@ -97,6 +97,10 @@ Put the audio files (MP3 recommended) in `public/data/music/`, or use full URLs 
 
 Main menu items are in `NAV` (shown as a row under the logo) and the categories listed under "আরাকউ" in `CATEGORIES`, both at the top of `src/components/header.ts`.
 
+## Account deletion (`/delete-account`)
+
+The text is in `src/content/delete-account.md` (same format as the privacy policy). Linked from the footer and the privacy policy. Use `https://ningshingche.com/delete-account` as the account deletion URL in Google Play.
+
 ## Privacy policy (`/privacy-policy`)
 
 The text is in `src/content/privacy.md` (headings, bullets, numbered lists, **bold** and links are supported). Linked from the footer and the register page.

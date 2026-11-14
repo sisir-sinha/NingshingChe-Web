@@ -84,6 +84,7 @@ export const T = {
   openNew: 'নতুন ট্যাবে খুলুন',
   toTop: 'উপরে যান',
   privacy: 'গোপনীয়তা নীতি',
+  deleteAccount: 'অ্যাকাউন্ট মুছে ফেলা',
   agreePrivacy: 'অ্যাকাউন্ট খুললে আপনি আমাদের গোপনীয়তা নীতি মেনে নিচ্ছেন:',
   // Forum
   forum: 'ফোরাম',

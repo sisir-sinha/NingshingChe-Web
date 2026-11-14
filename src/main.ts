@@ -15,7 +15,7 @@ import { categoryPage, featuredPage, recentPage, searchPage, tagPage } from './p
 import { musicPage } from './pages/music';
 import { pdfListPage, pdfPage } from './pages/pdf';
 import { aboutPage, errorPage, notFoundPage, socialPage, submitPage } from './pages/static';
-import { privacyPage } from './pages/privacy';
+import { deleteAccountPage, privacyPage } from './pages/privacy';
 import { initMiniPlayer } from './player';
 import { route, setNotFound, startRouter } from './router';
 import { T } from './strings';
@@ -42,6 +42,7 @@ route(/^\/forum$/, forumPage);
 route(/^\/forum\/([\w-]+)$/, topicPage);
 route(/^\/music$/, musicPage);
 route(/^\/privacy-policy$/, privacyPage);
+route(/^\/delete-account$/, deleteAccountPage);
 route(/^\/login$/, loginPage);
 route(/^\/register$/, registerPage);
 route(/^\/profile$/, profilePage);

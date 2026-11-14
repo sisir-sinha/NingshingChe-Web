@@ -29,6 +29,7 @@ export function renderFooter(el: HTMLElement): void {
         <li><a href="${B}/featured">${T.featured}</a></li>
         <li><a href="${B}/pdf">${T.pdfBooks}</a></li>
         <li><a href="${B}/privacy-policy">${T.privacy}</a></li>
+        <li><a href="${B}/delete-account">${T.deleteAccount}</a></li>
       </ul>
     </nav>
     <div>

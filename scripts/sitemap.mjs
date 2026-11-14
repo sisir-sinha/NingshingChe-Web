@@ -9,7 +9,7 @@ const authors = JSON.parse(readFileSync('public/data/authors.json', 'utf8'));
 const loc = (path) => origin + encodeURI(path).replace(/&/g, '&amp;');
 const entry = (path, lastmod) => `  <url><loc>${loc(path)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
 
-const pages = ['/', '/recent', '/featured', '/lekhok', '/pdf', '/forum', '/music', '/about-us', '/social-activities', '/blog_submission', '/privacy-policy'];
+const pages = ['/', '/recent', '/featured', '/lekhok', '/pdf', '/forum', '/music', '/about-us', '/social-activities', '/blog_submission', '/privacy-policy', '/delete-account'];
 const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>

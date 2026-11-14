@@ -1,9 +1,11 @@
 /**
- * Privacy policy. The text lives in src/content/privacy.md — edit it there.
+ * Legal pages: privacy policy and account deletion.
+ * The text lives in src/content/privacy.md and src/content/delete-account.md — edit it there.
  * Supported there: "## Heading", "### Sub-heading", "- bullet", "1. numbered",
  * **bold**, [link text](url) and blank lines between paragraphs.
  */
-import source from '../content/privacy.md?raw';
+import deleteSource from '../content/delete-account.md?raw';
+import privacySource from '../content/privacy.md?raw';
 import { SITE, T } from '../strings';
 import type { View } from '../types';
 import { B, esc } from '../utils';
@@ -17,9 +19,10 @@ interface Section {
 function inline(text: string): string {
   return esc(text)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\[([^\]]+)\]\(((?:https?:|mailto:)[^)\s]+)\)/g, (_m, label: string, url: string) =>
-      `<a href="${url}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ' data-external'}>${label}</a>`,
-    );
+    .replace(/\[([^\]]+)\]\(((?:https?:|mailto:|\/)[^)\s]+)\)/g, (_m, label: string, url: string) => {
+      if (url.startsWith('/')) return `<a href="${B}${url}">${label}</a>`; // page on this site
+      return `<a href="${url}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ' data-external'}>${label}</a>`;
+    });
 }
 
 function parse(md: string): { intro: string; sections: Section[] } {
@@ -65,17 +68,26 @@ function parse(md: string): { intro: string; sections: Section[] } {
   return { intro, sections };
 }
 
-const doc = parse(source);
+interface LegalPage {
+  source: string;
+  title: string;
+  icon: string;
+  description: string;
+  sign: string;
+  /** Optional call-to-action shown above the text. */
+  lead?: string;
+}
 
-export function privacyPage(): View {
+function legalPage(page: LegalPage): View {
+  const doc = parse(page.source);
   return {
-    title: `Privacy Policy | ${SITE.name}`,
-    description: 'How Ningshing Che Organization collects, uses, stores and protects personal information.',
+    title: `${page.title} | ${SITE.name}`,
+    description: page.description,
     html: `<div lang="en">
     <header class="page-head">
       <div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/" lang="bn">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><span>Privacy Policy</span></nav>
-        <h1 class="page-head__title"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Privacy Policy</h1>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/" lang="bn">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><span>${page.title}</span></nav>
+        <h1 class="page-head__title"><i class="${page.icon}" aria-hidden="true"></i> ${page.title}</h1>
         <p class="page-head__sub">Ningshing Che Organization</p>
       </div>
       <div class="phee phee--soft" aria-hidden="true"></div>
@@ -87,10 +99,11 @@ export function privacyPage(): View {
       </nav>
       <article class="legal__body prose">
         <div class="legal__dates">${doc.intro}</div>
+        ${page.lead ?? ''}
         ${doc.sections.map((s) => `<section id="${s.id}"><h2>${esc(s.title)}</h2>${s.html}</section>`).join('')}
         <footer class="legal__sign">
           <strong>Ningshing Che Organization</strong>
-          <p>Committed to respecting user privacy, protecting personal information, and providing a trustworthy digital experience.</p>
+          <p>${page.sign}</p>
         </footer>
       </article>
     </section>
@@ -108,4 +121,37 @@ export function privacyPage(): View {
       });
     },
   };
+}
+
+export function privacyPage(): View {
+  return legalPage({
+    source: privacySource,
+    title: 'Privacy Policy',
+    icon: 'fa-solid fa-shield-halved',
+    description: 'How Ningshing Che Organization collects, uses, stores and protects personal information.',
+    sign: 'Committed to respecting user privacy, protecting personal information, and providing a trustworthy digital experience.',
+  });
+}
+
+const DELETE_MAIL =
+  'mailto:ningshingche@gmail.com?subject=' +
+  encodeURIComponent('Ningshing Che Account Deletion Request') +
+  '&body=' +
+  encodeURIComponent('Please delete my Ningshing Che account.\n\nEmail address of the account: \nName on the account: \n');
+
+export function deleteAccountPage(): View {
+  return legalPage({
+    source: deleteSource,
+    title: 'Delete Your Ningshing Che Account',
+    icon: 'fa-solid fa-user-slash',
+    description: 'How to request permanent deletion of your Ningshing Che account and the personal data associated with it.',
+    sign: 'Respecting your privacy and giving you control over your data.',
+    lead: `<aside class="legal__cta">
+      <div>
+        <strong>Request deletion by email</strong>
+        <p>Opens your mail app with the subject line already filled in. Send it from the email address of your account.</p>
+      </div>
+      <a class="btn btn--primary" href="${DELETE_MAIL}" data-external><i class="fa-solid fa-envelope" aria-hidden="true"></i> Send deletion request</a>
+    </aside>`,
+  });
 }

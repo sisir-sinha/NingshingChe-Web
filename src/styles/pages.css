@@ -1567,3 +1567,30 @@
     display: none;
   }
 }
+
+/* call-to-action box on the account deletion page */
+.legal__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block: 1.5rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.legal__cta > div {
+  flex: 1 1 16rem;
+}
+.legal__cta p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.legal__cta .btn {
+  color: var(--accent-ink);
+  text-decoration: none;
+}
