@@ -1,3 +1,4 @@
+import { prefillFromAccount } from '../auth';
 import { BackendMissingError, getAuthors, submitArticle } from '../api';
 import { authorCard } from '../components/cards';
 import { SITE, T } from '../strings';
@@ -123,6 +124,7 @@ export function submitPage(): View {
       </form>
     </section>`,
     mount(root) {
+      prefillFromAccount(root);
       const form = root.querySelector<HTMLFormElement>('[data-article-form]')!;
       const note = form.querySelector<HTMLElement>('[data-form-note]')!;
       form.addEventListener('submit', async (e) => {

@@ -1,4 +1,6 @@
 import { getPosts } from '../api';
+import { currentUser, onAuthChange } from '../auth';
+import { avatar } from '../pages/account';
 import { navigate } from '../router';
 import { SITE, T } from '../strings';
 import type { Post } from '../types';
@@ -114,6 +116,7 @@ export function renderHeader(el: HTMLElement): void {
           <button type="button" class="icon-btn icon-btn--plain" id="nav-close" aria-label="${T.close}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
         </div>
         <ul class="nav__list">${navHtml()}</ul>
+        <div class="nav__account" id="nav-account"></div>
         <div class="nav__foot">
           <a class="btn btn--primary" href="${B}/blog_submission"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> ${T.submitArticle}</a>
           <div class="nav__social">
@@ -132,6 +135,7 @@ export function renderHeader(el: HTMLElement): void {
         <button type="button" class="icon-btn icon-btn--plain" id="theme-toggle" aria-label="${T.theme}">
           <i class="fa-solid fa-moon" aria-hidden="true"></i>
         </button>
+        <div class="account" id="account"></div>
       </div>
     </div>
     <div class="phee" aria-hidden="true"></div>
@@ -151,6 +155,7 @@ export function renderHeader(el: HTMLElement): void {
   <button type="button" class="to-top" id="to-top" aria-label="${T.toTop}" hidden><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>`;
 
   initTheme();
+  initAccount();
   initDrawer(el);
   initSearch();
   initToTop();
@@ -175,6 +180,66 @@ function initTheme(): void {
     }
     paint();
   });
+  paint();
+}
+
+/* ---------- account button (header) + account row (mobile drawer) ---------- */
+let closeAccount: () => void = () => {};
+
+function initAccount(): void {
+  const slot = document.getElementById('account')!;
+  const drawer = document.getElementById('nav-account')!;
+
+  const paint = () => {
+    const user = currentUser();
+    if (!user) {
+      slot.innerHTML = `<a class="account__login" href="${B}/login" aria-label="${T.login}"><i class="fa-regular fa-user" aria-hidden="true"></i><span>${T.login}</span></a>`;
+      drawer.innerHTML = `<a class="nav__user" href="${B}/login">
+          <span class="avatar avatar--initial" aria-hidden="true"><i class="fa-regular fa-user"></i></span>
+          <span class="nav__user-text"><strong>${T.login} / ${T.register}</strong><small>${T.account}</small></span>
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </a>`;
+      return;
+    }
+    slot.innerHTML = `<button type="button" class="account__btn" id="account-btn" aria-haspopup="true" aria-expanded="false" aria-controls="account-menu" aria-label="${T.account}: ${esc(user.name)}">${avatar(user)}</button>
+      <div class="account__menu" id="account-menu" hidden>
+        <div class="account__who">${avatar(user)}<span><strong>${esc(user.name)}</strong><small>${esc(user.email)}</small></span></div>
+        <a href="${B}/profile"><i class="fa-regular fa-user" aria-hidden="true"></i> ${T.profile}</a>
+        <a href="${B}/blog_submission"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> ${T.submitArticle}</a>
+        <button type="button" data-logout><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> ${T.logout}</button>
+      </div>`;
+    drawer.innerHTML = `<a class="nav__user" href="${B}/profile">
+        ${avatar(user)}
+        <span class="nav__user-text"><strong>${esc(user.name)}</strong><small>${esc(user.email)}</small></span>
+        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      </a>
+      <button type="button" class="icon-btn" data-logout aria-label="${T.logout}"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></button>`;
+  };
+
+  const setMenu = (on: boolean) => {
+    const menu = document.getElementById('account-menu');
+    if (!menu) return;
+    menu.hidden = !on;
+    document.getElementById('account-btn')?.setAttribute('aria-expanded', String(on));
+  };
+  closeAccount = () => setMenu(false);
+
+  slot.addEventListener('click', (e) => {
+    const target = e.target as Element;
+    if (target.closest('#account-btn')) setMenu(Boolean(document.getElementById('account-menu')!.hidden));
+    else if (target.closest('.account__menu a, .account__menu button')) setMenu(false);
+  });
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('#account')) setMenu(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setMenu(false);
+  });
+  // Another tab signed in or out
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'nc-session' || e.key === 'nc-users') paint();
+  });
+  onAuthChange(paint);
   paint();
 }
 
@@ -231,6 +296,7 @@ function initDrawer(header: HTMLElement): void {
 export function syncHeader(path: string): void {
   closeDrawer();
   closeSearch();
+  closeAccount();
   document.querySelectorAll<HTMLAnchorElement>('#nav a').forEach((a) => {
     let target = stripBase(a.pathname);
     try {

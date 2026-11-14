@@ -71,3 +71,10 @@ Swap the functions in `src/api.ts` for real endpoints and keep the shapes in `sr
 The comment form and the article-submission form validate input but do **not**
 send anything yet: `submitComment()` and `submitArticle()` in `src/api.ts`
 are stubs that need your POST endpoints (and CSRF token).
+
+## User accounts (login / register / profile)
+
+Routes: `/login`, `/register` (name, e-mail, password, confirm password, profile picture), `/profile`.
+
+- **Demo storage.** `src/auth.ts` keeps accounts in the visitor's browser (`localStorage`, passwords as salted PBKDF2 hashes). There is no server, so an account exists only on the device where it was created. To go live, keep the exported functions (`register`, `login`, `loginWithGoogle`, `updateProfile`, `logout`, `currentUser`) and replace their bodies with calls to your backend, Firebase Auth or Supabase. Then remove the "demo" line on the register page (`T.demoAccounts`).
+- **Google login.** Create an OAuth 2.0 *Web application* client ID at <https://console.cloud.google.com/apis/credentials>, add each site address (e.g. `https://sisir-sinha.github.io`, `https://ningshingche.com`) under *Authorised JavaScript origins*, then paste the ID into `src/config.ts` (or build with `VITE_GOOGLE_CLIENT_ID=...`). Until then the Google button only shows a "not set up" message. A real backend must verify the Google ID token itself.

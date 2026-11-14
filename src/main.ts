@@ -5,6 +5,7 @@ import './styles/pages.css';
 
 import { renderFooter } from './components/footer';
 import { renderHeader, syncHeader } from './components/header';
+import { initLogoutButtons, loginPage, profilePage, registerPage } from './pages/account';
 import { articlePage } from './pages/article';
 import { authorPage, authorsPage } from './pages/authors';
 import { homePage } from './pages/home';
@@ -32,8 +33,13 @@ route(/^\/search$/, searchPage);
 route(/^\/about-us$/, aboutPage);
 route(/^\/social-activities$/, socialPage);
 route(/^\/blog_submission$/, submitPage);
+route(/^\/login$/, loginPage);
+route(/^\/register$/, registerPage);
+route(/^\/profile$/, profilePage);
 route(/^\/\d{4}\/\d{2}\/.+$/, articlePage); // /2025/06/slug.kehem
 setNotFound(notFoundPage);
+
+initLogoutButtons();
 
 /* "Copy link" buttons anywhere on the site */
 document.addEventListener('click', async (e) => {

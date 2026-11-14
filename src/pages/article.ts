@@ -1,3 +1,4 @@
+import { prefillFromAccount } from '../auth';
 import { BackendMissingError, getAuthor, getCategories, getPostByPath, getPosts, submitComment } from '../api';
 import { chip, media, postCard, shareButtons } from '../components/cards';
 import { categoryWidget, postsWidget } from '../components/sidebar';
@@ -124,6 +125,7 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
     description: post.excerpt,
     html,
     mount(root) {
+      prefillFromAccount(root);
       const prose = root.querySelector<HTMLElement>('[data-prose]')!;
 
       // Wide tables scroll inside their own box instead of breaking the page.
