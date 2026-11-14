@@ -5,7 +5,7 @@ import { navigate } from '../router';
 import { categoryWidget, postsWidget } from '../components/sidebar';
 import { SITE, T } from '../strings';
 import type { Post, RouteContext, View } from '../types';
-import { bn, esc } from '../utils';
+import { B, bn, esc } from '../utils';
 
 const PER_PAGE = 10;
 
@@ -24,7 +24,7 @@ interface ListingOptions {
 export function pageHead(kicker: string, icon: string, heading: string, sub = '', extra = ''): string {
   return `<header class="page-head">
     <div class="container">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><span>${esc(kicker)}</span></nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><span>${esc(kicker)}</span></nav>
       <h1 class="page-head__title"><i class="${icon}" aria-hidden="true"></i> ${esc(heading)}</h1>
       ${sub ? `<p class="page-head__sub">${esc(sub)}</p>` : ''}
       ${extra}
@@ -73,7 +73,7 @@ export async function tagPage(ctx: RouteContext): Promise<View> {
   const issues = site.issues.filter((i) => site.issueCounts[i] > 0);
   const extra = issues.includes(name)
     ? `<div class="pill-row">${issues
-        .map((i) => `<a class="topic${i === name ? ' is-active' : ''}" href="/tag/${encodeURIComponent(i.replace(/ /g, '_'))}">${esc(i)} <span>${bn(site.issueCounts[i])}</span></a>`)
+        .map((i) => `<a class="topic${i === name ? ' is-active' : ''}" href="${B}/tag/${encodeURIComponent(i.replace(/ /g, '_'))}">${esc(i)} <span>${bn(site.issueCounts[i])}</span></a>`)
         .join('')}</div>`
     : '';
   return listing({ kicker: T.tags, icon: 'fa-solid fa-hashtag', heading: name, posts, ctx, extra });
@@ -91,7 +91,7 @@ export async function recentPage(ctx: RouteContext): Promise<View> {
 export async function searchPage(ctx: RouteContext): Promise<View> {
   const q = (ctx.query.get('q') ?? '').trim();
   const posts = q ? searchPosts(await getPosts(), q) : [];
-  const extra = `<form class="inline-search" action="/search" role="search" data-search-form>
+  const extra = `<form class="inline-search" action="${B}/search" role="search" data-search-form>
     <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
     <input type="search" name="q" value="${esc(q)}" placeholder="${T.searchPlaceholder}" aria-label="${T.search}">
     <button class="btn btn--primary" type="submit">${T.search}</button>
@@ -101,7 +101,7 @@ export async function searchPage(ctx: RouteContext): Promise<View> {
     root.querySelector<HTMLFormElement>('[data-search-form]')?.addEventListener('submit', (e) => {
       e.preventDefault();
       const value = new FormData(e.currentTarget as HTMLFormElement).get('q');
-      navigate(`/search?q=${encodeURIComponent(String(value ?? '').trim())}`);
+      navigate(`${B}/search?q=${encodeURIComponent(String(value ?? '').trim())}`);
     });
   };
   return view;

@@ -4,7 +4,7 @@ import { categoryWidget, postsWidget, widget } from '../components/sidebar';
 import { destroyAll, slider } from '../sliders';
 import { SITE, T } from '../strings';
 import type { Author, PdfBook, Post, RouteContext, View } from '../types';
-import { bn, categoryUrl, esc, href, img } from '../utils';
+import { B, bn, categoryUrl, esc, href, img } from '../utils';
 
 const PER_PAGE = 10;
 
@@ -35,10 +35,10 @@ export function videoSlide(id: string): string {
 
 export function pdfCard(book: PdfBook): string {
   return `<article class="book">
-    <a class="book__cover" href="/read_pdf/${book.id}" tabindex="-1" aria-hidden="true">${media(book.cover, '', 420)}</a>
-    <h3 class="book__title"><a href="/read_pdf/${book.id}">${esc(book.title)}</a></h3>
+    <a class="book__cover" href="${B}/read_pdf/${book.id}" tabindex="-1" aria-hidden="true">${media(book.cover, '', 420)}</a>
+    <h3 class="book__title"><a href="${B}/read_pdf/${book.id}">${esc(book.title)}</a></h3>
     <p class="book__date">${T.published}: ${esc(book.published)}</p>
-    <a class="btn btn--ghost btn--sm" href="/read_pdf/${book.id}"><i class="fa-solid fa-book-open" aria-hidden="true"></i> ${T.readPdf}</a>
+    <a class="btn btn--ghost btn--sm" href="${B}/read_pdf/${book.id}"><i class="fa-solid fa-book-open" aria-hidden="true"></i> ${T.readPdf}</a>
   </article>`;
 }
 
@@ -85,7 +85,7 @@ export async function homePage(ctx: RouteContext): Promise<View> {
       </div>
     </div>
     <aside class="hero__side">
-      <h2 class="eyebrow"><span>${T.newPosts}</span><a href="/recent">${T.seeAll} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></h2>
+      <h2 class="eyebrow"><span>${T.newPosts}</span><a href="${B}/recent">${T.seeAll} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></h2>
       <ol class="headline-list">
         ${latest
           .map(
@@ -110,7 +110,7 @@ export async function homePage(ctx: RouteContext): Promise<View> {
   </section>
 
   <section class="container section" aria-labelledby="featured-title">
-    ${sectionHead(T.featuredArticles, { id: 'featured-title', nav: 'featured', more: { href: '/featured', label: T.seeAll } })}
+    ${sectionHead(T.featuredArticles, { id: 'featured-title', nav: 'featured', more: { href: `${B}/featured`, label: T.seeAll } })}
     <div class="swiper" data-slider="featured">
       <div class="swiper-wrapper">${featured.map((p) => `<div class="swiper-slide">${postCard(p)}</div>`).join('')}</div>
     </div>
@@ -141,13 +141,13 @@ export async function homePage(ctx: RouteContext): Promise<View> {
 
   <section class="band section" aria-labelledby="authors-title">
     <div class="container">
-      ${sectionHead(T.ourAuthors, { id: 'authors-title', nav: 'authors', more: { href: '/lekhok', label: T.seeAll } })}
+      ${sectionHead(T.ourAuthors, { id: 'authors-title', nav: 'authors', more: { href: `${B}/lekhok`, label: T.seeAll } })}
       <div class="swiper" data-slider="authors"><div class="swiper-wrapper">${authorSlides(authors)}</div></div>
     </div>
   </section>
 
   <section class="container section" aria-labelledby="pdf-title">
-    ${sectionHead(T.pdfBooks, { id: 'pdf-title', nav: 'pdfs', more: { href: '/pdf', label: T.seeAll } })}
+    ${sectionHead(T.pdfBooks, { id: 'pdf-title', nav: 'pdfs', more: { href: `${B}/pdf`, label: T.seeAll } })}
     <div class="swiper" data-slider="pdfs">
       <div class="swiper-wrapper">${site.pdfs.map((b) => `<div class="swiper-slide">${pdfCard(b)}</div>`).join('')}</div>
     </div>

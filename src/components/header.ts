@@ -2,7 +2,7 @@ import { getPosts } from '../api';
 import { navigate } from '../router';
 import { SITE, T } from '../strings';
 import type { Post } from '../types';
-import { bn, categoryUrl, debounce, esc, fold, href, img, tagUrl, todayBn } from '../utils';
+import { B, stripBase, bn, categoryUrl, debounce, esc, fold, href, img, tagUrl, todayBn } from '../utils';
 
 interface NavItem {
   label: string;
@@ -14,22 +14,22 @@ const YEARS = Array.from({ length: 12 }, (_, i) => 2014 + i);
 const MORE_CATEGORIES = ['ভুমিকা', 'সম্পাদকীয়', 'ইতিহাস', 'সাহিত্য', 'সমাজ ও সংস্কৃতি', 'পর্যালোচনা', 'জীবনী', 'স্মৃতিচারণ', 'পৌরাণিক কাহিনী', 'বিজ্ঞান ও প্রযুক্তি'];
 
 const NAV: NavItem[] = [
-  { label: T.home, href: '/' },
-  { label: T.recent, href: '/recent' },
+  { label: T.home, href: `${B}/` },
+  { label: T.recent, href: `${B}/recent` },
   {
     label: T.onlineChe,
     children: YEARS.map((y) => ({ label: `${SITE.name}-${bn(y)}`, href: tagUrl(`${SITE.name} - ${bn(y)}`) })),
   },
-  { label: T.featured, href: '/featured' },
+  { label: T.featured, href: `${B}/featured` },
   { label: 'ইমার ঠারর এলা', href: categoryUrl('ইমার ঠারর এলা') },
   { label: 'পৌ', href: categoryUrl('পৌ') },
-  { label: T.about, href: '/about-us' },
+  { label: T.about, href: `${B}/about-us` },
   {
     label: T.more,
     children: [
-      { label: T.authors, href: '/lekhok' },
-      { label: T.pdfBooks, href: '/pdf' },
-      { label: T.social, href: '/social-activities' },
+      { label: T.authors, href: `${B}/lekhok` },
+      { label: T.pdfBooks, href: `${B}/pdf` },
+      { label: T.social, href: `${B}/social-activities` },
       ...MORE_CATEGORIES.map((c) => ({ label: c, href: categoryUrl(c) })),
     ],
   },
@@ -55,7 +55,7 @@ export function renderHeader(el: HTMLElement): void {
     <div class="container topbar__inner">
       <span class="topbar__date"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i> ${esc(todayBn())}</span>
       <div class="topbar__links">
-        <a href="/blog_submission"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> ${T.submitArticle}</a>
+        <a href="${B}/blog_submission"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> ${T.submitArticle}</a>
         <a href="${SITE.facebook}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
         <a href="${SITE.youtube}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
         <a href="${SITE.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
@@ -67,7 +67,7 @@ export function renderHeader(el: HTMLElement): void {
       <button type="button" class="icon-btn icon-btn--plain masthead__burger" id="nav-open" aria-label="${T.menu}" aria-controls="nav" aria-expanded="false">
         <i class="fa-solid fa-bars" aria-hidden="true"></i>
       </button>
-      <a class="brand" href="/" aria-label="${SITE.name} — ${T.home}">
+      <a class="brand" href="${B}/" aria-label="${SITE.name} — ${T.home}">
         <img class="brand__logo" src="${SITE.logo}" alt="" width="52" height="52">
         <span class="brand__text">
           <span class="brand__name">${SITE.name}</span>
@@ -191,7 +191,7 @@ export function syncHeader(path: string): void {
   closeDrawer();
   closeSearch();
   document.querySelectorAll<HTMLAnchorElement>('#nav a').forEach((a) => {
-    let target = a.pathname;
+    let target = stripBase(a.pathname);
     try {
       target = decodeURIComponent(target);
     } catch {
@@ -270,7 +270,7 @@ function initSearch(): void {
             </a></li>`,
           )
           .join('')}</ul>
-          ${found.length > 6 ? `<a class="search__all" href="/search?q=${encodeURIComponent(q)}">${T.seeAll} (${bn(found.length)}) <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>` : ''}`
+          ${found.length > 6 ? `<a class="search__all" href="${B}/search?q=${encodeURIComponent(q)}">${T.seeAll} (${bn(found.length)}) <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>` : ''}`
       : `<p class="search__hint">${T.noResults}</p>`;
   }, 120);
 
@@ -286,7 +286,7 @@ function initSearch(): void {
   document.getElementById('search-form')!.addEventListener('submit', (e) => {
     e.preventDefault();
     const q = input.value.trim();
-    if (q) navigate(`/search?q=${encodeURIComponent(q)}`);
+    if (q) navigate(`${B}/search?q=${encodeURIComponent(q)}`);
   });
   document.addEventListener('keydown', (e) => {
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target as Element).tagName);

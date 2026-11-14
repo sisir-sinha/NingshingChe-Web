@@ -1,3 +1,16 @@
+/**
+ * Base path the app is served from, without a trailing slash.
+ * '' at a domain root, '/NingshingChe-Web' on GitHub project pages.
+ * Set with the BASE_PATH env variable at build time (see vite.config.ts).
+ */
+export const B: string = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+/** Remove the base path from a pathname so routes can be matched. */
+export function stripBase(pathname: string): string {
+  if (B && (pathname === B || pathname.startsWith(`${B}/`))) return pathname.slice(B.length) || '/';
+  return pathname;
+}
+
 const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
 
 /** 2025 → ২০২৫ */
@@ -14,10 +27,13 @@ export function esc(value: unknown): string {
 
 /** Encode a path that may contain Bengali text, keeping the slashes. */
 export function href(path: string): string {
-  return path
-    .split('/')
-    .map((seg) => encodeURIComponent(seg))
-    .join('/');
+  return (
+    B +
+    path
+      .split('/')
+      .map((seg) => encodeURIComponent(seg))
+      .join('/')
+  );
 }
 
 export const categoryUrl = (name: string) => href(`/category/${name}`);
@@ -31,6 +47,7 @@ export const tagUrl = (name: string) => href(`/tag/${name.replace(/ /g, '_')}`);
  */
 export function img(url: string, width: number): string {
   if (!url) return '';
+  if (url.startsWith('/data/')) return B + url; // files shipped with the site
   if (url.includes('blogger.googleusercontent.com') || url.includes('bp.blogspot.com')) {
     return url.replace(/\/s\d+(-[a-z0-9-]+)?\//i, `/w${width}/`);
   }

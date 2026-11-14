@@ -2,7 +2,7 @@ import { BackendMissingError, getAuthors, submitArticle } from '../api';
 import { authorCard } from '../components/cards';
 import { SITE, T } from '../strings';
 import type { View } from '../types';
-import { esc, toast } from '../utils';
+import { B, esc, toast } from '../utils';
 import { pageHead } from './listing';
 
 export function notFoundPage(): View {
@@ -13,8 +13,8 @@ export function notFoundPage(): View {
       <h1>${T.notFound}</h1>
       <p>${T.notFoundText}</p>
       <div class="pill-row pill-row--center">
-        <a class="btn btn--primary" href="/"><i class="fa-solid fa-house" aria-hidden="true"></i> ${T.backHome}</a>
-        <a class="btn btn--ghost" href="/recent">${T.recent}</a>
+        <a class="btn btn--primary" href="${B}/"><i class="fa-solid fa-house" aria-hidden="true"></i> ${T.backHome}</a>
+        <a class="btn btn--ghost" href="${B}/recent">${T.recent}</a>
       </div>
     </section>`,
   };
@@ -82,7 +82,7 @@ export function socialPage(): View {
       <h2>${T.comingSoon}</h2>
       <div class="pill-row pill-row--center">
         <a class="btn btn--primary" href="${SITE.facebook}" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i> Facebook</a>
-        <a class="btn btn--ghost" href="/">${T.backHome}</a>
+        <a class="btn btn--ghost" href="${B}/">${T.backHome}</a>
       </div>
     </section>`,
   };

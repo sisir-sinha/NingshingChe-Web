@@ -6,6 +6,7 @@
  *  - the server must answer every unknown path with index.html
  */
 import type { RouteContext, View } from './types';
+import { stripBase } from './utils';
 
 type Handler = (ctx: RouteContext) => Promise<View> | View;
 interface Route {
@@ -36,7 +37,7 @@ export function setNotFound(handler: Handler): void {
 }
 
 function decodedPath(): string {
-  let path = location.pathname;
+  let path = stripBase(location.pathname);
   try {
     path = decodeURIComponent(path);
   } catch {
@@ -143,7 +144,7 @@ function onClick(e: MouseEvent): void {
   if (!raw || raw.startsWith('#') || a.target === '_blank' || a.hasAttribute('download') || a.dataset.external !== undefined) return;
   const url = new URL(a.href, location.href);
   if (url.origin !== location.origin) return;
-  if (/^\/(data|assets)\//.test(url.pathname)) return; // real files
+  if (/^\/(data|assets)\//.test(stripBase(url.pathname))) return; // real files
   e.preventDefault();
   navigate(url.href);
 }

@@ -6,6 +6,7 @@
  * function signatures and return the same shapes (see types.ts).
  */
 import type { Author, Category, Post, PostDetail, Site } from './types';
+import { B } from './utils';
 
 const cache = new Map<string, Promise<unknown>>();
 
@@ -22,16 +23,16 @@ function getJSON<T>(url: string): Promise<T> {
   return hit;
 }
 
-export const getPosts = () => getJSON<Post[]>('/data/posts.json');
-export const getAuthors = () => getJSON<Author[]>('/data/authors.json');
-export const getSite = () => getJSON<Site>('/data/site.json');
+export const getPosts = () => getJSON<Post[]>(`${B}/data/posts.json`);
+export const getAuthors = () => getJSON<Author[]>(`${B}/data/authors.json`);
+export const getSite = () => getJSON<Site>(`${B}/data/site.json`);
 
 export async function getPostByPath(path: string): Promise<PostDetail | null> {
   const posts = await getPosts();
   const clean = path.trim().normalize('NFC');
   const post = posts.find((p) => p.path.normalize('NFC') === clean);
   if (!post) return null;
-  return getJSON<PostDetail>(`/data/posts/${post.id}.json`);
+  return getJSON<PostDetail>(`${B}/data/posts/${post.id}.json`);
 }
 
 export async function getCategories(): Promise<Category[]> {

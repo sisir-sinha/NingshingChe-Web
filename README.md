@@ -35,6 +35,11 @@ npm start          # serve dist/ with SPA fallback → http://localhost:4173
 The server must return `index.html` for every path that is not a real file,
 otherwise refreshing a deep link gives a 404.
 
+- **GitHub Pages:** `.github/workflows/deploy-pages.yml` builds and publishes on every push to `main`.
+  It sets `BASE_PATH` automatically (`/NingshingChe-Web/` on github.io, `/` with a custom domain)
+  and copies `index.html` to `404.html` so deep links load. Note that GitHub Pages answers those
+  deep links with HTTP status 404, which search engines and link previews may not like.
+- **Sub-folder hosting elsewhere:** `BASE_PATH=/folder/ npm run build`.
 - **Node:** `npm start` (`server.mjs`, no dependencies).
 - **Apache:** `public/.htaccess` is copied into `dist/` automatically.
 - **Netlify / Cloudflare Pages:** `public/_redirects` is included.

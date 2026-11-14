@@ -2,7 +2,7 @@ import { getAuthor, getAuthors, getPosts } from '../api';
 import { authorCard, emptyState, media, pagination, paginate, postCard, shareButtons } from '../components/cards';
 import { SITE, T } from '../strings';
 import type { RouteContext, View } from '../types';
-import { authorUrl, bn, esc, fold } from '../utils';
+import { authorUrl, B, bn, esc, fold } from '../utils';
 import { pageHead } from './listing';
 import { notFoundPage } from './static';
 
@@ -59,7 +59,7 @@ export async function authorPage(ctx: RouteContext): Promise<View> {
       <div class="container profile__inner">
         <div class="profile__avatar">${media(author.image, author.name, 480, true)}</div>
         <div class="profile__body">
-          <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><a href="/lekhok">${T.authors}</a></nav>
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><a href="${B}/lekhok">${T.authors}</a></nav>
           <h1 class="profile__name">${esc(author.name)}</h1>
           <p class="profile__role">${esc(author.role)}</p>
           ${

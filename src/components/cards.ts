@@ -1,6 +1,6 @@
 import type { Author, Post } from '../types';
 import { T } from '../strings';
-import { authorUrl, bn, categoryUrl, esc, href, img } from '../utils';
+import { authorUrl, B, bn, categoryUrl, esc, href, img } from '../utils';
 
 const FALLBACK = "this.onerror=null;this.closest('.media')?.classList.add('media--empty');this.remove()";
 
@@ -123,7 +123,7 @@ export function paginate<T>(items: T[], query: URLSearchParams, perPage: number)
 }
 
 export function emptyState(text: string): string {
-  return `<div class="empty"><i class="fa-regular fa-folder-open" aria-hidden="true"></i><p>${esc(text)}</p><a class="btn btn--ghost" href="/">${T.backHome}</a></div>`;
+  return `<div class="empty"><i class="fa-regular fa-folder-open" aria-hidden="true"></i><p>${esc(text)}</p><a class="btn btn--ghost" href="${B}/">${T.backHome}</a></div>`;
 }
 
 export function shareButtons(url: string, title: string): string {

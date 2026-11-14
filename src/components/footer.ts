@@ -1,12 +1,12 @@
 import { SITE, T } from '../strings';
-import { bn } from '../utils';
+import { B, bn } from '../utils';
 
 export function renderFooter(el: HTMLElement): void {
   el.innerHTML = `
   <div class="phee phee--footer" aria-hidden="true"></div>
   <div class="container footer__grid">
     <div class="footer__about">
-      <a class="brand brand--footer" href="/">
+      <a class="brand brand--footer" href="${B}/">
         <img class="brand__logo" src="${SITE.logo}" alt="" width="56" height="56" loading="lazy">
         <span class="brand__text">
           <span class="brand__name">${SITE.name}</span>
@@ -23,11 +23,11 @@ export function renderFooter(el: HTMLElement): void {
     <nav aria-label="${T.quickLinks}">
       <h2 class="footer__title">${T.quickLinks}</h2>
       <ul class="footer__links">
-        <li><a href="/about-us">${T.about}</a></li>
-        <li><a href="/blog_submission">${T.submitArticle}</a></li>
-        <li><a href="/lekhok">${T.authors}</a></li>
-        <li><a href="/featured">${T.featured}</a></li>
-        <li><a href="/pdf">${T.pdfBooks}</a></li>
+        <li><a href="${B}/about-us">${T.about}</a></li>
+        <li><a href="${B}/blog_submission">${T.submitArticle}</a></li>
+        <li><a href="${B}/lekhok">${T.authors}</a></li>
+        <li><a href="${B}/featured">${T.featured}</a></li>
+        <li><a href="${B}/pdf">${T.pdfBooks}</a></li>
       </ul>
     </nav>
     <div>

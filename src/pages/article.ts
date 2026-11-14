@@ -3,7 +3,7 @@ import { chip, media, postCard, shareButtons } from '../components/cards';
 import { categoryWidget, postsWidget } from '../components/sidebar';
 import { SITE, T } from '../strings';
 import type { RouteContext, View } from '../types';
-import { authorUrl, bn, esc, href, img, tagUrl, toast } from '../utils';
+import { authorUrl, B, bn, esc, href, img, tagUrl, toast } from '../utils';
 import { notFoundPage } from './static';
 
 const SIZES = ['s', 'm', 'l'] as const;
@@ -24,7 +24,7 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
   const html = `
   <article class="article">
     <header class="article__head container container--narrow">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><a href="${href(`/category/${post.category}`)}">${esc(post.category)}</a></nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><a href="${href(`/category/${post.category}`)}">${esc(post.category)}</a></nav>
       ${chip(post.category)}
       <h1 class="article__title">${esc(post.title)}</h1>
       <div class="article__meta">
