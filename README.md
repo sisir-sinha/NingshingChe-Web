@@ -100,3 +100,7 @@ Main menu items are in `NAV` (shown as a row under the logo) and the categories 
 ## Privacy policy (`/privacy-policy`)
 
 The text is in `src/content/privacy.md` (headings, bullets, numbered lists, **bold** and links are supported). Linked from the footer and the register page.
+
+## Custom domain
+
+The site is served from **https://ningshingche.com** (GitHub Pages custom domain, set in *Settings → Pages*; `public/CNAME` records it). The workflow reads the base path from GitHub on every run, so the same build works on the domain root and on `github.io/<repo>/` — but a new run is needed after the domain is added or removed (push a commit or use *Run workflow*). `npm run build` also writes `sitemap.xml` and `robots.txt` (`scripts/sitemap.mjs`, address from `SITE_URL`).
