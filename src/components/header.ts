@@ -4,47 +4,77 @@ import { SITE, T } from '../strings';
 import type { Post } from '../types';
 import { B, stripBase, bn, categoryUrl, debounce, esc, fold, href, img, tagUrl, todayBn } from '../utils';
 
+interface NavChild {
+  label: string;
+  href: string;
+  icon?: string;
+}
 interface NavItem {
   label: string;
+  icon: string;
   href?: string;
-  children?: { label: string; href: string }[];
+  /** Dropdown layout: a grid of issues, or pages + categories */
+  menu?: 'issues' | 'more';
+  children?: NavChild[];
 }
 
 const YEARS = Array.from({ length: 12 }, (_, i) => 2014 + i);
 const MORE_CATEGORIES = ['ভুমিকা', 'সম্পাদকীয়', 'ইতিহাস', 'সাহিত্য', 'সমাজ ও সংস্কৃতি', 'পর্যালোচনা', 'জীবনী', 'স্মৃতিচারণ', 'পৌরাণিক কাহিনী', 'বিজ্ঞান ও প্রযুক্তি'];
 
 const NAV: NavItem[] = [
-  { label: T.home, href: `${B}/` },
-  { label: T.recent, href: `${B}/recent` },
+  { label: T.home, icon: 'fa-house', href: `${B}/` },
+  { label: T.recent, icon: 'fa-bolt', href: `${B}/recent` },
   {
     label: T.onlineChe,
-    children: YEARS.map((y) => ({ label: `${SITE.name}-${bn(y)}`, href: tagUrl(`${SITE.name} - ${bn(y)}`) })),
+    icon: 'fa-book-open',
+    menu: 'issues',
+    children: YEARS.map((y) => ({ label: bn(y), href: tagUrl(`${SITE.name} - ${bn(y)}`) })),
   },
-  { label: T.featured, href: `${B}/featured` },
-  { label: 'ইমার ঠারর এলা', href: categoryUrl('ইমার ঠারর এলা') },
-  { label: 'পৌ', href: categoryUrl('পৌ') },
-  { label: T.about, href: `${B}/about-us` },
+  { label: T.featured, icon: 'fa-star', href: `${B}/featured` },
+  { label: 'ইমার ঠারর এলা', icon: 'fa-music', href: categoryUrl('ইমার ঠারর এলা') },
+  { label: 'পৌ', icon: 'fa-newspaper', href: categoryUrl('পৌ') },
+  { label: T.about, icon: 'fa-circle-info', href: `${B}/about-us` },
   {
     label: T.more,
+    icon: 'fa-ellipsis',
+    menu: 'more',
     children: [
-      { label: T.authors, href: `${B}/lekhok` },
-      { label: T.pdfBooks, href: `${B}/pdf` },
-      { label: T.social, href: `${B}/social-activities` },
+      { label: T.authors, href: `${B}/lekhok`, icon: 'fa-feather-pointed' },
+      { label: T.pdfBooks, href: `${B}/pdf`, icon: 'fa-file-pdf' },
+      { label: T.social, href: `${B}/social-activities`, icon: 'fa-people-group' },
       ...MORE_CATEGORIES.map((c) => ({ label: c, href: categoryUrl(c) })),
     ],
   },
 ];
 
+function submenu(item: NavItem, id: string): string {
+  const kids = item.children ?? [];
+  const link = (c: NavChild) =>
+    `<li><a href="${c.href}">${c.icon ? `<i class="fa-solid ${c.icon}" aria-hidden="true"></i>` : ''}<span>${esc(c.label)}</span></a></li>`;
+  if (item.menu === 'issues') {
+    return `<div class="submenu submenu--issues" id="${id}">
+      <p class="submenu__label">${SITE.name} — ${esc(item.label)}</p>
+      <ul class="submenu__grid">${kids.map(link).join('')}</ul>
+    </div>`;
+  }
+  const pages = kids.filter((c) => c.icon);
+  const cats = kids.filter((c) => !c.icon);
+  return `<div class="submenu submenu--more" id="${id}">
+    <ul class="submenu__pages">${pages.map(link).join('')}</ul>
+    <p class="submenu__label">${T.categories}</p>
+    <ul class="submenu__cats">${cats.map(link).join('')}</ul>
+  </div>`;
+}
+
 function navHtml(): string {
   return NAV.map((item, i) => {
-    if (!item.children) return `<li><a class="nav__link" href="${item.href}">${esc(item.label)}</a></li>`;
+    const icon = `<i class="nav__icon fa-solid ${item.icon}" aria-hidden="true"></i>`;
+    if (!item.children) return `<li><a class="nav__link" href="${item.href}">${icon}<span>${esc(item.label)}</span></a></li>`;
     return `<li class="nav__group">
       <button type="button" class="nav__link nav__toggle" aria-expanded="false" aria-controls="submenu-${i}">
-        ${esc(item.label)} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        ${icon}<span>${esc(item.label)}</span><i class="nav__caret fa-solid fa-chevron-down" aria-hidden="true"></i>
       </button>
-      <ul class="submenu${item.children.length > 8 ? ' submenu--cols' : ''}" id="submenu-${i}">
-        ${item.children.map((c) => `<li><a href="${c.href}">${esc(c.label)}</a></li>`).join('')}
-      </ul>
+      ${submenu(item, `submenu-${i}`)}
     </li>`;
   }).join('');
 }
@@ -62,19 +92,38 @@ export function renderHeader(el: HTMLElement): void {
       </div>
     </div>
   </div>
-  <div class="masthead">
-    <div class="container masthead__inner">
-      <button type="button" class="icon-btn icon-btn--plain masthead__burger" id="nav-open" aria-label="${T.menu}" aria-controls="nav" aria-expanded="false">
-        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+  <div class="bar" id="bar">
+    <div class="container bar__inner">
+      <button type="button" class="icon-btn icon-btn--plain bar__burger" id="nav-open" aria-label="${T.menu}" aria-controls="nav" aria-expanded="false">
+        <i class="fa-solid fa-bars-staggered" aria-hidden="true"></i>
       </button>
       <a class="brand" href="${B}/" aria-label="${SITE.name} — ${T.home}">
-        <img class="brand__logo" src="${SITE.logo}" alt="" width="52" height="52">
+        <img class="brand__logo" src="${SITE.logo}" alt="" width="46" height="46">
         <span class="brand__text">
           <span class="brand__name">${SITE.name}</span>
           <span class="brand__tag">${SITE.tagline}</span>
         </span>
       </a>
-      <div class="masthead__tools">
+      <div class="scrim" id="nav-scrim" hidden></div>
+      <nav class="nav" id="nav" aria-label="${T.menu}">
+        <div class="nav__head">
+          <span class="brand">
+            <img class="brand__logo" src="${SITE.logo}" alt="" width="40" height="40">
+            <span class="brand__name">${SITE.name}</span>
+          </span>
+          <button type="button" class="icon-btn icon-btn--plain" id="nav-close" aria-label="${T.close}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </div>
+        <ul class="nav__list">${navHtml()}</ul>
+        <div class="nav__foot">
+          <a class="btn btn--primary" href="${B}/blog_submission"><i class="fa-solid fa-feather-pointed" aria-hidden="true"></i> ${T.submitArticle}</a>
+          <div class="nav__social">
+            <a class="icon-btn" href="${SITE.facebook}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+            <a class="icon-btn" href="${SITE.youtube}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+            <a class="icon-btn" href="${SITE.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </nav>
+      <div class="bar__tools">
         <button type="button" class="search-trigger" id="search-open" aria-label="${T.search}">
           <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
           <span>${T.search}</span>
@@ -86,15 +135,7 @@ export function renderHeader(el: HTMLElement): void {
       </div>
     </div>
     <div class="phee" aria-hidden="true"></div>
-  </div>
-  <nav class="nav" id="nav" aria-label="${T.menu}">
-    <div class="nav__head">
-      <span>${T.menu}</span>
-      <button type="button" class="icon-btn icon-btn--plain" id="nav-close" aria-label="${T.close}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-    </div>
-    <ul class="container nav__list">${navHtml()}</ul>
-  </nav>
-  <div class="scrim" id="nav-scrim" hidden></div>`;
+  </div>`;
 
   document.getElementById('overlays')!.innerHTML = `
   <div class="search" id="search" role="dialog" aria-modal="true" aria-label="${T.search}" hidden>
@@ -301,13 +342,13 @@ function initSearch(): void {
 /* ---------- back to top + sticky shadow ---------- */
 function initToTop(): void {
   const btn = document.getElementById('to-top')!;
-  const nav = document.getElementById('nav')!;
-  const masthead = document.querySelector<HTMLElement>('.masthead')!;
+  const bar = document.getElementById('bar')!;
+  const topbar = document.querySelector<HTMLElement>('.topbar')!;
   let ticking = false;
   const update = () => {
     ticking = false;
     btn.hidden = window.scrollY < 700;
-    nav.classList.toggle('is-stuck', window.scrollY > masthead.offsetTop + masthead.offsetHeight);
+    bar.classList.toggle('is-stuck', window.scrollY > topbar.offsetHeight);
   };
   window.addEventListener(
     'scroll',
