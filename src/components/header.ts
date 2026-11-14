@@ -15,13 +15,15 @@ interface NavItem {
   label: string;
   icon: string;
   href?: string;
-  /** Dropdown layout: a grid of issues, or pages + categories */
+  /** Drawn as a highlighted button */
+  special?: 'forum' | 'music';
+  /** Dropdown layout: a grid of issues, or a row of page tiles */
   menu?: 'issues' | 'more';
   children?: NavChild[];
 }
 
 const YEARS = Array.from({ length: 12 }, (_, i) => 2014 + i);
-const MORE_CATEGORIES = ['ভুমিকা', 'সম্পাদকীয়', 'ইতিহাস', 'সাহিত্য', 'সমাজ ও সংস্কৃতি', 'পর্যালোচনা', 'জীবনী', 'স্মৃতিচারণ', 'পৌরাণিক কাহিনী', 'বিজ্ঞান ও প্রযুক্তি'];
+const CATEGORIES = ['ইমার ঠারর এলা', 'পৌ', 'ভুমিকা', 'সম্পাদকীয়', 'ইতিহাস', 'সাহিত্য', 'সমাজ ও সংস্কৃতি', 'পর্যালোচনা', 'জীবনী', 'স্মৃতিচারণ', 'পৌরাণিক কাহিনী', 'বিজ্ঞান ও প্রযুক্তি'];
 
 const NAV: NavItem[] = [
   { label: T.home, icon: 'fa-house', href: `${B}/` },
@@ -33,8 +35,8 @@ const NAV: NavItem[] = [
     children: YEARS.map((y) => ({ label: bn(y), href: tagUrl(`${SITE.name} - ${bn(y)}`) })),
   },
   { label: T.featured, icon: 'fa-star', href: `${B}/featured` },
-  { label: 'ইমার ঠারর এলা', icon: 'fa-music', href: categoryUrl('ইমার ঠারর এলা') },
-  { label: 'পৌ', icon: 'fa-newspaper', href: categoryUrl('পৌ') },
+  { label: T.forum, icon: 'fa-comments', href: `${B}/forum`, special: 'forum' },
+  { label: T.music, icon: 'fa-headphones', href: `${B}/music`, special: 'music' },
   { label: T.about, icon: 'fa-circle-info', href: `${B}/about-us` },
   {
     label: T.more,
@@ -44,7 +46,6 @@ const NAV: NavItem[] = [
       { label: T.authors, href: `${B}/lekhok`, icon: 'fa-feather-pointed' },
       { label: T.pdfBooks, href: `${B}/pdf`, icon: 'fa-file-pdf' },
       { label: T.social, href: `${B}/social-activities`, icon: 'fa-people-group' },
-      ...MORE_CATEGORIES.map((c) => ({ label: c, href: categoryUrl(c) })),
     ],
   },
 ];
@@ -59,19 +60,15 @@ function submenu(item: NavItem, id: string): string {
       <ul class="submenu__grid">${kids.map(link).join('')}</ul>
     </div>`;
   }
-  const pages = kids.filter((c) => c.icon);
-  const cats = kids.filter((c) => !c.icon);
   return `<div class="submenu submenu--more" id="${id}">
-    <ul class="submenu__pages">${pages.map(link).join('')}</ul>
-    <p class="submenu__label">${T.categories}</p>
-    <ul class="submenu__cats">${cats.map(link).join('')}</ul>
+    <ul class="submenu__pages">${kids.map(link).join('')}</ul>
   </div>`;
 }
 
 function navHtml(): string {
   return NAV.map((item, i) => {
     const icon = `<i class="nav__icon fa-solid ${item.icon}" aria-hidden="true"></i>`;
-    if (!item.children) return `<li><a class="nav__link" href="${item.href}">${icon}<span>${esc(item.label)}</span></a></li>`;
+    if (!item.children) return `<li><a class="nav__link${item.special ? ` nav__link--special nav__link--${item.special}` : ''}" href="${item.href}">${icon}<span>${esc(item.label)}</span></a></li>`;
     return `<li class="nav__group">
       <button type="button" class="nav__link nav__toggle" aria-expanded="false" aria-controls="submenu-${i}">
         ${icon}<span>${esc(item.label)}</span><i class="nav__caret fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -138,8 +135,14 @@ export function renderHeader(el: HTMLElement): void {
         <div class="account" id="account"></div>
       </div>
     </div>
+  </div>
+  <nav class="catbar" aria-label="${T.categories}">
+    <div class="container catbar__inner">
+      <span class="catbar__label"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> ${T.categories}</span>
+      <ul class="catbar__list">${CATEGORIES.map((c) => `<li><a href="${categoryUrl(c)}">${esc(c)}</a></li>`).join('')}</ul>
+    </div>
     <div class="phee" aria-hidden="true"></div>
-  </div>`;
+  </nav>`;
 
   document.getElementById('overlays')!.innerHTML = `
   <div class="search" id="search" role="dialog" aria-modal="true" aria-label="${T.search}" hidden>
@@ -297,7 +300,7 @@ export function syncHeader(path: string): void {
   closeDrawer();
   closeSearch();
   closeAccount();
-  document.querySelectorAll<HTMLAnchorElement>('#nav a').forEach((a) => {
+  document.querySelectorAll<HTMLAnchorElement>('#nav a, .catbar a').forEach((a) => {
     let target = stripBase(a.pathname);
     try {
       target = decodeURIComponent(target);
@@ -305,9 +308,12 @@ export function syncHeader(path: string): void {
       /* keep raw */
     }
     const current = target.normalize('NFC') === path;
-    if (current) a.setAttribute('aria-current', 'page');
+    // Forum topics keep the Forum button lit.
+    const within = a.classList.contains('nav__link--forum') && path.startsWith(`${target}/`);
+    if (current || within) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });
+  document.querySelector<HTMLElement>('.catbar [aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
   document.querySelectorAll<HTMLElement>('.nav__group').forEach((g) => {
     g.classList.toggle('has-current', Boolean(g.querySelector('[aria-current="page"]')));
   });

@@ -91,6 +91,12 @@ export function currentUser(): User | null {
   return found ? publicUser(found) : null;
 }
 
+/** Public details of any account (used to show names and pictures next to forum posts). */
+export function findUser(id: string): User | null {
+  const found = readUsers().find((u) => u.id === id);
+  return found ? publicUser(found) : null;
+}
+
 /** Calls `fn` whenever someone signs in, signs out or edits their profile. */
 export function onAuthChange(fn: (user: User | null) => void): () => void {
   listeners.add(fn);

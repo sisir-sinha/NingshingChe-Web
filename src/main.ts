@@ -8,10 +8,13 @@ import { renderHeader, syncHeader } from './components/header';
 import { initLogoutButtons, loginPage, profilePage, registerPage } from './pages/account';
 import { articlePage } from './pages/article';
 import { authorPage, authorsPage } from './pages/authors';
+import { forumPage, topicPage } from './pages/forum';
 import { homePage } from './pages/home';
 import { categoryPage, featuredPage, recentPage, searchPage, tagPage } from './pages/listing';
+import { musicPage } from './pages/music';
 import { pdfListPage, pdfPage } from './pages/pdf';
 import { aboutPage, errorPage, loadingHtml, notFoundPage, socialPage, submitPage } from './pages/static';
+import { initMiniPlayer } from './player';
 import { route, setNotFound, startRouter } from './router';
 import { T } from './strings';
 import { toast } from './utils';
@@ -33,6 +36,9 @@ route(/^\/search$/, searchPage);
 route(/^\/about-us$/, aboutPage);
 route(/^\/social-activities$/, socialPage);
 route(/^\/blog_submission$/, submitPage);
+route(/^\/forum$/, forumPage);
+route(/^\/forum\/([\w-]+)$/, topicPage);
+route(/^\/music$/, musicPage);
 route(/^\/login$/, loginPage);
 route(/^\/register$/, registerPage);
 route(/^\/profile$/, profilePage);
@@ -40,6 +46,7 @@ route(/^\/\d{4}\/\d{2}\/.+$/, articlePage); // /2025/06/slug.kehem
 setNotFound(notFoundPage);
 
 initLogoutButtons();
+initMiniPlayer();
 
 /* "Copy link" buttons anywhere on the site */
 document.addEventListener('click', async (e) => {

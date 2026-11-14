@@ -78,3 +78,21 @@ Routes: `/login`, `/register` (name, e-mail, password, confirm password, profile
 
 - **Demo storage.** `src/auth.ts` keeps accounts in the visitor's browser (`localStorage`, passwords as salted PBKDF2 hashes). There is no server, so an account exists only on the device where it was created. To go live, keep the exported functions (`register`, `login`, `loginWithGoogle`, `updateProfile`, `logout`, `currentUser`) and replace their bodies with calls to your backend, Firebase Auth or Supabase. Then remove the "demo" line on the register page (`T.demoAccounts`).
 - **Google login.** Create an OAuth 2.0 *Web application* client ID at <https://console.cloud.google.com/apis/credentials>, add each site address (e.g. `https://sisir-sinha.github.io`, `https://ningshingche.com`) under *Authorised JavaScript origins*, then paste the ID into `src/config.ts` (or build with `VITE_GOOGLE_CLIENT_ID=...`). Until then the Google button only shows a "not set up" message. A real backend must verify the Google ID token itself.
+
+## Forum (`/forum`, `/forum/<id>`)
+
+Signed-in users can start topics, reply, and delete their own posts. `src/forum.ts` stores everything in the visitor's browser (`localStorage`) — a demo, like the accounts. Replace the bodies of `listTopics`, `getTopic`, `createTopic`, `addReply`, `deleteTopic`, `deleteReply` with API calls to make it shared. Forum sections are listed in `FORUM_CATEGORIES`.
+
+## Music (`/music`)
+
+The playlist is `public/data/music.json`:
+
+```json
+[{ "id": "song-1", "title": "…", "artist": "…", "src": "/data/music/song-1.mp3", "cover": "/data/music/song-1.jpg", "duration": 215 }]
+```
+
+Put the audio files (MP3 recommended) in `public/data/music/`, or use full URLs in `src`/`cover`. `cover` and `duration` (seconds) are optional. The three `sample-*.wav` files are generated placeholder tones — delete them when real songs are added. Playback continues across pages with a mini player (`src/player.ts`).
+
+## Navigation
+
+Main menu items are in `NAV` and the category row in `CATEGORIES`, both at the top of `src/components/header.ts`.

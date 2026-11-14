@@ -114,7 +114,7 @@
 }
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-padding-top: 6rem;
+  scroll-padding-top: 8.5rem;
 }
 html.no-scroll {
   overflow: hidden;
