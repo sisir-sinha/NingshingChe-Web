@@ -3,6 +3,7 @@ import './styles/layout.css';
 import './styles/components.css';
 import './styles/pages.css';
 
+import { initImageSkeletons, skeletonFor } from './components/skeletons';
 import { renderFooter } from './components/footer';
 import { renderHeader, syncHeader } from './components/header';
 import { initLogoutButtons, loginPage, profilePage, registerPage } from './pages/account';
@@ -13,7 +14,7 @@ import { homePage } from './pages/home';
 import { categoryPage, featuredPage, recentPage, searchPage, tagPage } from './pages/listing';
 import { musicPage } from './pages/music';
 import { pdfListPage, pdfPage } from './pages/pdf';
-import { aboutPage, errorPage, loadingHtml, notFoundPage, socialPage, submitPage } from './pages/static';
+import { aboutPage, errorPage, notFoundPage, socialPage, submitPage } from './pages/static';
 import { privacyPage } from './pages/privacy';
 import { initMiniPlayer } from './player';
 import { route, setNotFound, startRouter } from './router';
@@ -47,6 +48,7 @@ route(/^\/profile$/, profilePage);
 route(/^\/\d{4}\/\d{2}\/.+$/, articlePage); // /2025/06/slug.kehem
 setNotFound(notFoundPage);
 
+initImageSkeletons();
 initLogoutButtons();
 initMiniPlayer();
 
@@ -63,7 +65,7 @@ document.addEventListener('click', async (e) => {
 });
 
 startRouter(document.getElementById('main')!, {
-  loading: loadingHtml,
+  loading: skeletonFor,
   error: errorPage,
   afterRender: syncHeader,
 });

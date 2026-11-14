@@ -35,14 +35,6 @@ export function errorPage(): View {
   };
 }
 
-export function loadingHtml(): string {
-  const card = '<div class="skeleton skeleton--card"></div>';
-  return `<div class="container section" aria-busy="true" aria-label="${T.loading}">
-    <div class="skeleton skeleton--hero"></div>
-    <div class="grid grid--3" style="margin-top:1.5rem">${card.repeat(3)}</div>
-  </div>`;
-}
-
 export async function aboutPage(): Promise<View> {
   const authors = await getAuthors();
   const self = authors.find((a) => a.name === SITE.name);

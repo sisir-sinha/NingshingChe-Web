@@ -36,8 +36,16 @@
   <body>
     <a class="skip-link" href="#main">মূল লেখায় যান</a>
     <div id="progress" aria-hidden="true"></div>
-    <header id="site-header"></header>
-    <main id="main" tabindex="-1"></main>
+    <header id="site-header"><div class="boot-bar" aria-hidden="true"></div></header>
+    <main id="main" tabindex="-1">
+      <!-- placeholder shown until the script starts; the router replaces it -->
+      <div class="container section sk-stack" aria-hidden="true">
+        <span class="sk sk--hero"></span>
+        <span class="sk sk--title" style="width: 40%"></span>
+        <span class="sk sk--line"></span>
+        <span class="sk sk--line" style="width: 85%"></span>
+      </div>
+    </main>
     <footer id="site-footer"></footer>
     <div id="overlays"></div>
     <noscript><p style="padding:2rem;text-align:center">এই সাইটটি দেখতে JavaScript চালু করুন।</p></noscript>

@@ -15,7 +15,7 @@ interface Route {
 }
 
 interface Hooks {
-  loading: () => string;
+  loading: (path: string) => string;
   error: (err: unknown) => View;
   afterRender: (path: string) => void;
 }
@@ -66,10 +66,18 @@ async function render(restoreY: number | null): Promise<void> {
   const { handler, params } = match(path);
   const samePage = path === lastPath;
 
-  // Show a skeleton only if the data takes a moment to arrive.
-  const spinner = window.setTimeout(() => {
-    if (id === renderId && !samePage) outlet.innerHTML = hooks.loading();
-  }, 180);
+  // Skeleton: at once on the first visit, otherwise only if the data takes a moment
+  // (cached pages open instantly and a flash of placeholders would be distracting).
+  const showSkeleton = () => {
+    if (id !== renderId || samePage) return;
+    if (typeof cleanup === 'function') cleanup();
+    cleanup = undefined;
+    outlet.innerHTML = hooks.loading(path);
+    window.scrollTo(0, 0);
+  };
+  const firstVisit = lastPath === '';
+  if (firstVisit) showSkeleton();
+  const spinner = firstVisit ? undefined : window.setTimeout(showSkeleton, 120);
 
   let view: View;
   try {
