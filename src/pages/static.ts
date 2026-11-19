@@ -66,6 +66,48 @@ export async function aboutPage(): Promise<View> {
   };
 }
 
+export function contactPage(): View {
+  return {
+    title: 'Contact Us | Ningshing Che',
+    description: 'Contact Ningshing Che with questions, feedback, technical support, contributions, or privacy and account requests.',
+    html: `<div lang="en">
+      ${pageHead('Contact Us', 'fa-solid fa-envelope', 'Contact Us', 'Welcome to Ningshing Che!')}
+      <article class="container container--narrow section prose">
+        <p>Thank you for your interest in Ningshing Che. We value our readers, contributors, and community members. If you have questions, feedback, suggestions, or concerns about our website, digital publications, or mobile application, please feel free to contact us.</p>
+        <h2>About Ningshing Che</h2>
+        <p>Ningshing Che is a digital information platform and online magazine dedicated to the Bishnupriya Manipuri community. We aim to provide informative content and resources related to Bishnupriya Manipuri language, literature, history, culture, traditions, society, and community heritage.</p>
+        <p>We welcome communication from readers, researchers, writers, contributors, and members of the community.</p>
+        <h2>Publisher and Responsible Entity</h2>
+        <p><strong>Publication Name:</strong> Ningshing Che<br>
+        <strong>Responsible Legal Entity / Developer Account Holder:</strong> Surajit Singha Sisir<br>
+        <strong>Website:</strong> <a href="${B}/">https://ningshingche.com/</a></p>
+        <h2>Contact Information</h2>
+        <p>For general inquiries, feedback, technical support, content-related questions, or other concerns, please contact us using the information below.</p>
+        <p><strong>Email:</strong> <a href="mailto:${SITE.email}" data-external>${SITE.email}</a><br>
+        <strong>Website:</strong> <a href="${B}/">https://ningshingche.com/</a></p>
+        <h2>What Can You Contact Us About?</h2>
+        <p>You can contact us regarding:</p>
+        <ul>
+          <li>General questions about Ningshing Che.</li>
+          <li>Website and mobile application support.</li>
+          <li>Content corrections or factual concerns.</li>
+          <li>Bishnupriya Manipuri language, literature, and cultural contributions.</li>
+          <li>Suggestions, feedback, and reader inquiries.</li>
+          <li>Privacy-related questions and account-related requests.</li>
+        </ul>
+        <h2>Privacy and Account-Related Requests</h2>
+        <p>If you have questions about how your personal information is handled or wish to request deletion of your account, please visit our Privacy Policy and Account Deletion pages.</p>
+        <p><strong>Privacy Policy:</strong> <a href="${B}/privacy-policy/">https://ningshingche.com/privacy-policy/</a><br>
+        <strong>Account Deletion:</strong> <a href="${B}/delete-account/">https://ningshingche.com/delete-account/</a></p>
+        <h2>Our Commitment</h2>
+        <p>We value transparency, responsible publishing, and communication with our readers. We aim to review inquiries and respond as soon as reasonably possible.</p>
+        <p>Thank you for being part of the Ningshing Che community.</p>
+        <p><strong>Ningshing Che</strong><br>Website: <a href="${B}/">https://ningshingche.com/</a></p>
+      </article>
+    </div>`,
+  };
+}
+
 export function socialPage(): View {
   return {
     title: `${T.social} | ${SITE.name}`,

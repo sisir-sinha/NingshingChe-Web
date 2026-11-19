@@ -9,7 +9,7 @@ If you have created an account in the Ningshing Che Android application and wish
 You can request deletion of your Ningshing Che account by following these steps:
 
 1. Visit our official website: [https://ningshingche.com/](https://ningshingche.com/)
-2. Navigate to the [Contact Us](/about-us) section, or write directly to [ningshingche@gmail.com](mailto:ningshingche@gmail.com?subject=Ningshing%20Che%20Account%20Deletion%20Request).
+2. Navigate to the [Contact Us](/contact) section, or write directly to [ningshingche@gmail.com](mailto:ningshingche@gmail.com?subject=Ningshing%20Che%20Account%20Deletion%20Request).
 3. Send us an account deletion request using your registered email address.
 4. Include "Ningshing Che Account Deletion Request" in the subject line.
 5. Provide the email address associated with your Ningshing Che account.
@@ -53,7 +53,7 @@ If you have questions about account deletion or personal data, please contact us
 
 **Organization:** Ningshing Che Organization
 **Website:** [https://ningshingche.com/](https://ningshingche.com/)
-**Contact:** Use the [Contact Us](/about-us) section on our official website.
+**Contact:** Use the [Contact Us](/contact) section on our official website.
 **Email:** [ningshingche@gmail.com](mailto:ningshingche@gmail.com)
 
 For how we handle personal information in general, see our [Privacy Policy](/privacy-policy).

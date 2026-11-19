@@ -16,7 +16,7 @@ async function table(query) {
 
 const loc = (path) => origin + encodeURI(path).replace(/&/g, '&amp;');
 const entry = (path, lastmod) => `  <url><loc>${loc(path)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
-const pages = ['/', '/recent', '/featured', '/lekhok', '/pdf', '/forum', '/music', '/about-us', '/social-activities', '/blog_submission', '/privacy-policy', '/delete-account'];
+const pages = ['/', '/recent', '/featured', '/lekhok', '/pdf', '/forum', '/music', '/about-us', '/contact', '/social-activities', '/blog_submission', '/privacy-policy', '/delete-account'];
 
 try {
   const [blogs, authors, books, threads] = await Promise.all([

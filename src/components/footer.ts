@@ -24,6 +24,7 @@ export function renderFooter(el: HTMLElement): void {
       <h2 class="footer__title">${T.quickLinks}</h2>
       <ul class="footer__links">
         <li><a href="${B}/about-us">${T.about}</a></li>
+        <li><a href="${B}/contact">Contact Us</a></li>
         <li><a href="${B}/blog_submission">${T.submitArticle}</a></li>
         <li><a href="${B}/lekhok">${T.authors}</a></li>
         <li><a href="${B}/featured">${T.featured}</a></li>
