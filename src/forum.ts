@@ -123,9 +123,10 @@ export async function createTopic(input: { title: string; body: string; category
   return text((data.discussion as Row | undefined)?.id);
 }
 
+/** Submit rich HTML; the reader-side sanitizer also protects rendered replies. */
 export async function addReply(topicId: string, body: string, parentId = ''): Promise<void> {
   await whenProfileReady();
-  await call('forum_reply', { p_id: topicId, p_body: textToHtml(body), p_parent_id: parentId || null, p_device_id: deviceId() });
+  await call('forum_reply', { p_id: topicId, p_body: sanitizeHtml(body), p_parent_id: parentId || null, p_device_id: deviceId() });
 }
 
 export async function deleteReply(replyId: string): Promise<void> {

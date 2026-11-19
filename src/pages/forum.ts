@@ -2,7 +2,7 @@ import { currentUser } from '../auth';
 import { addReply, createTopic, deleteReply, deleteTopic, getForum, getTopic, toggleLike } from '../forum';
 import type { ForumPost, Reply, Topic } from '../forum';
 import { navigate, reload } from '../router';
-import { htmlToText } from '../sanitize';
+import { htmlToText, sanitizeHtml } from '../sanitize';
 import { SITE, T } from '../strings';
 import type { RouteContext, View } from '../types';
 import { B, bn, esc, toast } from '../utils';
@@ -177,7 +177,7 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
       <h2 class="section-title forum__count">${bn(replies.length)} ${T.replies}</h2>
       ${
         replies.length
-          ? `<div class="fpost-list">${threaded(replies).map((r) => post(r, 'reply', r.mine, likeButton(r))).join('')}</div>`
+          ? `<div class="fpost-list">${threaded(replies).map((r) => post(r, 'reply', r.mine, `${likeButton(r)} ${user ? `<button type="button" class="fpost__reply" data-reply-to="${r.id}"><i class="fa-solid fa-reply" aria-hidden="true"></i> ${T.reply}</button>` : `<a class="fpost__reply" href="${B}/login?next=${encodeURIComponent(path)}"><i class="fa-solid fa-reply" aria-hidden="true"></i> ${T.reply}</a>`}`)).join('')}</div>`
           : `<p class="forum__empty">${T.noReplies}</p>`
       }
       ${
@@ -185,7 +185,19 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
           ? `<form class="fpost fpost--form" data-reply-form novalidate>
               ${avatar(user)}
               <div class="fpost__body form">
-                <label class="field"><span class="sr-only">${T.reply}</span><textarea name="body" rows="4" required maxlength="4000" placeholder="${T.writeReply}"></textarea></label>
+                <div class="reply-target" data-reply-target hidden><span data-target-label></span><button type="button" data-cancel-reply>${T.cancel}</button></div>
+                <div class="reply-editor">
+                  <div class="reply-editor__toolbar" role="toolbar" aria-label="লেখার বিন্যাস">
+                    <button type="button" data-format="bold" aria-label="Bold" title="Bold"><i class="fa-solid fa-bold" aria-hidden="true"></i></button>
+                    <button type="button" data-format="italic" aria-label="Italic" title="Italic"><i class="fa-solid fa-italic" aria-hidden="true"></i></button>
+                    <button type="button" data-format="underline" aria-label="Underline" title="Underline"><i class="fa-solid fa-underline" aria-hidden="true"></i></button>
+                    <button type="button" data-format="insertUnorderedList" aria-label="Bullet list" title="Bullet list"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></button>
+                    <button type="button" data-format="insertOrderedList" aria-label="Numbered list" title="Numbered list"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></button>
+                    <button type="button" data-format="removeFormat" aria-label="Clear formatting" title="Clear formatting"><i class="fa-solid fa-eraser" aria-hidden="true"></i></button>
+                  </div>
+                  <div class="reply-editor__input" data-editor contenteditable="true" role="textbox" aria-label="${T.reply}" aria-multiline="true" data-placeholder="${T.writeReply}"></div>
+                </div>
+                <p class="reply-editor__error" data-editor-error role="alert" hidden></p>
                 <button class="btn btn--primary" type="submit"><i class="fa-solid fa-reply" aria-hidden="true"></i> ${T.reply}</button>
               </div>
             </form>`
@@ -227,18 +239,56 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
         }
       });
       const form = root.querySelector<HTMLFormElement>('[data-reply-form]');
-      form?.addEventListener('submit', async (e) => {
+      const editor = form?.querySelector<HTMLElement>('[data-editor]');
+      if (!form || !editor) return;
+      const targetBox = form.querySelector<HTMLElement>('[data-reply-target]')!;
+      const targetLabel = form.querySelector<HTMLElement>('[data-target-label]')!;
+      const error = form.querySelector<HTMLElement>('[data-editor-error]')!;
+      let parent: Reply | undefined;
+      root.querySelectorAll<HTMLButtonElement>('[data-reply-to]').forEach((button) => {
+        button.addEventListener('click', () => {
+          parent = replies.find((r) => r.id === button.dataset.replyTo);
+          if (!parent) return;
+          targetLabel.textContent = `${parent.authorName} — ${T.reply}`;
+          targetBox.hidden = false;
+          form.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+          editor.focus({ preventScroll: true });
+        });
+      });
+      form.querySelector('[data-cancel-reply]')!.addEventListener('click', () => {
+        parent = undefined;
+        targetBox.hidden = true;
+        editor.focus();
+      });
+      form.querySelectorAll<HTMLButtonElement>('[data-format]').forEach((button) => {
+        // Preserve the selection when clicking a formatting control.
+        button.addEventListener('mousedown', (e) => e.preventDefault());
+        button.addEventListener('click', () => {
+          editor.focus();
+          document.execCommand(button.dataset.format!, false);
+        });
+      });
+      editor.addEventListener('paste', (e) => {
         e.preventDefault();
-        const body = String(new FormData(form).get('body') ?? '').trim();
-        if (!body) {
-          form.classList.add('was-validated');
-          form.querySelector<HTMLElement>('textarea')!.focus();
+        document.execCommand('insertText', false, e.clipboardData?.getData('text/plain') ?? '');
+      });
+      editor.addEventListener('input', () => { error.hidden = true; });
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const body = sanitizeHtml(editor.innerHTML);
+        const plain = htmlToText(body);
+        const prefix = parent ? `<p><strong>উত্তরে: ${esc(parent.authorName)}</strong></p>` : '';
+        const totalLength = [...plain, ...(parent ? `উত্তরে: ${parent.authorName}` : '')].length;
+        if (!plain || totalLength > 4000) {
+          error.textContent = !plain ? 'অনুগ্রহ করে আপনার উত্তর লিখুন।' : 'উত্তর সর্বোচ্চ ৪০০০ অক্ষরের হতে পারে।';
+          error.hidden = false;
+          editor.focus();
           return;
         }
         const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
         submit.disabled = true;
         try {
-          await addReply(topic.id, body);
+          await addReply(topic.id, prefix + body, parent?.id);
           toast(T.posted);
           reload();
         } catch (err) {

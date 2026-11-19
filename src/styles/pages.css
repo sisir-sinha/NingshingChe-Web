@@ -1747,3 +1747,31 @@
 .music__layout > * {
   min-width: 0; /* long song titles must not widen the page on phones */
 }
+
+/* Forum reply composer */
+.fpost__reply {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  margin: .6rem 0 0 .35rem;
+  padding: .2rem .65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .88rem;
+}
+.fpost__reply:hover, .fpost__reply:focus-visible { color: var(--accent); border-color: var(--accent); }
+.reply-target { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; color: var(--muted); font-size: .9rem; }
+.reply-target[hidden], .reply-editor__error[hidden] { display: none; }
+.reply-target button { color: var(--link); text-decoration: underline; }
+.reply-editor { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.reply-editor:focus-within { border-color: var(--accent); }
+.reply-editor__toolbar { display: flex; flex-wrap: wrap; gap: .15rem; padding: .35rem; border-bottom: 1px solid var(--line); }
+.reply-editor__toolbar button { display: inline-grid; place-items: center; min-width: 40px; min-height: 40px; border-radius: 6px; color: var(--ink-2); }
+.reply-editor__toolbar button:hover, .reply-editor__toolbar button:focus-visible { background: var(--bg); color: var(--link); }
+.reply-editor__input { min-height: 120px; padding: .8rem; overflow-wrap: anywhere; outline: none; }
+.reply-editor__input:empty::before { content: attr(data-placeholder); color: var(--muted); pointer-events: none; }
+.reply-editor__input ul, .reply-editor__input ol { padding-left: 1.5rem; }
+.reply-editor__input ul { list-style: disc; }
+.reply-editor__input ol { list-style: decimal; }
+.reply-editor__error { color: #c62828; font-size: .9rem; }
