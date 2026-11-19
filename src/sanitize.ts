@@ -99,3 +99,8 @@ export function htmlToText(html: string): string {
   const doc = new DOMParser().parseFromString(`<body>${html ?? ''}</body>`, 'text/html');
   return (doc.body.textContent ?? '').replace(/\s+/g, ' ').trim();
 }
+
+/** Biographies may contain dashboard HTML or plain text from older records. */
+export function biographyHtml(value: string): string {
+  return /<\/?[a-z][^>]*>/i.test(value) ? sanitizeHtml(value) : textToHtml(value);
+}

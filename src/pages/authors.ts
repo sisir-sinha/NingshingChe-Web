@@ -1,6 +1,7 @@
 import { getAuthor, getAuthors, getPosts } from '../api';
 import { authorCard, emptyState, media, pagination, paginate, postCard, shareButtons } from '../components/cards';
 import { SITE, T } from '../strings';
+import { biographyHtml, htmlToText } from '../sanitize';
 import type { RouteContext, View } from '../types';
 import { authorUrl, B, bn, esc, fold } from '../utils';
 import { pageHead } from './listing';
@@ -49,11 +50,13 @@ export async function authorPage(ctx: RouteContext): Promise<View> {
   if (!author) return notFoundPage();
   const posts = (await getPosts()).filter((p) => p.author === author.name);
   const { items, page, pages } = paginate(posts, ctx.query, 9);
-  const long = author.bio.length > 420;
+  const bioHtml = biographyHtml(author.bio);
+  const bioText = htmlToText(bioHtml);
+  const long = bioText.length > 420;
 
   return {
     title: `${author.name} | ${SITE.name}`,
-    description: author.bio.slice(0, 160) || `${author.name} — ${author.role}`,
+    description: bioText.slice(0, 160) || `${author.name} — ${author.role}`,
     html: `
     <header class="profile">
       <div class="container profile__inner">
@@ -64,10 +67,7 @@ export async function authorPage(ctx: RouteContext): Promise<View> {
           <p class="profile__role">${esc(author.role)}</p>
           ${
             author.bio
-              ? `<div class="profile__bio${long ? ' is-clamped' : ''}" data-bio>${author.bio
-                  .split('\n')
-                  .map((p) => `<p>${esc(p)}</p>`)
-                  .join('')}</div>
+              ? `<div class="profile__bio${long ? ' is-clamped' : ''}" data-bio>${bioHtml}</div>
                  ${long ? `<button type="button" class="link-more" data-bio-toggle aria-expanded="false">${T.more} <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>` : ''}`
               : ''
           }

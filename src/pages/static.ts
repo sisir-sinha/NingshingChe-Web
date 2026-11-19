@@ -1,10 +1,10 @@
 import { currentUser, prefillFromAccount } from '../auth';
 import { getAuthors, submitArticle } from '../api';
-import { textToHtml } from '../sanitize';
+import { biographyHtml, textToHtml } from '../sanitize';
 import { authorCard } from '../components/cards';
 import { SITE, T } from '../strings';
 import type { View } from '../types';
-import { B, esc, toast } from '../utils';
+import { B, toast } from '../utils';
 import { pageHead } from './listing';
 
 export function notFoundPage(): View {
@@ -48,7 +48,7 @@ export async function aboutPage(): Promise<View> {
     <section class="container container--narrow section about">
       <img class="about__logo" src="${SITE.logo}" alt="${SITE.name}" width="120" height="120">
       <p class="about__lead">${SITE.description}</p>
-      ${self?.bio ? `<div class="prose">${self.bio.split('\n').map((p) => `<p>${esc(p)}</p>`).join('')}</div>` : ''}
+      ${self?.bio ? `<div class="prose">${biographyHtml(self.bio)}</div>` : ''}
       <ul class="contact-cards">
         <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i><a href="${SITE.map}" target="_blank" rel="noopener">${SITE.address}</a></li>
         <li><i class="fa-solid fa-phone" aria-hidden="true"></i><a href="tel:${SITE.phone.replace(/[^+\d]/g, '')}" data-external>${SITE.phone}</a></li>

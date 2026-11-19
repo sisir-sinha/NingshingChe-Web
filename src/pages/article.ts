@@ -1,4 +1,5 @@
 import { currentUser, prefillFromAccount } from '../auth';
+import { biographyHtml, htmlToText } from '../sanitize';
 import { getAuthor, getCategories, getComments, getPostByPath, getPosts, submitComment } from '../api';
 import { recordView } from '../supabase';
 import type { Comment } from '../types';
@@ -90,7 +91,7 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
                   <p class="author-box__label">${T.writer}</p>
                   <h2 class="author-box__name"><a href="${authorUrl(author.name)}">${esc(author.name)}</a></h2>
                   <p class="author-box__role">${esc(author.role)}</p>
-                  ${author.bio ? `<p class="author-box__bio">${esc(author.bio)}</p>` : ''}
+                  ${author.bio ? `<p class="author-box__bio">${esc(htmlToText(biographyHtml(author.bio)))}</p>` : ''}
                   <a class="link-more" href="${authorUrl(author.name)}">${T.authorPosts} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                 </div>
               </aside>`
