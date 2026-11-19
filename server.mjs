@@ -22,7 +22,11 @@ createServer(async (req, res) => {
   let file = normalize(join(ROOT, pathname));
   if (!file.startsWith(ROOT)) file = join(ROOT, 'index.html');
   let isFile = false;
-  try { isFile = (await stat(file)).isFile(); } catch { /* not found */ }
+  try {
+    const info = await stat(file);
+    if (info.isDirectory()) file = join(file, 'index.html');
+    isFile = (await stat(file)).isFile();
+  } catch { /* not found */ }
   if (!isFile) file = join(ROOT, 'index.html'); // SPA fallback
   try {
     const body = await readFile(file);

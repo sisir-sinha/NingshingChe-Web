@@ -5,6 +5,7 @@
  * **bold**, [link text](url) and blank lines between paragraphs.
  */
 import deleteSource from '../content/delete-account.md?raw';
+import contactSource from '../content/contact.md?raw';
 import privacySource from '../content/privacy.md?raw';
 import { SITE, T } from '../strings';
 import type { View } from '../types';
@@ -73,7 +74,7 @@ interface LegalPage {
   title: string;
   icon: string;
   description: string;
-  sign: string;
+  sign?: string;
   /** Optional call-to-action shown above the text. */
   lead?: string;
 }
@@ -101,10 +102,7 @@ function legalPage(page: LegalPage): View {
         <div class="legal__dates">${doc.intro}</div>
         ${page.lead ?? ''}
         ${doc.sections.map((s) => `<section id="${s.id}"><h2>${esc(s.title)}</h2>${s.html}</section>`).join('')}
-        <footer class="legal__sign">
-          <strong>Ningshing Che Organization</strong>
-          <p>${page.sign}</p>
-        </footer>
+        ${page.sign ? `<footer class="legal__sign"><strong>Ningshing Che Organization</strong><p>${page.sign}</p></footer>` : ''}
       </article>
     </section>
     </div>`,
@@ -121,6 +119,15 @@ function legalPage(page: LegalPage): View {
       });
     },
   };
+}
+
+export function contactPage(): View {
+  return legalPage({
+    source: contactSource,
+    title: 'Contact Us',
+    icon: 'fa-solid fa-envelope',
+    description: 'Contact Ningshing Che with questions, feedback, contributions, or privacy and account requests.',
+  });
 }
 
 export function privacyPage(): View {
