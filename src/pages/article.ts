@@ -44,7 +44,7 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
 
   const html = `
   <article class="article">
-    <header class="article__head container container--narrow">
+    <header class="article__head container">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><a href="${href(`/category/${post.category}`)}">${esc(post.category)}</a></nav>
       ${chip(post.category)}
       <h1 class="article__title">${esc(post.title)}</h1>
