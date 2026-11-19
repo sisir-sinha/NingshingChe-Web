@@ -15,6 +15,10 @@ export interface Track {
   artist: string;
   /** Album or collection name, may be empty */
   album: string;
+  genre: string;
+  searchText: string;
+  createdAt: string;
+  loves: number;
   src: string;
   cover?: string;
   /** seconds — only used to show a length before the file has loaded */
@@ -33,6 +37,7 @@ const audio = new Audio();
 audio.preload = 'metadata';
 let tracks: Track[] = [];
 let index = -1;
+let queue: number[] = [];
 let loading: Promise<Track[]> | undefined;
 const listeners = new Set<(s: PlayerState) => void>();
 
@@ -56,7 +61,7 @@ export function loadTracks(): Promise<Track[]> {
     try {
       const { data, error } = await sb
         .from('music_tracks')
-        .select('id,title,artist,album,bn_title,bn_artist,bn_album,thumbnail_url,audio_url,duration_seconds,sort_order,created_at')
+        .select('id,title,artist,album,bn_title,bn_artist,bn_album,genre,love_count,thumbnail_url,audio_url,duration_seconds,sort_order,created_at')
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
       if (error) throw new Error(error.message);
@@ -65,6 +70,10 @@ export function loadTracks(): Promise<Track[]> {
         title: String(t.bn_title || t.title || ''),
         artist: String(t.bn_artist || t.artist || ''),
         album: String(t.bn_album || t.album || ''),
+        genre: String(t.genre || ''),
+        searchText: `${t.title || ''} ${t.bn_title || ''} ${t.artist || ''} ${t.bn_artist || ''} ${t.album || ''} ${t.bn_album || ''} ${t.genre || ''}`,
+        createdAt: String(t.created_at || ''),
+        loves: Number(t.love_count) || 0,
         src: String(t.audio_url ?? ''),
         cover: String(t.thumbnail_url ?? ''),
         duration: Number(t.duration_seconds) || 0,
@@ -73,6 +82,7 @@ export function loadTracks(): Promise<Track[]> {
       loading = undefined; // try again on the next visit to the page
       tracks = [];
     }
+    queue = tracks.map((_, i) => i);
     return tracks;
   })();
   return loading;
@@ -108,8 +118,17 @@ export function toggle(): void {
   if (audio.paused) void audio.play().catch(() => emit());
   else audio.pause();
 }
-export const next = () => play(index + 1);
-export const prev = () => (audio.currentTime > 3 ? seek(0) : play(index - 1));
+export function setQueue(indices: number[]): void {
+  queue = [...new Set(indices)].filter((i) => Number.isInteger(i) && i >= 0 && i < tracks.length);
+}
+function adjacent(direction: number): void {
+  if (!tracks.length) return;
+  const activeQueue = queue.length ? queue : tracks.map((_, i) => i);
+  const position = activeQueue.indexOf(index);
+  play(activeQueue[position < 0 ? (direction > 0 ? 0 : activeQueue.length - 1) : (position + direction + activeQueue.length) % activeQueue.length]);
+}
+export const next = () => adjacent(1);
+export const prev = () => (audio.currentTime > 3 ? seek(0) : adjacent(-1));
 export function seek(seconds: number): void {
   audio.currentTime = seconds;
   emit();
@@ -128,7 +147,8 @@ export function stop(): void {
 
 ['play', 'pause', 'timeupdate', 'loadedmetadata', 'durationchange', 'emptied'].forEach((ev) => audio.addEventListener(ev, emit));
 audio.addEventListener('ended', () => {
-  if (index < tracks.length - 1) next();
+  const position = queue.indexOf(index);
+  if (position >= 0 && position < queue.length - 1) next();
   else emit();
 });
 if ('mediaSession' in navigator) {
@@ -159,6 +179,7 @@ export function initMiniPlayer(): void {
       <span class="mini-player__art"><i class="fa-solid fa-music" aria-hidden="true"></i></span>
       <span class="mini-player__text"><strong data-mp-title></strong><small data-mp-artist></small></span>
     </a>
+    <button type="button" class="icon-btn icon-btn--plain mini-player__prev" data-mp-prev aria-label="${T.prevTrack}"><i class="fa-solid fa-backward-step" aria-hidden="true"></i></button>
     <button type="button" class="icon-btn icon-btn--plain" data-mp-toggle aria-label="${T.play}"><i class="fa-solid fa-play" aria-hidden="true"></i></button>
     <button type="button" class="icon-btn icon-btn--plain" data-mp-next aria-label="${T.nextTrack}"><i class="fa-solid fa-forward-step" aria-hidden="true"></i></button>
     <button type="button" class="icon-btn icon-btn--plain" data-mp-close aria-label="${T.close}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
@@ -169,6 +190,7 @@ export function initMiniPlayer(): void {
   const btn = el.querySelector<HTMLElement>('[data-mp-toggle]')!;
   const bar = el.querySelector<HTMLElement>('[data-mp-bar]')!;
   btn.addEventListener('click', toggle);
+  el.querySelector('[data-mp-prev]')!.addEventListener('click', prev);
   el.querySelector('[data-mp-next]')!.addEventListener('click', next);
   el.querySelector('[data-mp-close]')!.addEventListener('click', stop);
   let shownIndex = -2;
@@ -182,6 +204,7 @@ export function initMiniPlayer(): void {
       shownIndex = s.index;
       title.textContent = s.tracks[s.index].title;
       artist.textContent = s.tracks[s.index].artist;
+      el.querySelector<HTMLElement>('.mini-player__art')!.innerHTML = artHtml(s.tracks[s.index]);
     }
     if (s.playing !== shownPlaying) {
       shownPlaying = s.playing;
