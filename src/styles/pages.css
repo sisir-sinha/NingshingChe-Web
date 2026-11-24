@@ -1815,3 +1815,22 @@
   .music-track__add { margin-left:auto; }
   .mini-player__prev { display:none; }
 }
+
+/* 3D PDF book reader */
+.flip-reader { padding: clamp(.75rem, 2vw, 1.5rem); border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
+.flip-reader__toolbar { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:.6rem; }
+.flip-reader__toolbar .btn { min-height:42px; }
+.flip-reader__jump { display:flex; align-items:center; gap:.4rem; color:var(--muted); }
+.flip-reader__jump input { width:4.5rem; padding:.45rem; border:1px solid var(--line); border-radius:8px; color:var(--ink); background:var(--bg); text-align:center; font:inherit; }
+.flip-reader__status { text-align:center; color:var(--muted); margin:.85rem 0; min-height:1.5em; }
+.flip-reader__stage { display:flex; justify-content:center; overflow:hidden; background:var(--surface-2); border-radius:12px; padding:1rem .25rem; min-height:120px; }
+.flip-reader__stage[hidden] { display:none; }
+.flip-reader__stage:not(.is-ready) { min-height:120px; }
+.flip-reader__book { margin:auto; }
+.flip-page { overflow:hidden; background:#fff; box-shadow:inset 0 0 12px rgba(0,0,0,.15); }
+.flip-page img { display:block; width:100%; height:100%; object-fit:contain; user-select:none; pointer-events:none; }
+.flip-reader__help { margin:.75rem 0 .25rem; text-align:center; color:var(--muted); font-size:.9rem; }
+.flip-reader__fallback { display:block; margin:.65rem auto; color:var(--link); text-decoration:underline; }
+.flip-reader .reader { margin-top:1rem; }
+.flip-reader .reader[hidden] { display:none; }
+@media(max-width:560px) { .flip-reader__toolbar { gap:.4rem; } .flip-reader__toolbar .btn { font-size:.85rem; padding-inline:.65rem; } .flip-reader__jump { order:3; flex-basis:100%; justify-content:center; } .flip-reader__stage { padding:.5rem 0; } }
