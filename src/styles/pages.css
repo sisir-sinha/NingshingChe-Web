@@ -1825,3 +1825,16 @@
 @container (max-width: 34rem) {
   .pdf-viewer .pdflip-button-zoomIn, .pdf-viewer .pdflip-button-zoomOut { display: inline-flex; }
 }
+.pdf-action { border: 1px solid var(--line); background: var(--surface); }
+.pdf-spinner, .pdf-viewer .pdflip-loader::after, .pdf-viewer .pdflip-page.is-loading:not(.is-empty)::after, .pdf-viewer .pdflip-thumbnail.is-loading::after {
+  width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--accent);
+  border-radius: 50%; animation: pdf-spin .8s linear infinite;
+}
+.pdf-spinner { display: inline-block; vertical-align: middle; }
+.pdf-viewer .pdflip-loader { overflow: visible; }
+.pdf-viewer .pdflip-loader::after, .pdf-viewer .pdflip-page.is-loading:not(.is-empty)::after, .pdf-viewer .pdflip-thumbnail.is-loading::after {
+  content: ''; position: absolute; left: 50%; top: 50%; margin: -14px 0 0 -14px; z-index: 5; pointer-events: none;
+}
+.pdf-viewer .pdflip-loader::after { top: -20px; }
+@keyframes pdf-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .pdf-spinner, .pdf-viewer .pdflip-loader::after, .pdf-viewer .pdflip-page.is-loading::after { animation-duration: 2s; } }

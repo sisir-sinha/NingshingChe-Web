@@ -9,12 +9,13 @@ pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 export function mountPdfViewer(element: HTMLElement, url: string): () => void {
   const reader = new Flipbook(element, {
     source: url,
-    pdfjs: { lib: pdfjs, workerSrc, cMapUrl: `${import.meta.env.BASE_URL}pdfjs/cmaps/`, standardFontDataUrl: `${import.meta.env.BASE_URL}pdfjs/standard_fonts/`, wasmUrl: `${import.meta.env.BASE_URL}pdfjs/wasm/` },
+    rangeChunkSize: 262144,
+    pdfjs: { lib: { ...pdfjs, getDocument: (options: Parameters<typeof pdfjs.getDocument>[0]) => pdfjs.getDocument({ ...options as object, disableStream: true, disableAutoFetch: true }) }, workerSrc, cMapUrl: `${import.meta.env.BASE_URL}pdfjs/cmaps/`, standardFontDataUrl: `${import.meta.env.BASE_URL}pdfjs/standard_fonts/`, wasmUrl: `${import.meta.env.BASE_URL}pdfjs/wasm/` },
     flipStyle: 'cover',
     pageMode: 'auto',
     deepLink: false,
     lazy: false,
-    controls: ['first', 'prev', 'pageNumber', 'next', 'last', 'zoomOut', 'zoomIn', 'thumbnails', 'search', 'pageMode', 'download', 'fullscreen'],
+    controls: ['prev', 'pageNumber', 'next', 'zoomOut', 'zoomIn', 'download', 'fullscreen'],
     labels: {
       book: 'পিডিএফ বই', first: 'প্রথম পৃষ্ঠা', prev: 'আগের পৃষ্ঠা', next: 'পরের পৃষ্ঠা', last: 'শেষ পৃষ্ঠা',
       pageOf: 'এর মধ্যে', goToPage: 'পৃষ্ঠা নম্বর', zoomIn: 'বড় করুন', zoomOut: 'ছোট করুন',

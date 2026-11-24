@@ -34,16 +34,16 @@ export async function pdfPage(ctx: RouteContext): Promise<View> {
       book.title,
       `${T.published}: ${book.published}`,
       `<div class="pill-row">
-        <a class="btn btn--primary" href="${esc(book.file)}" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i> ${T.openNew}</a>
-        <a class="btn btn--ghost" href="${esc(book.file)}" download target="_blank" rel="noopener"><i class="fa-solid fa-download" aria-hidden="true"></i> ${T.download}</a>
+        <a class="icon-btn pdf-action" href="${esc(book.file)}" target="_blank" rel="noopener" aria-label="${T.openNew}" title="${T.openNew}"><i class="fa-solid fa-up-right-from-square" aria-hidden="true"></i></a>
+        <a class="icon-btn pdf-action" href="${esc(book.file)}" download target="_blank" rel="noopener" aria-label="${T.download}" title="${T.download}"><i class="fa-solid fa-download" aria-hidden="true"></i></a>
       </div>`,
     )}
     <section class="container section">
       <div class="pdf-viewer" data-pdf-viewer role="region" aria-label="${esc(book.title)} বইয়ের পাঠক">
-        <p data-pdf-status role="status">বই লোড হচ্ছে…</p>
+        <p data-pdf-status role="status"><span class="pdf-spinner" aria-hidden="true"></span><span class="sr-only">বই লোড হচ্ছে…</span></p>
         <div data-pdf-book></div>
       </div>
-      <button type="button" class="flip-reader__fallback" data-book-fallback>সাধারণ PDF রিডারে দেখুন</button>
+      <button type="button" class="icon-btn pdf-action flip-reader__fallback" data-book-fallback aria-expanded="false" aria-label="সাধারণ PDF রিডারে দেখুন" title="সাধারণ PDF রিডারে দেখুন"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i></button>
       <div class="reader" data-book-native hidden><iframe title="${esc(book.title)}" loading="lazy"></iframe></div>
       <p class="reader__hint"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> PDF খুলতে সমস্যা হলে উপরের “${T.openNew}” বোতামটি ব্যবহার করুন।</p>
     </section>
@@ -62,7 +62,9 @@ export async function pdfPage(ctx: RouteContext): Promise<View> {
           const iframe = native.querySelector<HTMLIFrameElement>('iframe')!;
           if (!iframe.getAttribute('src')) iframe.src = `${book.file}#view=FitH`;
         }
-        fallback.textContent = native.hidden ? 'সাধারণ PDF রিডারে দেখুন' : 'সাধারণ রিডার বন্ধ করুন';
+        const label = native.hidden ? 'সাধারণ PDF রিডারে দেখুন' : 'সাধারণ রিডার বন্ধ করুন';
+        fallback.setAttribute('aria-label', label); fallback.title = label;
+        fallback.setAttribute('aria-expanded', String(!native.hidden));
       });
       void import('./pdf-viewer').then(({ mountPdfViewer }) => {
         if (!cancelled) {
