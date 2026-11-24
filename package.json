@@ -7,14 +7,16 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit",
-    "build": "node scripts/sitemap.mjs && tsc --noEmit && vite build && node scripts/static-pages.mjs",
+    "build": "node scripts/sitemap.mjs && tsc --noEmit && node scripts/copy-pdfjs-assets.mjs && vite build && node scripts/static-pages.mjs",
     "preview": "node server.mjs",
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "predev": "node scripts/copy-pdfjs-assets.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
+    "@wapplersystems/pdflip": "^0.1.0",
     "js-md5": "^0.11.0",
-    "pdfjs-dist": "^4.10.38",
+    "pdfjs-dist": "^6.5.438",
     "swiper": "^14.4.0"
   },
   "devDependencies": {
