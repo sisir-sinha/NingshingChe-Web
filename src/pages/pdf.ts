@@ -20,7 +20,7 @@ export async function pdfListPage(): Promise<View> {
 export async function pdfPage(ctx: RouteContext): Promise<View> {
   const site = await getSite();
   // Old links used a running number (/read_pdf/1 = the newest book); keep them working.
-  const book = site.pdfs.find((b) => b.id === ctx.params[0]) ?? (/^\d+$/.test(ctx.params[0]) ? site.pdfs[Number(ctx.params[0]) - 1] : undefined);
+  const book = site.pdfs.find((b) => b.id === ctx.params[0]) ?? (/^\d+$/.test(ctx.params[0]) ? site.pdfs.filter((b) => b.id !== 'ningshingche-2026')[Number(ctx.params[0]) - 1] : undefined);
   if (!book) return notFoundPage();
   const others = site.pdfs.filter((b) => b.id !== book.id);
 

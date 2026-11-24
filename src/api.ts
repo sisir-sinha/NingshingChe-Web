@@ -3,6 +3,8 @@
  * in the dashboard shows on the site straight away (no rebuild needed).
  * Pages only use the functions below and the shapes in types.ts.
  */
+import issue2026Pdf from './books/Ningshingche-2026_Final.pdf?url';
+import issue2026Cover from './books/ningshingche-2026-cover.jpg?url';
 import { sanitizeHtml } from './sanitize';
 import { sb } from './supabase';
 import type { Author, Category, Comment, PdfBook, Post, PostDetail, Site } from './types';
@@ -176,7 +178,10 @@ export const getSite = () =>
       special: posts.filter((p) => flags.get(p.id)?.special).map((p) => p.path),
       literature: posts.filter((p) => LITERATURE.includes(p.category)).slice(0, 5).map((p) => p.path),
       videos: [...new Set(videos.map((v) => youtubeId(v.video_link)).filter(Boolean))],
-      pdfs: books.map<PdfBook>((b) => ({ id: b.id, title: b.title, published: dateBn(b.book_published_date ?? ''), cover: b.image ?? '', file: b.link ?? '' })),
+      pdfs: [
+        { id: 'ningshingche-2026', title: 'নিংশিং চে - ২০২৬ সংখ্যা', published: '২০২৬', cover: issue2026Cover, file: issue2026Pdf },
+        ...books.map<PdfBook>((b) => ({ id: b.id, title: b.title, published: dateBn(b.book_published_date ?? ''), cover: b.image ?? '', file: b.link ?? '' })),
+      ],
       ad: { href: settings[0]?.ad_link_url ?? '', image: settings[0]?.ad_image_url ?? '' },
       issues,
       issueCounts,

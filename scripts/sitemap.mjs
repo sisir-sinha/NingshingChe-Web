@@ -30,6 +30,7 @@ try {
     ...pages.map((p) => entry(p)),
     ...categories.map((c) => entry(`/category/${c}`)),
     ...authors.map((a) => entry(`/author/${a.title}`)),
+    entry('/read_pdf/ningshingche-2026'),
     ...books.map((b) => entry(`/read_pdf/${b.id}`)),
     ...threads.map((t) => entry(`/forum/${t.id}`, (t.updated_at || '').slice(0, 10))),
     ...blogs.map((b) => {
