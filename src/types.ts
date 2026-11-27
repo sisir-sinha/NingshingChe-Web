@@ -69,6 +69,9 @@ export interface Comment {
 export interface View {
   title: string;
   description?: string;
+  image?: string;
+  socialType?: 'website' | 'article';
+  publishedTime?: string;
   html: string;
   /** Runs after the HTML is in the DOM. May return a cleanup function. */
   mount?: (root: HTMLElement) => void | (() => void);

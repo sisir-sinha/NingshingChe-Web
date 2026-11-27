@@ -7,10 +7,11 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit",
-    "build": "node scripts/sitemap.mjs && tsc --noEmit && node scripts/copy-pdfjs-assets.mjs && vite build && node scripts/static-pages.mjs",
+    "build": "node scripts/sitemap.mjs && tsc --noEmit && node scripts/copy-pdfjs-assets.mjs && vite build && node scripts/static-pages.mjs && node scripts/social-meta.mjs",
     "preview": "node server.mjs",
     "start": "node server.mjs",
-    "predev": "node scripts/copy-pdfjs-assets.mjs"
+    "predev": "node scripts/copy-pdfjs-assets.mjs",
+    "test:metadata": "node scripts/check-social-meta.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
@@ -20,6 +21,7 @@
     "swiper": "^14.4.0"
   },
   "devDependencies": {
+    "he": "^1.2.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.8"
   }

@@ -6,6 +6,7 @@
  *  - the server must answer every unknown path with index.html
  */
 import type { RouteContext, View } from './types';
+import { updateMetadata } from './metadata';
 import { stripBase } from './utils';
 
 type Handler = (ctx: RouteContext) => Promise<View> | View;
@@ -93,8 +94,7 @@ async function render(restoreY: number | null): Promise<void> {
   const swap = () => {
     if (typeof cleanup === 'function') cleanup();
     outlet.innerHTML = view.html;
-    document.title = view.title;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', view.description ?? '');
+    updateMetadata(view, path);
     cleanup = view.mount?.(outlet);
 
     // Scroll inside the swap so the incoming page is captured at its final position.

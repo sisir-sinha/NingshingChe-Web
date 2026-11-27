@@ -42,6 +42,7 @@ async function listing(o: ListingOptions): Promise<View> {
   return {
     title: `${o.heading} | ${SITE.name}`,
     description: `${o.heading} — ${SITE.description}`,
+    image: o.posts[0]?.image,
     html: `
     ${pageHead(o.kicker, o.icon, o.heading, `${bn(o.posts.length)} ${T.articles}`, o.extra)}
     <div class="container layout section" data-scroll-anchor>

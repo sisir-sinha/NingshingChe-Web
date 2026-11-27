@@ -151,7 +151,10 @@ export async function articlePage(ctx: RouteContext): Promise<View> {
 
   return {
     title: `${post.title} | ${SITE.name}`,
-    description: post.excerpt,
+    description: post.excerpt || htmlToText(post.content).slice(0, 180),
+    image: post.image,
+    socialType: 'article',
+    publishedTime: post.iso,
     html,
     mount(root) {
       prefillFromAccount(root);

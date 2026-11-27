@@ -14,21 +14,24 @@ async function table(query) {
   return res.json();
 }
 
-const loc = (path) => origin + encodeURI(path).replace(/&/g, '&amp;');
-const entry = (path, lastmod) => `  <url><loc>${loc(path)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
+const loc = (path) => origin + path.normalize('NFC').split('/').map(encodeURIComponent).join('/');
+const entry = (path, lastmod) => `  <url><loc>${loc(path === '/' ? '/' : path.replace(/\/+$/, '') + '/')}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
 const pages = ['/', '/recent', '/featured', '/lekhok', '/pdf', '/forum', '/music', '/about-us', '/contact', '/social-activities', '/blog_submission', '/privacy-policy', '/delete-account'];
 
 try {
-  const [blogs, authors, books, threads] = await Promise.all([
-    table('blogs?select=slug,published_date,created_at,updated_at,category_title&status=eq.Publish&order=published_date.desc'),
+  const [blogs, authors, books, threads, allCategories] = await Promise.all([
+    table('blogs?select=slug,published_date,created_at,updated_at,category_title,tags&status=eq.Publish&order=published_date.desc'),
     table('authors?select=title'),
     table('pdf_books?select=id'),
     table('forum_discussions?select=id,updated_at&status=eq.Publish'),
+    table('categories?select=title'),
   ]);
-  const categories = [...new Set(blogs.map((b) => b.category_title).filter(Boolean))];
+  const categories = [...new Set([...allCategories.map((c) => c.title), ...blogs.map((b) => b.category_title)].filter(Boolean))].filter((v) => !v.includes('/'));
+  const tags = [...new Set(blogs.flatMap((b) => Array.isArray(b.tags) ? b.tags : []).filter(Boolean))].filter((v) => !v.includes('/'));
   const urls = [
     ...pages.map((p) => entry(p)),
     ...categories.map((c) => entry(`/category/${c}`)),
+    ...tags.map((t) => entry(`/tag/${t.replace(/ /g, '_')}`)),
     ...authors.map((a) => entry(`/author/${a.title}`)),
     entry('/read_pdf/ningshingche-2026'),
     ...books.map((b) => entry(`/read_pdf/${b.id}`)),

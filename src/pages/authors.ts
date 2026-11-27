@@ -57,6 +57,7 @@ export async function authorPage(ctx: RouteContext): Promise<View> {
   return {
     title: `${author.name} | ${SITE.name}`,
     description: bioText.slice(0, 160) || `${author.name} — ${author.role}`,
+    image: author.image,
     html: `
     <header class="profile">
       <div class="container profile__inner">

@@ -27,6 +27,7 @@ export async function pdfPage(ctx: RouteContext): Promise<View> {
   return {
     title: `${book.title} | ${SITE.name}`,
     description: `${book.title} — ${T.published}: ${book.published}`,
+    image: book.cover,
     html: `
     ${pageHead(
       'PDF',

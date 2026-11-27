@@ -168,6 +168,7 @@ export async function topicPage({ params }: RouteContext): Promise<View> {
   return {
     title: `${topic.title} | ${T.forum} | ${SITE.name}`,
     description: htmlToText(topic.body).slice(0, 160),
+    image: topic.cover,
     html: `<section class="container container--narrow forum forum--topic section">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="${B}/">${T.home}</a><i class="fa-solid fa-chevron-right" aria-hidden="true"></i><a href="${B}/forum">${T.forum}</a></nav>
       <a class="chip" href="${B}/forum?c=${encodeURIComponent(topic.categorySlug)}">${esc(topic.category)}</a>

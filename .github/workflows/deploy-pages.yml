@@ -5,7 +5,7 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
-  # Once a day: refresh the sitemap from the database (the pages themselves always read live data).
+  # Once a day: refresh the sitemap and crawler-facing metadata from the database.
   schedule:
     - cron: "15 21 * * *"
 
@@ -39,6 +39,8 @@ jobs:
         run: npm run build
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - name: Validate social metadata
+        run: npm run test:metadata
       - name: SPA fallback for deep links
         # GitHub Pages serves 404.html for unknown paths; the router takes over from there.
         run: cp dist/index.html dist/404.html

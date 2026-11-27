@@ -113,3 +113,9 @@ The site reads and writes everything through Supabase; there are no content file
 - Changes made in the dashboard appear on the site on the next page load. The sitemap is rebuilt from the database on every deploy and once a day by the scheduled workflow.
 - SQL that was applied for the website is kept in `supabase/`.
 - In Supabase → Authentication → URL Configuration, set **Site URL** to `https://ningshingche.com` and add `https://ningshingche.com/**` to **Redirect URLs**.
+
+### Social previews and crawler metadata
+
+The build creates crawler-readable HTML with Open Graph and Twitter Card tags for published articles, authors, categories, tags, forum discussions, PDF books and public static pages. Facebook, Messenger, WhatsApp and other services read Open Graph; X reads Twitter Card tags. The SPA also updates tags when navigating in the browser. The sitemap and these static previews are refreshed on each deployment and by the daily GitHub Pages workflow. New or changed Supabase content may need the next build before a social crawler sees its updated preview. Social platforms can also cache older previews. Login, registration, profile and search pages are marked `noindex`.
+
+Run `npm run test:metadata` after building to verify generated tags. A metadata-fetch failure stops the build instead of silently publishing incomplete previews.
