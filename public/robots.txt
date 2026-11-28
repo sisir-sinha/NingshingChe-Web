@@ -3,5 +3,6 @@ Allow: /
 Disallow: /login
 Disallow: /register
 Disallow: /profile
+Disallow: /dashboard/
 
 Sitemap: https://ningshingche.com/sitemap.xml

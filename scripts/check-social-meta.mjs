@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
+    if (path === join('dist', 'dashboard')) return []; // Private administration is intentionally noindex.
     return entry.isDirectory() ? walk(path) : entry.name === 'index.html' ? [path] : [];
   });
 }

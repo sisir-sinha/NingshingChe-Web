@@ -1,0 +1,953 @@
+key,value
+Choose your language · লাউখোল,Choose your language · লাউখোল
+Downloads/Ningshingche_PDFs/{1} ফোল্ডারে সংরক্ষিত হয়েছে!,Saved to the Downloads/Ningshingche_PDFs/{1} folder!
+Downloads/{1}/{2} ফোল্ডারে সংরক্ষিত হয়েছে!,Saved to the Downloads/{1}/{2} folder!
+Facebook আইডি / লিংক (ঐচ্ছিক),Facebook ID / link (optional)
+Google অ্যাকাউন্ট দিয়ে প্রবেশ করুন। একবার সাইন-ইন করলে অ্যাপ বন্ধ করলেও সেশন থাকবে।,"Sign in with your Google account. Once you sign in, the session stays even after the app is closed."
+Google ও Supabase-এ Web Client ID মিলছে না। Dashboard → Authentication → Google-এ Web Client ID দিন।,The Web Client ID does not match between Google and Supabase. Add the Web Client ID in Dashboard → Authentication → Google.
+Google কনসোলে এই অ্যাপের প্যাকেজ নাম (com.ningshingche.app) ও সাইনিং SHA-1 মিলছে না। Debug ও Release দুই SHA-1 Android OAuth ক্লায়েন্টে যোগ করুন।,The package name (com.ningshingche.app) and the signing SHA-1 of this app do not match in the Google Console. Add both the Debug and Release SHA-1 to the Android OAuth client.
+Google দিয়ে চালিয়ে যান,Continue with Google
+Google দিয়ে প্রবেশ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।,Could not sign in with Google. Please try again.
+Google সাইন-ইন খোলার জন্য অ্যাপ স্ক্রিন প্রয়োজন। আবার চেষ্টা করুন।,Google sign-in needs the app to be on screen. Try again.
+Google সাইন-ইন সময় শেষ হয়েছে। আবার চেষ্টা করুন।,The Google sign-in timed out. Try again.
+HTML লেখা,Write HTML
+ImgBB API Key পাওয়া যায়নি। সেটিংস বা এনভায়রনমেন্ট কনফিগারেশন চেক করুন।,ImgBB API key not found. Check the settings or the environment configuration.
+ImgBB আপলোড ব্যর্থ হয়েছে: {1},ImgBB upload failed: {1}
+ImgBB ত্রুটি: {1},ImgBB error: {1}
+PDF আর্কাইভ,PDF archive
+PDF প্রকাশনা শেয়ার করুন,Share the PDF publication
+PDF ফাইল নির্বাচন করুন,Choose a PDF file
+Supabase-এ Google সাইন-ইন চালু নেই। Authentication → Providers → Google চালু করুন।,Google sign-in is not enabled in Supabase. Enable it in Authentication → Providers → Google.
+chепе ধরে প্রতিক্রিয়া দিন,Press and hold to react
+ningshingche.com ওয়েবসাইটে যান,Go to the ningshingche.com website
+{1} ({2}) — বিষ্ণুপ্রিয়া মণিপুরি ডিজিটাল তথ্যকোষ 'নিংশিং চে' থেকে সংগৃহীত। https://ningshingche.com,{1} ({2}) — from the Bishnupriya Manipuri digital encyclopedia 'Ningshing Che'. https://ningshingche.com
+{1} {2} {3}  নিংশিং চে,{1} {2} {3}  Ningshing Che
+{1} অক্ষর,{1} characters
+{1} কে উত্তর,Answer to {1}
+{1} টি প্রবন্ধ,{1} articles
+{1} পয়েন্ট,{1} points
+{1} বার পঠিত,Read {1} times
+{1} বার শোনা,Played {1} times
+{1} বার শোনা হয়েছে,Played {1} times
+{1} বিষয়ে নিংশিং চে-তে প্রকাশিত প্রবন্ধসমূহ।,Articles published in Ningshing Che on {1}.
+{1} বিষয়ে প্রকাশিত প্রবন্ধসমূহ,Articles published on {1}
+{1} মাস,{1} months
+{1} মাসে {2} পয়েন্ট,{2} points in {1} months
+{1} মিনিট,{1} minutes
+{1} — নিংশিং চে PDF আর্কাইভ,{1} — Ningshing Che PDF archive
+{1}-এর তালিকা,List of {1}
+{1}টি,{1}
+{1}টি গান,{1} songs
+{1}টি নতুন PDF বই,{1} new PDF books
+{1}টি নতুন ছবি,{1} new photos
+{1}টি নতুন প্রবন্ধ,{1} new articles
+{1}টি নতুন বার্তা,{1} new messages
+{1}টি নতুন ভিডিও,{1} new videos
+{1}টি নির্বাচিত প্রবন্ধ,{1} featured articles
+{1}টি প্রবন্ধ,{1} articles
+{1}টি মন্তব্য,{1} comments
+{1}টি মিল,{1} matches
+{1}টি লেখা সংরক্ষিত,{1} texts saved
+© ২০২৬ {1} | সাইট উন্নয়ন,© 2026 {1} | site development
+«{1}» — এই শব্দে কোনো আলোচনা নেই।,«{1}» — no discussion with this word.
+· {1}টি গান,· {1} songs
+অক্টো,Oct
+অক্টোবর,October
+অক্ষরের আকার,Font size
+অজানা ত্রুটি,Unknown error
+অটোপ্লে,Autoplay
+অডিও আপলোড যায়নি ({1})।,Audio upload failed ({1}).
+অডিও আপলোড যায়নি।,Audio upload failed.
+অডিও আপলোডের অনুমতি নেই। আবার সাইন ইন করে চেষ্টা করুন।,You do not have permission to upload audio. Sign in again and try.
+অডিও ফাইল খালি।,The audio file is empty.
+অডিও ফাইল পড়া যায়নি।,Could not read the audio file.
+অডিওতে ফিরুন,Back to the audio
+অতিথি ভিউ,Guest views
+অথবা,or
+অনুবাদ হালনাগাদ করুন,Update the translations
+অনুমোদনের পর আপনার মন্তব্য এখানে প্রকাশিত হবে।,Your comment appears here after approval.
+অনুমোদিত,Approved
+অনুমোদিত ({1}),Approved ({1})
+অনুসন্ধান,Search
+অনুসন্ধানের ফল,Search results
+অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।,Too many attempts. Try again in a little while.
+অন্তত {1} অক্ষর,At least {1} characters
+"অন্তত দুই অক্ষর লিখুন। শিরোনাম, উপশিরোনাম, লেখক, ট্যাগ ও লেখার ভেতরে খোঁজা হয়।","Type at least two letters. Titles, subtitles, authors, tags and the writing itself are searched."
+অন্বেষণ,Explore
+অন্বেষণ ও সংগ্রহ,Explore and collect
+অন্য অ্যাপে খুলুন,Open in another app
+অন্য ধরন লিখুন,Type another way
+অন্য শব্দ দিয়ে খুঁজুন বা বিভাগ ফিল্টার বদলান।,Search with another word or change the category filter.
+অন্য শব্দে চেষ্টা করুন,Try another word
+অন্যান্য,Others
+অন্যের পরিচয়ে প্রতারণা,Impersonation
+অপছন্দ,Dislike
+অপছন্দ {1} ·,Dislike {1} ·
+অপেক্ষমাণ,Pending
+অফলাইন,Offline
+অফলাইন ক্যাশ সিঙ্ক ও পরিষ্কার করুন,Sync and clear the offline cache
+অফলাইন ক্যাশে {1}টি প্রবন্ধ,{1} articles in the offline cache
+অফলাইনে পড়ার জন্য সংরক্ষিত লেখা,Texts saved to read offline
+অফলাইনে সংরক্ষিত,Saved offline
+অবদান পয়েন্ট,Contribution points
+অবদানকারীর তালিকা ও আপনার নিজের পয়েন্ট দেখতে সাইন ইন করুন।,Sign in to see the contributor list and your own points.
+অশ্লীল বা যৌন স্পষ্ট,Sexual or explicit content
+"অস্থায়ী ইমেইল ঠিকানা দিয়ে অ্যাকাউন্ট খোলা যায় না। Gmail, Yahoo, Outlook বা নিজের ডোমেইনের ঠিকানা দিন।","A temporary email address cannot be used for an account. Use Gmail, Yahoo, Outlook, or a domain of your own."
+"অস্থায়ী ইমেইল দিয়ে অ্যাকাউন্ট খোলা যায় না। Gmail, Yahoo বা নিজের ডোমেইন ব্যবহার করুন।","A temporary email cannot be used for an account. Use Gmail, Yahoo, or a domain of your own."
+অ্যাকসেন্ট,Accent
+অ্যাকাউন্ট,Account
+অ্যাকাউন্ট খুলুন,Create an account
+"অ্যাকাউন্ট তৈরি হয়েছে, কিন্তু প্রোফাইলের তথ্য সার্ভারে সংরক্ষিত হয়নি। পরে প্রোফাইল সম্পাদনা করে আবার সংরক্ষণ করুন।","Your account was created, but the profile details were not saved to the server. Please edit your profile and save again later."
+অ্যাকাউন্ট মুছুন,Delete account
+অ্যাকাউন্ট মুছে ফেলুন?,Delete your account?
+অ্যাডমিন,Admin
+অ্যাডমিন নতুন বার্তা পাঠালে,When an admin sends a new message
+অ্যাডমিন বার্তা,Admin message
+অ্যাডমিনকে প্রশ্ন বা অনুরোধ পাঠান। উত্তর এখানে দেখাবে।,Send the admin a question or a request. The answer appears here.
+অ্যাডমিনের বার্তা,The admin's message
+অ্যানোটেশন দেখান,Show annotations
+অ্যান্ড্রয়েড সিস্টেম নোটিফিকেশন চালু রাখুন,Keep Android system notifications on
+অ্যাপ আপডেট হয়েছে,App updated
+অ্যাপ ও সাইট হালনাগাদ,App and site updates
+অ্যাপ ছাড়া অনুরোধ করুন (ওয়েব পেজ),Request deletion without the app (web page)
+অ্যাপ থিম নির্বাচন,Choose the app theme
+অ্যাপ শেয়ার করুন,Share the app
+অ্যাপ সংস্করণ ও সাইট হালনাগাদ,App version and site updates
+অ্যাপে MP3 সংরক্ষণ,Save MP3 in the app
+অ্যাপের ভাষা — বদলাতে টিপুন,App language — tap to change
+অ্যালবাম,Album
+আগস্ট,August
+আগেই অ্যাকাউন্ট আছে? সাইন ইন করুন,Already have an account? Sign in
+আগের কাজ,Earlier work
+আগের গান,Earlier songs
+আগের ছবি,Earlier photos
+আগের পৃষ্ঠা,Previous page
+আগের বার্তা লোড করুন,Load earlier messages
+আজ,Today
+আধুনিক,Modern
+আধ্যাত্মিক,Spiritual
+"আপনার অধিকারে নেই এমন গান, ছবি বা লেখা প্রকাশ করা যাবে না।","Do not publish songs, pictures or writing that you do not have the rights to."
+আপনার অ্যাকাউন্ট ও সংশ্লিষ্ট তথ্য মুছে ফেলা হয়েছে।,Your account and its associated data have been deleted.
+"আপনার অ্যাকাউন্ট, প্রোফাইল, পয়েন্ট, সংরক্ষিত তালিকা, মন্তব্য ও ফোরামের উত্তর স্থায়ীভাবে মুছে যাবে। এটি ফেরানো যাবে না।","Your account, profile, points, saved lists, comments and forum answers will be permanently deleted. This cannot be undone."
+আপনার উত্তর,Your answer
+আপনার কোনো মন্তব্য পাওয়া যায়নি।,No comment of yours was found.
+আপনার গানে শ্রোতাদের মোট শোনার সময় (মিনিট),Total time listeners spent on your songs (minutes)
+আপনার পছন্দের প্রদর্শন শৈলী নির্বাচন করুন:,Choose how you would like it shown:
+আপনার পয়েন্ট,Your points
+আপনার মন্তব্য সফলভাবে প্রকাশিত হয়েছে!,Your comment was published!
+আপনার মূল্যবান মন্তব্য *,Your valuable comment *
+আপনার রিপোর্টটি জমা হয়েছে। আমাদের মডারেশন টিম বিষয়টি পর্যালোচনা করবে।,Your report has been submitted. Our moderation team will review it.
+আপনার সংরক্ষিত প্লেলিস্ট,Your saved playlist
+আপনার সেশনের মেয়াদ শেষ হয়েছে। আবার সাইন ইন করলে তালিকা ও পয়েন্ট দেখা যাবে।,Your session has ended. Sign in again to see the list and the points.
+আপনি,You
+আপলোড করা PDF যাচাই করা যায়নি।,The uploaded PDF could not be verified.
+আপলোড সার্ভার এখন সাড়া দিচ্ছে না ({1})।,The upload server is not responding right now ({1}).
+আপলোড সার্ভার ঠিকানা দেয়নি।,The upload server did not give an address.
+আপলোডার: {1},Uploader: {1}
+আবার,Again
+আবার চেষ্টা করুন,Try again
+আবার লিখুন,Type it again
+আমাদের অনুসরণ করুন,Follow us
+আমাদের সম্পর্কে,About us
+আমার ড্যাশবোর্ড,My dashboard
+আমার সম্পর্কে,About me
+আমি ব্যবহারের শর্তাবলি এবং কমিউনিটি নির্দেশিকা পড়েছি এবং সম্মত হচ্ছি।,I have read and agree to the Terms of Use and Community Guidelines.
+আরও,More
+আরও {1} টি উত্তর — সব উত্তর দেখুন চাপুন,{1} more answers — tap to see all the answers
+আরও দেখুন,See more
+আরও দেখুন ({1}),See more ({1})
+আরও লোড করুন,Load more
+আরতী,Arati
+আলোচনা,Discussion
+আলোচনা {1},Discussion {1}
+আলোচনা {1} · উত্তর {2},Discussion {1} · {2} answers
+আলোচনা আনা যায়নি।,Could not load the discussion.
+আলোচনা খুঁজুন,Search discussions
+আলোচনা খুলুন,Open the discussion
+আলোচনা খোলা যায়নি।,Could not open the discussion.
+আলোচনা পাওয়া যায়নি।,No discussion found.
+আলোচনা ভিউ,Discussion views
+আলোচনা লোড হয়নি।,The discussion did not load.
+আলোচনার কথা *,Discussion text *
+আলোচনার কথা লিখুন।,Write the discussion text.
+আলোচনার কথা লিখুন…,Write the discussion text…
+আলোচনার কথা ৮০০০ অক্ষরের বেশি হতে পারবে না।,The discussion text cannot be longer than 8000 characters.
+আলোচনাসমূহ,Discussions
+"আসল কালো, রাতের পড়ার জন্য","True black, for reading at night"
+ইংরেজি,English
+ইতিহাস,History
+ইন্টারনেট সংযোগ নেই।,There is no internet connection.
+ইন্টারনেট সংযোগ নেই। সংরক্ষিত আর্কাইভ দেখানো হচ্ছে।,There is no internet connection. Showing the saved archive.
+ইন্টারনেট সংযোগ পাওয়া যাচ্ছে না। আবার চেষ্টা করুন।,No internet connection. Try again.
+ইন্টারনেট সংযোগ যাচাই করে আবার চেষ্টা করুন। আপনার মন্তব্য মুছে ফেলা হয়নি।,Check the internet connection and try again. Your comment has not been deleted.
+ইন্টারফেসের ভাষা। অনুবাদ না থাকা লেখা বাংলাতেই থাকবে ({1}টি অনুবাদ লোড হয়েছে)।,Interface language. Anything without a translation stays in Bengali ({1} translations loaded).
+ইন্টারফেসের ভাষা। বাংলা মূল ভাষা; অন্য ভাষা বাছলে অনুবাদ ডাউনলোড হবে।,Interface language. Bengali is the source language; picking another language downloads its translation.
+ইমার,Imar
+ইমার ঠারর এলা,Songs of the mother tongue
+ইমার-ঠারর-এলা,Imar-tharar-ela
+ইমেইল,Email
+ইমেইল (পরিবর্তন করা যায় না),Email (cannot be changed)
+ইমেইল বা Google অ্যাকাউন্ট দিয়ে প্রবেশ করুন,Sign in with email or your Google account
+ইমেইল বা পাসওয়ার্ড মিলছে না। আবার চেষ্টা করুন।,The email or password does not match. Try again.
+ইমেইলটি এখনো নিশ্চিত হয়নি। মেইলের লিংকটি খুলে আবার চেষ্টা করুন।,That email is not confirmed yet. Open the link in the message and try again.
+উচ্চতা,Height
+উত্তর,Answer
+উত্তর দিতে সাইন ইন করুন,Sign in to answer
+উত্তর দিন,Answer
+উত্তর পাঠানো যায়নি।,Could not send the answer.
+উত্তর মুছে ফেলা যায়নি।,Could not delete the answer.
+উত্তর যোগ করুন,Add an answer
+উত্তর লিখুন।,Write an answer.
+উত্তর লিখুন…,Write an answer…
+উত্তর সম্পাদনা,Edit the answer
+উত্তর ৪০০০ অক্ষরের বেশি হতে পারবে না।,An answer cannot be longer than 4000 characters.
+উত্তরগুলো লুকান,Hide the answers
+উত্তরসমূহ,Answers
+উত্তরসমূহ (৩),Answers (3)
+উপর-নিচ স্ক্রল করে পুরো বই পড়ুন।,Scroll up and down to read the whole book.
+উপরে যান,Go to top
+উৎসব,Festival
+এই {1}-এ কোনো গান নেই।,There are no songs in this {1}.
+এই অডিও ফর্ম্যাট সাপোর্টেড নয়। এমপি৩ নির্বাচন করুন।,This audio format is not supported. Choose MP3.
+এই আলোচনাটি রিপোর্ট করুন,Report this discussion
+এই ইমেইলে আগেই অ্যাকাউন্ট আছে। সাইন ইন করুন।,An account already exists for this email. Sign in.
+এই উত্তরটি রিপোর্ট করুন,Report this answer
+এই কী-টি ইমেজবিবি ব্লক করেছে (অ্যাকাউন্ট নিষিদ্ধ)। api.imgbb.com থেকে নতুন কী নিয়ে .env-এ দিন।,This key has been blocked by ImgBB (the account is banned). Get a new key at api.imgbb.com and put it in .env.
+এই গানের অডিও ফাইল নেই।,This song has no audio file.
+এই গানের লিরিক এখনো যোগ করা হয়নি।,The lyrics of this song have not been added yet.
+এই ডিভাইসে কোনো Google অ্যাকাউন্ট পাওয়া যায়নি। একটি Google অ্যাকাউন্ট যোগ করে আবার চেষ্টা করুন।,No Google account was found on this device. Add a Google account and try again.
+এই ডিভাইসে সংরক্ষিত MP3,MP3 saved on this device
+এই পাতা নিবন্ধিত পাঠকের জন্য,This page is for registered readers
+এই পৃষ্ঠা ছাড়বেন?,Leave this page?
+এই প্রবন্ধে কোনো বিষয়বস্তু পাওয়া যায়নি।,No content was found in this article.
+এই বইয়ের পিডিএফ লিংক নেই।,This book has no PDF link.
+এই বিভাগ পাওয়া যায়নি।,This category was not found.
+এই বিভাগে এখনো কোনো আলোচনা হয়নি।,There is no discussion in this category yet.
+এই বিভাগের আলোচনাগুলো,The discussions in this category
+এই ব্যবহারকারী এখনো কোনো আলোচনা শুরু করেননি।,This user has not started a discussion yet.
+এই ব্যবহারকারী এখনো কোনো উত্তর লেখেননি।,This user has not written an answer yet.
+এই ব্যবহারকারীর এখনো কোনো গান প্রকাশিত হয়নি।,This user has not published a song yet.
+এই ব্যবহারকারীর এখনো কোনো প্রকাশিত প্রবন্ধ নেই।,This user has no published article yet.
+এই ব্যবহারকারীর পাতা পাওয়া যায়নি।,This user's page was not found.
+এই মাসে এখনো কেউ পয়েন্ট নেয়নি।,Nobody has scored a point this month yet.
+এই মাসের পয়েন্ট,This month's points
+এই লেখককে ব্লক করুন,Block this author
+এক পাতায় একটি পৃষ্ঠা। বাঁদিকে/ডানদিকে সোয়াইপ করলে পাতা উল্টে।,One page at a time. Swipe left or right to turn the page.
+একটি আলোচনায় সর্বোচ্চ {1}টি ফাইল যুক্ত করা যাবে।,At most {1} files can be added to one discussion.
+একটি উত্তরে সর্বোচ্চ {1}টি ফাইল যুক্ত করা যাবে।,At most {1} files can be added to one answer.
+একমত,Agree
+একমত {1} ·,Agree {1} ·
+এখন নয়,Not now
+এখন বাজছে,Playing now
+এখনো কেউ উত্তর দেয়নি। আপনিই প্রথম উত্তর দিন।,Nobody has answered yet. Be the first to answer.
+এখনো কোনো আলোচনা হয়নি। প্রথম আলোচনাটি আপনিই শুরু করুন।,No discussion yet. Start the first one yourself.
+এখনো কোনো আলোচনায় উত্তর আসেনি।,No answer has come in any discussion yet.
+এখনো কোনো গান জমা দেননি।,No song has been submitted yet.
+এখনো কোনো গান পছন্দ করা হয়নি।,No song has been liked yet.
+এখনো কোনো গান যোগ করা হয়নি।,No song has been added yet.
+এখনো কোনো নির্বাচিত লেখা নেই।,There is no featured writing yet.
+এখনো কোনো প্রবন্ধ জমা দেওয়া হয়নি।,No article has been submitted yet.
+এখনো কোনো প্রবন্ধ জমা দেননি।,You have not submitted an article yet.
+এখনো কোনো প্রবন্ধ প্রকাশিত হয়নি।,No article has been published yet.
+এখনো কোনো প্রবন্ধ বা গান জমা দেননি।,You have not submitted an article or a song yet.
+এখনো কোনো বই নেই।,There are no books yet.
+এখনো কোনো বার্ষিক সংখ্যা প্রকাশিত হয়নি।,No annual issue has been published yet.
+এখনো কোনো বিজ্ঞপ্তি নেই। প্রবন্ধ বা মন্তব্য প্রকাশিত হলে এখানে দেখাবে।,No notification yet. Article and comment news appears here.
+এখনো কোনো ভিডিও প্রকাশিত হয়নি।,No video has been published yet.
+এখনো কোনো মন্তব্য নেই,No comment yet
+এখনো প্রশাসকের কোনো আলোচনা নেই।,The admin has no discussion yet.
+এখনো ফোরামে কিছু লেখা হয়নি।,Nothing has been written in the forum yet.
+এখানে কোনো প্রবন্ধ পাওয়া যায়নি।,No article was found here.
+এগুলোও পড়ুন,Read these too
+এপ্রিল,April
+এভাবে প্রকাশিত হবে,It will appear like this
+এমপি৩ ফাইল নির্বাচন করুন।,Choose an MP3 file.
+এলাহান বরিক,এলাহান বরিক
+ঐতিহ্যবাহী,Traditional
+ওয়েবসাইট (ঐচ্ছিক),Website (optional)
+কনটেন্ট জমা দেওয়ার আগে অনুগ্রহ করে আমাদের ব্যবহারের শর্তাবলি এবং কমিউনিটি নির্দেশিকা পড়ুন।,"Before submitting content, please read our Terms of Use and Community Guidelines."
+কন্টেন্ট,Content
+কপিরাইট © নিংশিং চে • সর্বস্বত্ব সংরক্ষিত,Copyright © Ningshing Che • all rights reserved
+কপিরাইট লঙ্ঘন,Copyright infringement
+কবিতা,Poetry
+কভার ছবি,Cover photo
+কভার ছবি (ঐচ্ছিক),Cover photo (optional)
+কভার ছবি নির্বাচন (ঐচ্ছিক),Choose a cover photo (optional)
+কভার ছবি বদলান,Change the cover photo
+কভার ছবি সরান,Remove the cover photo
+কম দেখান,Show less
+কমা বা ট্যাব চাপলে চিপ হবে,Press comma or Tab to make a chip
+কাউকে ব্লক করা নেই।,No blocked users.
+কার্যক্রম,Activity
+কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।,Something went wrong. Try again.
+কিছু তথ্য লোড হয়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।,Some information could not be loaded. Check your connection and try again.
+কী সমস্যা?,What is wrong?
+কুমেই,Kumei
+কেহেম আইটি,Kehem IT
+কোড পাঠান,Send the code
+কোড যাচাই করুন,Verify the code
+কোডটি মিলছে না। মেইলে আসা ৬ সংখ্যার কোডটি দিন।,That code does not match. Enter the 6-digit code from the message.
+কোন মন্তব্য,No comment
+কোনো অ্যালবাম নেই।,No album yet.
+কোনো অ্যালবাম মেলেনি।,No album matched.
+কোনো গান অ্যাপে সংরক্ষণ করা হয়নি।,No song has been saved in the app.
+কোনো গান মেলেনি।,No song matched.
+কোনো তথ্য পাওয়া যায়নি।,No information was found.
+কোনো ধরন নেই।,No genre yet.
+কোনো ধরন মেলেনি।,No genre matched.
+কোনো ফলাফল নেই,No results
+কোনো ফিচার্ড প্রবন্ধ পাওয়া যায়নি।,No featured article was found.
+কোনো বই পাওয়া যায়নি।,No books found.
+কোনো বিভাগ পাওয়া যায়নি।,No category was found.
+কোনো মিল পাওয়া যায়নি,No match found
+কোনো লেখক পাওয়া যায়নি।,No author was found.
+কোনো শিল্পী নেই।,No artist yet.
+কোনো শিল্পী মেলেনি।,No artist matched.
+কোনো সংরক্ষিত প্রবন্ধ নেই,No saved article
+ক্যাটাগরি,Categories
+ক্যাটাগরির প্রবন্ধহানি,The category's articles
+ক্যাশ খালি করা হয়েছে এবং তথ্য হালনাগাদ করা হয়েছে,The cache was cleared and the data updated
+খোঁজার ফলাফল,Search results
+"গরম কাগজ আর মাটির রঙ, দীর্ঘ পড়ার জন্য","Warm paper and clay tones, for long reading"
+গান,Songs
+গান {1},Song {1}
+গান {1}টি,{1} songs
+গান · {1},Songs · {1}
+গান আপলোড যায়নি ({1})।,The song could not be uploaded ({1}).
+গান জমা যায়নি ({1})। প্রোফাইল সম্পূর্ণ করে আবার চেষ্টা করুন।,The song could not be submitted ({1}). Complete your profile and try again.
+গান জমা যায়নি।,The song could not be submitted.
+গান জমা যায়নি। আবার সাইন ইন করে চেষ্টা করুন।,The song could not be submitted. Sign in again and try.
+গান জমা হয়েছে,Song submitted
+গান জমা হয়েছে। সম্পাদকীয় পর্যালোচনার পর যুক্ত হবে।,The song is submitted. It is added after editorial review.
+গান বাজানো যায়নি। ফাইল লিংক যাচাই করুন।,The song could not be played. Check the file link.
+গান ভিউ,Song views
+গান যোগ,Add a song
+"গান, শিল্পী, অ্যালবাম, ধরন…","Song, artist, album, genre…"
+গানের ফাইল পাওয়া যায়নি।,The song file was not found.
+গানের ফাইল লিংক নেই।,The song has no file link.
+গানের বিবরণ,Song details
+গানের লিংক মেয়াদ শেষ বা বন্ধ। ড্যাশবোর্ড থেকে MP3 আবার আপলোড করুন।,The song link has expired or is closed. Upload the MP3 again from the dashboard.
+গোপনীয়তা নীতি,Privacy policy
+গোলাপ,Rose
+গোলাপি আর নীল — উষ্ণ অথচ শান্ত,Pink and blue — warm yet calm
+গ্যালারি ও অন্যান্য আপডেট,Gallery and other updates
+গ্যালারি ও বাকি আপডেট,Gallery and the rest of the updates
+গ্রন্থাগার,Library
+ঘর,Home
+ঘৃণা বা বিদ্বেষ,Hate or discrimination
+"ঘৃণা, বর্ণবাদ, ধর্মীয় বিদ্বেষ বা কোনো গোষ্ঠীকে অপমান করা যাবে না।","No hatred, racism, religious hostility, or insults aimed at any community."
+চলচ্চিত্র,Films
+চাকা ঘুরিয়ে নিজের অ্যাকসেন্ট বেছে নিন,Turn the wheel to pick your own accent
+"চাকা ঘুরিয়ে রঙ, কেন্দ্র থেকে দূরে টেনে গাঢ়তা — দুটোই এক আঙুলে।","Turn the wheel for the colour, pull away from the centre for depth — both with one finger."
+চালান,Play
+চালিয়ে যান,Continue
+চালু করে শেষ করুন,Turn it on and finish
+চোখে-আরাম,Eye comfort
+ছবি,Photos
+ছবি ImgBB-তে আপলোড হবে; না দিলেও আলোচনা খোলা যাবে।,The photo uploads to ImgBB; you can still open the discussion without one.
+ছবি আপডেট,Update the photo
+ছবি আপলোড যায়নি।,The photo could not be uploaded.
+ছবি আপলোড হচ্ছে…,Uploading the photo…
+ছবি আপলোড হয়নি।,The photo was not uploaded.
+ছবি ঘর,Photo gallery
+ছবি বদলাতে চাপুন,Tap to change the photo
+ছবি বদলান,Change the photo
+ছবি বা পিডিএফ,Photo or PDF
+ছবি যোগ,Add a photo
+ছবি যোগ করুন,Add a photo
+ছবি লোড করা যায়নি,The photo could not be loaded
+ছবি শেয়ার করুন,Share the photo
+ছবি সংরক্ষণ যায়নি।,The photo could not be saved.
+ছবির আকার ৩২ মেগাবাইটের বেশি হতে পারবে না (Image exceeds 32MB),The photo cannot be larger than 32 MB (image exceeds 32MB)
+ছবির আকার ৩২ মেগাবাইটের বেশি হতে পারবে না।,The image must be no larger than 32 MB.
+ছবির আকার ৩২ মেগাবাইটের বেশি হতে পারে না।,The photo cannot be larger than 32 MB.
+ছবির ঠিকানা পাওয়া যায়নি।,No address for the photo was found.
+ছবির ফাইল পড়া যাচ্ছে না (Cannot read image file),The photo file cannot be read (cannot read image file)
+ছেড়ে দিলে ছোট হয়ে যাবে,Release to make it smaller
+ছোট করুন,Smaller
+জনপ্রিয়,Popular
+জনপ্রিয় ও নির্বাচিত,Popular and featured
+জমা দিন,Submit
+জমা দেওয়ার আগে বর্তমান ব্যবহারের শর্তাবলিতে সম্মতি দিন।,Please accept the current Terms of Use before submitting.
+জানু,Jan
+জানুয়ারি,January
+জীবনী,Biography
+জুন,June
+জুম করতে দুই আঙুল ব্যবহার করুন,Use two fingers to zoom
+জুম রিসেট করতে ট্যাপ করুন,Tap to reset the zoom
+জুলাই,July
+জেলা / দেশ (ঐচ্ছিক),District / country (optional)
+ট্যাগসমূহ,Tags
+"ঠান্ডা কাগজ, ইন্ডিগো আর সোনালি","Cool paper, indigo and gold"
+ঠার,Language
+ঠিক আছে,OK
+ঠিকানা,Address
+ঠিকানা (ঐচ্ছিক),Address (optional)
+ঠিকানা আপনার প্রকাশ্য প্রোফাইলে দেখা যেতে পারে।,Your address may appear on your public profile.
+ঠিকানা দিন।,Enter the address.
+"ঠিকানা: তিলকপুর, কমলগঞ্জ, মৌলভীবাজার, সিলেট","Address: Tilakpur, Kamalganj, Moulvibazar, Sylhet"
+ডাউনলোড,Download
+ডাউনলোড ফোল্ডারে সংরক্ষিত হয়েছে: {1},Saved in the Downloads folder: {1}
+ডাউনলোড ব্যর্থ হয়েছে: {1},Download failed: {1}
+ডাউনলোড হচ্ছে...,Downloading...
+ডাউনলোড হয়নি,Not downloaded
+ডাউনলোড হয়নি।,It was not downloaded.
+ডার্ক,Dark
+ডার্ক থিম,Dark theme
+ডিজিটাল গ্রন্থাগার,Digital library
+ডিজিটাল বই ও পত্রিকা প্রকাশিত হলে,When a digital book or magazine is published
+ডিসে,Dec
+ডিসেম্বর,December
+ডেটাবেজ আপডেট প্রয়োজন।,A database update is needed.
+ডেটাবেজ টেবিল পাওয়া যায়নি। অনুগ্রহ করে সার্ভার কনফিগারেশন যাচাই করুন।,The database table was not found. Please check the server configuration.
+ড্যাশবোর্ড,Dashboard
+ড্যাশবোর্ড ও নতুন প্রবন্ধ ব্যবহার করতে প্রোফাইলের সব আবশ্যক ঘর পূরণ করুন।,Fill in every required profile field to use the dashboard and new articles.
+তথ্য লোড করতে সমস্যা হয়েছে।,There was a problem loading the data.
+তথ্য লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।,There was a problem loading the data. Please try again.
+তথ্যের দৈর্ঘ্য অনুমোদিত সীমার বেশি।,The information exceeds the permitted length.
+তামকরিক,Tamkarik
+তারিখ YYYY-MM-DD আকারে লিখুন।,Enter the date as YYYY-MM-DD.
+তালিকা,List
+তালিকা আনা যায়নি।,Could not load the list.
+তালিকা পড়তে ডেটাবেস আপডেট দরকার — 033_profile_paging.sql চালান।,A database update is needed to read the list — run 033_profile_paging.sql.
+তালিকা লোড হয়নি। আবার চেষ্টা করুন।,Could not load the list. Try again.
+তালিকাটি লোড হয়নি।,The list did not load.
+"তিলকপুর, কমলগঞ্জ, মৌলভীবাজার, সিলেট","Tilakpur, Kamalganj, Moulvibazar, Sylhet"
+তৈরি,Create
+তৈরি করুন,Create
+থামান,Stop
+থিম: ডার্ক,Theme: Dark
+থিম: লাইট,Theme: Light
+থিম: সিস্টেম (স্বয়ংক্রিয়),Theme: System (automatic)
+দুটি পাসওয়ার্ড মিলছে না।,The two passwords do not match.
+দুবার ট্যাপে জুম,Double-tap to zoom
+দৃশ্য,View
+দেখা হয়েছে,Seen
+দেশাত্মবোধক,Patriotic
+দ্রুত লিংকসমূহ,Quick links
+ধরন,Genre
+ধরন / ক্যাটাগরি,Genre / category
+ধর্ম,Religion
+ধ্রুমেল,Dhrumel
+ন,N
+নতুন PDF বই,New PDF books
+নতুন PDF বই প্রকাশিত হলে,When a new PDF book is published
+নতুন অ্যাকাউন্ট খুলুন,Create a new account
+নতুন আলোচনা,New discussion
+নতুন উত্তর,New answer
+নতুন ও নির্বাচিত প্রবন্ধ প্রকাশিত হলে,When a new or featured article is published
+নতুন কিছু প্রকাশিত হলে অ্যান্ড্রয়েড নোটিফিকেশনে জানানো হবে।,When something new is published you are told through an Android notification.
+নতুন গান,New song
+নতুন গান জমা দিতে আগে প্রোফাইল সম্পূর্ণ করুন।,Complete your profile first to submit a new song.
+নতুন ছবি,New photos
+নতুন ছবি আপলোড হয়নি; আগের ছবিটি রাখা হয়েছে।,The new photo was not uploaded; the previous photo has been kept.
+নতুন পাসওয়ার্ড,New password
+নতুন পাসওয়ার্ড দিন,Enter a new password
+নতুন প্রকাশিত প্রবন্ধ এলে জানান,Tell me when a new article is published
+নতুন প্রবন্ধ,New article
+নতুন প্রবন্ধ জমা দিতে আগে প্রোফাইল সম্পূর্ণ করুন।,Complete your profile first to submit a new article.
+নতুন প্রবন্ধসমূহ পুনরায় সিঙ্ক করবে,New articles will sync again
+নতুন প্লেলিস্ট,New playlist
+নতুন বই,New book
+নতুন ভিডিও,New videos
+নতুন ভিডিও যোগ হলে,When a new video is added
+নতুন? অ্যাকাউন্ট খুলুন,New here? Create an account
+নভে,Nov
+নভেম্বর,November
+না,No
+নাটক,Drama
+নাম লিখুন,Write your name
+নামের প্রথম অংশ,First part of the name
+নামের প্রথম ও শেষ অংশ পূরণ করুন।,Fill in the first and last part of the name.
+নামের শেষ অংশ,Last part of the name
+নিংশিং চে,Ningshing Che
+নিংশিং চে PDF {1},Ningshing Che PDF {1}
+নিংশিং চে {1},Ningshing Che {1}
+নিংশিং চে অ্যাপ শেয়ার করুন,Share the Ningshing Che app
+"নিংশিং চে তথ্যকোষে প্রকাশিত লেখক। {1} এর রচনাসমূহ ইতিহাস, সাহিত্য ও সংস্কৃতি বিষয়ে পাওয়া যায়।","An author published in the Ningshing Che encyclopedia. {1}'s works are on history, literature and culture."
+নিংশিং চে তথ্যকোষের লেখক ও গবেষকবৃন্দ,Writers and researchers of the Ningshing Che encyclopedia
+নিংশিং চে পাঠক,Ningshing Che reader
+নিংশিং চে পাঠকদের আলোচনা,Ningshing Che readers' discussions
+নিংশিং চে প্রকাশনা পর্ষদ,Ningshing Che publication board
+"নিংশিং চে বিষ্ণুপ্রিয়া মণিপুরি ভাষা, সাহিত্য, ইতিহাস ও সংস্কৃতির ডিজিটাল তথ্যকোষ। পোর্টালটি তিলকপুর, কমলগঞ্জ, মৌলভীবাজার, সিলেট থেকে পরিচালিত।","Ningshing Che is a digital encyclopedia of Bishnupriya Manipuri language, literature, history and culture. The portal is run from Tilakpur, Kamalganj, Moulvibazar, Sylhet."
+নিংশিং চে লেখক,Ningshing Che writer
+নিংশিং চে — {1},Ningshing Che — {1}
+নিংশিং চে — বিষ্ণুপ্রিয়া মণিপুরি তথ্যকোষ,Ningshing Che — Bishnupriya Manipuri encyclopedia
+নিংশিং চে — বিষ্ণুপ্রিয়া মণিপুরি সাহিত্য ও সংস্কৃতি পোর্টাল https://ningshingche.com,Ningshing Che — Bishnupriya Manipuri literature and culture portal https://ningshingche.com
+নিংশিং চে-তে {1} সালে প্রকাশিত প্রবন্ধ ও সংখ্যা।,Articles and issues published in Ningshing Che in {1}.
+নিংশিং চে-র নতুন সংস্করণ ইনস্টল আছে।,A new version of Ningshing Che is installed.
+নিংশিং চে-র সকল ডিজিটাল প্রকাশনা।,All the digital publications of Ningshing Che.
+নিংশিং_চে_-_{1},নিংশিং_চে_-_{1}
+নিংশিংচে {1},Ningshingche {1}
+নিংশিংচে-,Ningshingche-
+নিংশিংচে-{1},Ningshingche-{1}
+নিংশিংচে.কম থেকে {1}টি প্রবন্ধ হালনাগাদ হয়েছে,{1} articles were updated from ningshingche.com
+নিংশিংচে.কম থেকে সংগৃহীত মূল ডিজিটাল সংস্করণ।,"The original digital edition, taken from ningshingche.com."
+নিচে দাগ,Underline
+নিচে যান,Go down
+নিজস্ব প্রবন্ধ রচনা ও খসড়া সংরক্ষণ,Write your own articles and keep drafts
+নিজের রঙ,Your own colour
+নিজের সম্পর্কে,About yourself
+নিজের সম্পর্কে সংক্ষিপ্ত পরিচিতি লিখুন।,Write a short introduction about yourself.
+নিবন্ধিত পাঠক,Registered readers
+নিবন্ধিত ভিউ,Registered views
+নির্বাচিত প্রবন্ধ,Featured articles
+নির্বাচিত ফাইলটি কোনো বৈধ ছবি নয় (Not an image). Type: {1},The chosen file is not a valid image (not an image). Type: {1}
+নির্বাচিত লেখা,Featured writing
+নিশীথ,Nishith
+নিশ্চিত করতে “{1}” লিখুন,Type “{1}” to confirm
+নীলা-কালি,Nila-kali
+নুয়া লেখা,New writing
+নৃত্য,Dance
+প,P
+পছন্দ,Like
+পছন্দের গান,Favourite songs
+পঠন ইতিহাস মুছে ফেলা হয়েছে,The reading history was cleared
+পঠন ইতিহাস রিসেট করুন,Reset the reading history
+পঠন সেটিংস (Font & Spacing),Reading settings (Font & Spacing)
+পড়া যায় সবার — লেখা যায় নিজের নামে।,Everyone can read — you write in your own name.
+পড়ার মতো কোনো লেখা পাওয়া যায়নি।,No writing worth reading was found.
+পড়ে শোনানোর সময় ত্রুটি হয়েছে।,There was an error while reading it out.
+পদবি,Last name
+পদবি / পরিচয় (আবশ্যক),Title / identity (required)
+পদবি / পরিচয় দিন।,Enter your title / identity.
+পয়েন্ট,Points
+পয়েন্টের হিসাব এখনো পাওয়া যায়নি।,The points total could not be fetched yet.
+পরবর্তী,Next
+পরে সেটিংস থেকে ভাষা বদলাতে পারবেন।,You can change the language later in the settings.
+পরের গান,Next song
+পরের ছবি,Next photo
+পরের পৃষ্ঠা,Next page
+পর্যালোচনা,Review
+পর্যালোচনায়,Under review
+পর্যালোচিত,Reviewed
+পল্লী,Palli
+পাঠক,Reader
+পাঠক {1},Reader {1}
+পাঠকের সেটিংস,Reader settings
+পাঠান,Send
+পাঠানো হয়েছে,Sent
+পাঠ্য লেখা,Body text
+পাতা স্ন্যাপ,Page snap
+পাতার ফাঁক  ·  {1} dp,Page gap  ·  {1} dp
+পালা-কীর্তন,Pala-kirtan
+পাসওয়ার্ড,Password
+পাসওয়ার্ড অন্তত {1} অক্ষরের হতে হবে।,The password must be at least {1} characters.
+পাসওয়ার্ড আবার লিখুন,Type the password again
+পাসওয়ার্ড দেখুন,Show password
+পাসওয়ার্ড ভুলে গেছেন?,Forgot your password?
+পাসওয়ার্ড লুকান,Hide password
+পাসওয়ার্ড সংরক্ষণ করুন,Save the password
+পিডিএফ খালি এসেছে।,The PDF came through empty.
+পিডিএফ খুলুন,Open the PDF
+পিডিএফ খোলা যায়নি।,The PDF could not be opened.
+পিডিএফ খোলা হচ্ছে…,Opening the PDF…
+পিডিএফ ডকুমেন্ট,PDF document
+পিডিএফ ডাউনলোড হয়নি ({1}),The PDF was not downloaded ({1})
+পিডিএফ পড়া যায়নি।,The PDF could not be read.
+পিডিএফ পাঠক,PDF reader
+পিডিএফ বই,PDF books
+পিডিএফ লিংক পাওয়া যায়নি।,No PDF link was found.
+পিডিএফ ২০০ এমবি-র বেশি হতে পারে না।,The PDF cannot be larger than 200 MB.
+পিডিএফটি খোলা যায়নি।,This PDF could not be opened.
+পূর্ণ আকারের ছবি,Full-size photo
+পৃষ্ঠা {1} / {2},Page {1} / {2}
+পৃষ্ঠা খোলা যায়নি,The page could not be opened
+পৃষ্ঠা ছাড়ুন,Leave page
+পৃষ্ঠা সংখ্যা,Page count
+পৃষ্ঠায় যান,Go to the page
+পৃষ্ঠার সংখ্যা সঠিক নয়।,The page count is invalid.
+পেছনে,Back
+পেস্ট,Paste
+পৌ,পৌ
+পৌরাণিক,Mythological
+পৌরাণিক কাহিনী,Mythological tales
+পৌরাণিক-কাহিনী,Mythological tales
+প্রকাশিত,Published
+প্রকাশিত লেখা বা গান সংরক্ষণাগারে “লেখক মুছে ফেলা হয়েছে” নামে থাকতে পারে।,Articles or songs already published may remain in the archive under “deleted author”.
+প্রকাশিত হলে লিংকটি কাজ করবে।,The link works once it is published.
+প্রকাশের তারিখ (YYYY-MM-DD),Publication date (YYYY-MM-DD)
+প্রতিক্রিয়া,Reaction
+প্রত্যাখ্যাত,Rejected
+প্রথম নাম,First name
+প্রথম মন্তব্যটি আপনিই লিখুন।,Be the first to write a comment.
+প্রথমবার খুললে সাইন-ইন প্রয়োজন। তারপর বিজ্ঞপ্তি চালু করতে পারবেন।,Signing in is needed the first time you open it. After that you can turn on notifications.
+প্রধান প্রশাসক,Chief admin
+প্রবন্ধ,Articles
+প্রবন্ধ {1},Article {1}
+প্রবন্ধ {1} ·,Article {1} ·
+প্রবন্ধ ও গান খুঁজুন...,Search articles and songs...
+প্রবন্ধ জমা দেওয়ার আগে বর্তমান ব্যবহারের শর্তাবলিতে সম্মতি দিন।,Accept the current Terms of Use before submitting an article.
+প্রবন্ধ প্রকাশিত হয়েছে,The article is published
+প্রবন্ধ বিশ্লেষণ,Article analysis
+প্রবন্ধ ভিউ,Article views
+প্রবন্ধ যোগ,Add an article
+প্রবন্ধ রিপোর্ট করুন,Report article
+প্রবন্ধ সংরক্ষণ হয়েছে,The article was saved
+প্রবন্ধটি পাওয়া যায়নি।,The article was not found.
+প্রবন্ধের অবস্থা,Article status
+প্রবন্ধের ছবি,Article photo
+প্রবন্ধের লিংক পাওয়া যায়নি; শুধু শিরোনাম শেয়ার করা হচ্ছে।,Article link unavailable; sharing the title only.
+প্রবেশ করা হচ্ছে...,Signing in...
+প্রস্থ,Width
+প্রস্থ ও উচ্চতা দুটোই,Both width and height
+প্রিভিউ,Preview
+প্রেম,Love
+প্রোফাইল,Profile
+প্রোফাইল অসম্পূর্ণ। নতুন প্রবন্ধ বা গান জমা দিতে আগে প্রোফাইল পূরণ করুন।,The profile is incomplete. Fill it in before submitting a new article or song.
+প্রোফাইল ছবি,Profile photo
+প্রোফাইল ছবি (ImgBB),Profile photo (ImgBB)
+প্রোফাইল ছবি (ঐচ্ছিক),Profile photo (optional)
+প্রোফাইল ছবি আপডেট হয়েছে।,The profile photo was updated.
+প্রোফাইল ছবি আপলোড করুন।,Upload a profile photo.
+প্রোফাইল লোড হয়নি।,The profile did not load.
+প্রোফাইল সংরক্ষণ করুন,Save the profile
+প্রোফাইল সংরক্ষণ যায়নি ({1})।,Could not save the profile ({1}).
+প্রোফাইল সংরক্ষণ যায়নি।,The profile could not be saved.
+প্রোফাইল সংরক্ষণ হয়নি,Profile not saved
+প্রোফাইল সংরক্ষিত হয়েছে।,The profile was saved.
+প্রোফাইল সম্পাদনা,Edit the profile
+প্রোফাইল সম্পূর্ণ করুন।,Complete your profile.
+প্রোফাইলে যান,Go to the profile
+প্লেয়ার চালু হয়নি। আবার চেষ্টা করুন।,The player did not start. Try again.
+প্লেলিস্ট,Playlist
+প্লেলিস্ট তৈরি করতে উপরের + চাপুন।,Press the + above to create a playlist.
+প্লেলিস্টে যোগ করুন,Add to the playlist
+প্লেলিস্টের নাম,Playlist name
+ফর্ম টোকেন পাওয়া যায়নি,The form token was not found
+ফলাফল,Result
+ফাইল খালি এসেছে।,The file came through empty.
+ফাইল খালি।,The file is empty.
+ফাইল খোলা যায়নি।,The file could not be opened.
+ফাইল ডাউনলোড হয়নি ({1}),The file was not downloaded ({1})
+ফাইল যুক্ত করা যায়নি।,The file could not be attached.
+ফাইল সংযুক্ত করুন,Attach a file
+ফাইল ২০০ এমবি-র বেশি হতে পারে না।,The file cannot be larger than 200 MB.
+ফাইল ৩২ এমবি-র বেশি হতে পারবে না।,The file cannot be larger than 32 MB.
+ফাইলটি একটি বৈধ পিডিএফ নয়।,The file is not a valid PDF.
+ফাইলের ঠিকানা নেই।,The file has no address.
+ফিচা / ড,ফিচা / ড
+ফিচারড,Featured
+ফিচার্ড,Featured
+ফিচার্ড ও সম্পাদকীয় পছন্দ,Featured and editorial picks
+ফিচার্ড প্রবন্ধসমূহ,Featured articles
+ফিরুন,Back
+ফেব,Feb
+ফেব্রুয়ারি,February
+ফোক-ফিউশন,Folk fusion
+ফোন (ঐচ্ছিক),Phone (optional)
+ফোন নম্বর,Phone number
+ফোন নম্বর দিন।,Enter the phone number.
+ফোন: +880 9638-781890,Phone: +880 9638-781890
+ফোরাম,Forum
+ফোরাম · আলোচনা,Forum · discussions
+ফোরাম · উত্তর,Forum · answers
+ফোরাম লোড হয়নি।,The forum did not load.
+ফোরামে আপনার কাজ,Your work in the forum
+ফোরামে এখনো কোনো আলোচনা নেই।,There is no discussion in the forum yet.
+ফোরামে যান,Go to the forum
+ফোরামের হিসাব লোড হচ্ছে…,Loading the forum totals…
+ফ্রেমে মিল,Fit to frame
+বই,Books
+বই ও সাময়িকী,Books and periodicals
+বই খুঁজুন...,Search books...
+বই জমা যায়নি ({1}),The book could not be submitted ({1}).
+বই জমা যায়নি।,The book could not be submitted.
+বই জমার ব্যবস্থা এখনো চালু হয়নি।,Book submissions are not available yet.
+বই দৃশ্য  ·  সোয়াইপ করে পাতা উল্টান,Book view  ·  swipe to turn the page
+বই পর্যালোচনার পর প্রকাশিত হবে। ফাইলটি তৃতীয় পক্ষের সার্ভারে থাকবে; লিংক জানা থাকলে অন্যরাও খুলতে পারে।,The book will be published after review. The file is on a third-party server; anyone with its link may open it.
+বই যোগ,Add book
+বইটি খোলা যায়নি,The book could not be opened
+বইটি খোলা যায়নি।,The book could not be opened.
+বড় করুন,Bigger
+বড় করে দেখুন,View it larger
+বন,Forest
+বন্ধ,Closed
+বন্ধ করুন,Close
+বন্ধ বিভাগ,Closed category
+বাঁকা,Italic
+বাংলা,Bengali
+বাংলাদেশ,Bangladesh
+বাংলাদেশ / ভারত,Bangladesh / India
+বাতিল,Cancel
+বাদ্যযন্ত্র,Instruments
+বার পঠিত,Read count
+বার শোনা,Play count
+বার্তা,Message
+বার্তা পাঠানো যায়নি ({1})। SQL মাইগ্রেশন 007 চালান।,The message could not be sent ({1}). Run SQL migration 007.
+বার্তা পাঠানো যায়নি।,The message could not be sent.
+বার্তা লিখুন।,Write a message.
+বার্ষিক ও উৎসব সংখ্যা,Annual and festival issues
+বার্ষিক সংখ্যা,Annual issue
+বার্ষিক সংখ্যা • {1} সালে প্রকাশিত লেখাসমূহ,Annual issue • writing published in {1}
+বার্ষিক সাহিত্য সংকলন,Annual literary collection
+বিজ্ঞপ্তি,Notifications
+বিজ্ঞপ্তি ({1}),Notifications ({1})
+বিজ্ঞপ্তি ও আপডেট,Notifications and updates
+বিজ্ঞপ্তি চালু করুন,Turn on notifications
+বিজ্ঞান,Science
+বিজ্ঞান ও প্রযুক্তি,Science and technology
+বিজ্ঞান-ও-প্রযুক্তি,Science-and-technology
+বিবরণ,Description
+বিভাগ,Category
+বিভাগ গুটিয়ে নিন,Collapse the category
+বিভাগ দেখুন,See the category
+বিভাগ বন্ধ,Category closed
+বিভাগ বেছে নিন,Pick a category
+বিভাগ লোড হয়নি।,The category did not load.
+"বিভাগ, লেখক, বার্ষিক সংখ্যা ও নির্বাচিত লেখা","Categories, writers, annual issues and featured writing"
+বিভাগসমূহ,Categories
+বিভাগসমূহ ({1}),Categories ({1})
+বিরতি,Break
+বিরহ,Biraha
+বিশেষ নির্বাচন,Special selection
+বিশ্লেষণ,Analysis
+বিষ্ণুপ্রিয়া মণিপুরি ডিজিটাল সাংস্কৃতিক আর্কাইভ ও সাহিত্য পত্রিকা,Bishnupriya Manipuri digital cultural archive and literary magazine
+বিষ্ণুপ্রিয়া মণিপুরি তথ্যকোষ,Bishnupriya Manipuri encyclopedia
+বিষ্ণুপ্রিয়া মণিপুরি ভাষা ও সংস্কৃতির ডিজিটাল সংকলন — নিংশিং চে।,A digital collection of Bishnupriya Manipuri language and culture — Ningshing Che.
+"বিষ্ণুপ্রিয়া মণিপুরি ভাষা, সাহিত্য, ইতিহাস, সংস্কৃতি ও ঐতিহ্যের একমাত্র প্রামাণ্য ও মুক্ত ডিজিটাল তথ্যকোষ ও আর্কাইভ।","The only authoritative and open digital encyclopedia and archive of Bishnupriya Manipuri language, literature, history, culture and tradition."
+বিষ্ণুপ্রিয়া মণিপুরী,Bishnupriya Manipuri
+বিষ্ণুপ্রিয়া মণিপুরী / Bishnupriya Manipuri,Bishnupriya Manipuri
+বিষ্ণুপ্রিয়া মণিপুরি ডিজিটাল কমিউনিটি,Bishnupriya Manipuri digital community
+বিস্তারিত (ঐচ্ছিক),Details (optional)
+ব্যবহারকারী রিপোর্ট করুন,Report user
+ব্যবহারকারীর পাতা,User page
+ব্যবহারের শর্তাবলি,Terms of Use
+ব্রাউজারে খুলুন,Open in the browser
+ব্লক করা ব্যবহারকারী,Blocked users
+ব্লক করা যায়নি। আবার চেষ্টা করুন।,Could not block. Please try again.
+ব্লক করা হলেও এখনো সব জায়গায় এই ব্যবহারকারীর কনটেন্ট লুকানো হয় না। আপনি কি নিশ্চিত?,Blocking does not yet hide this user’s content everywhere. Are you sure?
+ব্লক করুন,Block
+ব্লক খুলুন,Unblock
+ব্লক খুলুন?,Unblock user?
+ব্লক খোলা যায়নি। আবার চেষ্টা করুন।,Could not unblock. Try again.
+ব্লক সংরক্ষিত হয়েছে।,Block saved.
+ভজন,Bhajan
+ভয়েস ইঞ্জিন প্রস্তুত করা যায়নি।,The voice engine could not be prepared.
+ভয়েস থামান,Stop the voice
+ভয়েস পুনরায় চালু করুন,Start the voice again
+ভয়েস শুনুন,Listen to the voice
+ভলিউম {1}%,Volume {1}%
+ভাষা,Language
+ভাষা ফাইল আনতে শুরু হয়েছে।,Fetching the language file.
+ভাষা ফাইল আনা যায়নি ({1})।,Could not fetch the language file ({1}).
+ভাষা বাছাই করুন,Choose the language
+ভিউ,Views
+ভিউয়ের তথ্য এখনো পাওয়া যায়নি।,The view information could not be fetched yet.
+ভিডিও,Videos
+ভিডিও আর্কাইভে নতুন সংযোজন,New additions to the video archive
+ভিডিও চালান,Play the video
+ভিডিও দেখুন,Watch the video
+ভুমিকা,Introduction
+ভূমিকা,Introduction
+মডারেটর,Moderator
+মণিপুরী ব্যান্ড,Manipuri band
+মন্তব্য,Comments
+মন্তব্য আবশ্যক।,A comment is required.
+মন্তব্য ও পাঠক রচনা পর্যালোচনা,Review comments and reader writing
+মন্তব্য করতে সাইন ইন করুন।,Sign in to comment.
+মন্তব্য করিক,Comment
+মন্তব্য করুন,Comment
+মন্তব্য জমা দিন,Submit the comment
+মন্তব্য জমা হয়েছে। অনুমোদনের পর প্রকাশিত হবে।,The comment is submitted. It appears after approval.
+মন্তব্য পাঠানি ইল। পর্যালোচনার পর প্রকাশ অইতই।,The comment was sent. It appears after review.
+মন্তব্য পাঠানো হচ্ছে...,Sending the comment...
+মন্তব্য প্রকাশিত হয়েছে,The comment is published
+মার্চ,March
+মিউজিক,Music
+মিথ্যা তথ্য,False information
+মিনিট,Minutes
+মুছুন,Clear
+মুছে ফেলবেন?,Delete it?
+মুছে ফেলুন,Delete
+মূল লেখা,Original writing
+মে,May
+মেইলে আসা কোডটি দিন,Enter the code from the message
+মেনু,Menu
+মেমরি ও অফলাইন ক্যাশ ব্যবস্থাপনা,Memory and offline cache management
+মোট {1} · শেষ {2} দিনে {3},Total {1} · in the last {2} days {3}
+মোট {1}টি জমা,{1} submitted in all
+মোট পয়েন্ট,Total points
+মোট ভিউ,Total views
+মোটা,Bold
+যাচাইকৃত,Verified
+যাচাইকৃত লেখক,Verified writer
+যান,Go
+যুব,Youth
+যে কোনো প্রবন্ধের কার্ডে বা পড়ার সময় বুকমার্ক আইকনে চাপ দিলে তা এখানে সংরক্ষিত থাকবে।,"Tap the bookmark icon on any article card, or while reading, and it is kept here."
+যে রঙে অ্যাপটি পড়তে চান সেটি বেছে নিন — প্রতিটি প্যালেটে লাইট ও ডার্ক দুটি রূপ আছে।,Pick the colour you want to read the app in — every palette has a light and a dark form.
+যোগ করুন,Add
+যোগাযোগ করুন,Contact us
+"যৌন স্পষ্ট বা শিশু-সংক্রান্ত যেকোনো অশ্লীলতা নিষিদ্ধ, এবং তা অবিলম্বে সরানো হবে।","Sexually explicit material, and anything that sexualises children, is forbidden and will be removed at once."
+রক,Rock
+রকমারি,Varied
+রঙের প্যালেট,Colour palette
+রাখুয়াল,Rakhual
+রাতের মোড,Night mode
+রাস,Ras
+রিপিট,Repeat
+রিপোর্ট,Report
+রিপোর্ট জমা হয়েছে,Report received
+রিপোর্ট পাঠান,Send report
+রিপোর্ট পাঠানো যায়নি। আবার চেষ্টা করুন।,The report could not be sent. Please try again.
+রিফ্রেশ,Refresh
+রিমিক্স,Remix
+রিলোড,Reload
+রিসেট,Reset
+লগ আউট,Log out
+লাইক,Like
+লাইক {1} ·,Like {1} ·
+লাইট,Light
+লাইনের ফাঁক (Line Spacing),Line spacing
+লাইভ প্রিভিউ (কালপুরুষ ফন্ট):,Live preview (Kalpurush font):
+লিরিক,Lyrics
+লেখক,Writer
+লেখক / সম্পাদক,Author / editor
+লেখক • নিংশিং চে,Writer • Ningshing Che
+লেখকবৃন্দ,Writers
+লেখকের রচনাবলী,The author's works
+লেখা জমা না হওয়া পর্যন্ত এখানে সংরক্ষিত থাকে — ফিরে এলে যা লিখেছিলেন তাই পাবেন।,It stays saved here until the writing is submitted — come back and you get back what you wrote.
+লেখা জমা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।,The article could not be submitted. Check your internet connection and try again.
+লেখা জমা হয়েছে,Writing submitted
+লেখা জমা হয়েছে। সম্পাদকীয় পর্যালোচনার পর প্রকাশিত হবে।,The writing is submitted. It is published after editorial review.
+লেখা জমাদান,Submit writing
+"লেখা নির্বাচন করলে মোটা, বাঁকা, নিচে দাগ, কপি, কাট ও পেস্ট দেখাবে। ছবি ImgBB-তে আপলোড হয়।","Selecting text shows bold, italic, underline, copy, cut and paste. Photos upload to ImgBB."
+লেখা বন্ধ করুন,Close the editor
+"লেখা লিখুন… নির্বাচন করলে মোটা, বাঁকা, নিচে দাগ, কপি, কাট ও পেস্ট আসবে।","Write here… selecting text brings up bold, italic, underline, copy, cut and paste."
+লেখা সম্পাদকীয় পর্যালোচনার পর প্রকাশিত হবে। শিরোনাম ও মূল লেখা জমা দেওয়া পর্যন্ত সংরক্ষিত থাকবে।,The writing is published after editorial review. The title and the body stay saved until they are submitted.
+লোকগীতি,Folk songs
+লোড হচ্ছে…,Loading…
+শর্তাবলিতে সম্মতি সংরক্ষণ করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।,Your Terms acceptance could not be saved. Check your internet connection and try again.
+শর্তাবলী,Terms
+শাফেল,Shuffle
+শিরোনাম,Title
+শিরোনাম অন্তত ৪ অক্ষরের হতে হবে।,The title must be at least 4 characters.
+শিরোনাম আবশ্যক।,The title is required.
+শিরোনাম ও PDF ফাইল নির্বাচন করুন।,Enter a title and choose a PDF file.
+শিরোনাম ও লেখা আবশ্যক।,Title and writing are required.
+শিরোনাম ১৬০ অক্ষরের বেশি হতে পারবে না।,The title cannot be longer than 160 characters.
+শিরোনামহীন,Untitled
+শিরোনামহীন আলোচনা,Untitled discussion
+শিল্পী,Artist
+শিশু,Children
+শীর্ষ উত্তর,Top answer
+শুধু ছবি ও পিডিএফ ফাইল যুক্ত করা যাবে।,Only photo and PDF files can be attached.
+শুধু বৈধ PDF ফাইল নির্বাচন করুন।,Choose a valid PDF file only.
+শুনুন,Listen
+শুরু করুন,Start
+শেয়ার,Share
+শেয়ার করুন,Share
+শেষ {1} দিন,Last {1} days
+শেষ উত্তর,Last answer
+শেষ ছয় মাসে কোনো কার্যক্রম নেই।,No activity in the last six months.
+শেষ ৬ মাস,Last 6 months
+শেষ ৬ মাসে মোট {1}টি,{1} in all in the last 6 months
+শোনা {1} মিনিট,{1} minutes listened
+শোনা মিনিট,Minutes listened
+সংযুক্তি,Attachment
+সংযুক্তি সরান,Remove the attachment
+সংযুক্তি ২০০ এমবি-র বেশি হতে পারে না।,The attachment cannot be larger than 200 MB.
+সংযুক্তি.pdf,attachment.pdf
+সংরক্ষণ করুন,Save
+সংরক্ষণ না করা পরিবর্তন হারিয়ে যেতে পারে।,Unsaved changes may be lost.
+সংরক্ষণ বাতিল করুন,Cancel the save
+সংরক্ষণ যায়নি ({1})। লিংক মেয়াদ শেষ হতে পারে।,Could not save ({1}). The link may have expired.
+সংরক্ষণ সরানো হয়েছে,The save was removed
+সংরক্ষিত,Saved
+সংরক্ষিত তথ্য লোড হচ্ছে...,Loading the saved data...
+সংরক্ষিত তালিকার মধ্যে খুঁজুন...,Search within the saved list...
+সংরক্ষিত প্রবন্ধ,Saved articles
+সংস্করণ,Edition
+সংস্করণ ১.০.০ (অফিশিয়াল সংস্করণ),Version 1.0.0 (official release)
+সংস্কৃতি,Culture
+সংস্কৃতি ও উৎসব,Culture and festivals
+সকল PDF,All PDFs
+সকল কন্টেন্ট তৈরি ও সম্পাদনার অনুমতি,Permission to create and edit all content
+"সকল ক্ষমতা, সেটিংস ও মুছে ফেলার পূর্ণ নিয়ন্ত্রণ","Full control of every power, the settings and deletion"
+সঙ্গীত,Music
+সঠিক ইমেইল ঠিকানা লিখুন।,Enter a correct email address.
+সঠিক ইমেইল দিন অথবা ঐচ্ছিক ঘরটি খালি রাখুন।,"Enter a correct email, or leave the optional field empty."
+সব,All
+সব উত্তর দেখুন ({1}),See all the answers ({1})
+সব গান,All songs
+সব চালান,Play all
+সব দেখুন,See all
+সব বিজ্ঞপ্তি,All notifications
+সব ভিডিও,All videos
+সব সংরক্ষিত,All saved
+সবুজ পাতা আর অলিভ-সোনালি,Green leaf and olive-gold
+সময়,Time
+সময়ের সাথে ভিউ,Views over time
+সমাজ,Society
+সমাজ ও সংস্কৃতি,Society and culture
+সমাজ-ও-সংস্কৃতি,Society-and-culture
+সম্পাদক,Editor
+সম্পাদকীয়,Editorial
+সম্পাদকীয়,Editorial
+সম্পাদনা,Edit
+সম্পাদনা সংরক্ষণ হয়নি।,The edit was not saved.
+সম্পূর্ণ ব্যবহারের শর্তাবলি পড়ুন,Read the full Terms of Use
+সম্মত ও চালিয়ে যান,Agree and continue
+সম্মতি দিলেও প্রবন্ধটি সঙ্গে সঙ্গে প্রকাশিত হবে না; সম্পাদকীয় অনুমোদন প্রয়োজন।,Accepting does not publish the article immediately; editorial approval is still required.
+সরাত,Sarat
+সরান,Remove
+সর্বশেষ আপডেট পেতে আমাদের অ্যাপটি ডাউনলোড করুন,Download our app to get the latest updates
+সর্বোচ্চ {1},Up to {1}
+সহিংসতা বা হুমকি,Violence or threats
+সাইট হালনাগাদ,Site updates
+সাইটম্যাপ,Sitemap
+সাইন ইন,Sign in
+সাইন ইন করা নেই।,You are not signed in.
+সাইন ইন করা নেই। আবার প্রবেশ করুন।,You are not signed in. Sign in again.
+সাইন ইন করুন,Sign in
+সাইন ইনে ফিরুন,Back to sign in
+সাইন-ইন ছাড়া এগিয়ে যান,Continue without signing in
+সাইন-ইন ছাড়া পরবর্তী,Next without signing in
+সাদা / লাইট,White / light
+সাধারণ,General
+সাম্প্রতিক,Recent
+সাম্প্রতিক আলোচনা,Recent discussions
+সাম্প্রতিক পঠিত তালিকা মুছে ফেলুন,Clear the recently read list
+সার্ভার জবাব: {1},Server reply: {1}
+সার্ভার ত্রুটি ({1}),Server error ({1})
+সাহিত্য,Literature
+সিঙ্ক সম্পন্ন: অফলাইন আর্কাইভ প্রস্তুত।,Sync complete: the offline archive is ready.
+সিস্টেম,System
+সিস্টেম আপডেট,System update
+সুপাবেজ (Supabase) এপিআই থেকে ডাটা লোড হচ্ছে...,Loading data from the Supabase API...
+সুপাবেজ (Supabase) থেকে {1}টি প্রবন্ধ সিঙ্ক সম্পন্ন,Synced {1} articles from Supabase
+সুপাবেজে নতুন ডাটা পাওয়া যায়নি; অফলাইন ক্যাশ ব্যবহার করা হচ্ছে।,No new data was found in Supabase; the offline cache is being used.
+সেটিংস,Settings
+সেপ্টে,Sep
+সেপ্টেম্বর,September
+সেপ্টেম্বর মাস,The month of September
+সেরা অবদানকারী,Top contributor
+সেশন শেষ হয়ে গেছে। আবার সাইন ইন করুন।,The session has ended. Sign in again.
+সেশন শেষ হয়েছে। আবার সাইন ইন করুন।,Your session has expired. Sign in again.
+সেশনের মেয়াদ শেষ হয়েছে। আবার প্রবেশ করুন।,The session has ended. Sign in again.
+স্ক্রল,Scroll
+স্ক্রল দৃশ্য  ·  চিমটি করে জুম,Scroll view  ·  pinch to zoom
+স্ক্রল হ্যান্ডেল,Scroll handle
+স্ক্রিন জ্বালিয়ে রাখুন,Keep the screen on
+স্প্যাম বা বিজ্ঞাপন,Spam or advertising
+"স্প্যাম, বিজ্ঞাপন, ছদ্মবেশ বা প্রতারণামূলক তথ্য ছড়ানো যাবে না।","Do not post spam, advertising, impersonation, or deceptive information."
+স্বাগতম। অ্যাকাউন্ট খুলুন অথবা Google দিয়ে প্রবেশ করুন।,"Welcome. Create an account, or sign in with Google."
+স্বাভাবিক আকারে ফিরতে দুই আঙুল টেনে ছোট করুন,Pinch in with two fingers to go back to the normal size
+স্মারক,Memorial
+স্মারক ও উৎসব,Memorial and festival
+স্মৃতি,Memory
+স্মৃতিচারণ,Reminiscence
+স্লিপ টাইমার,Sleep timer
+স্লিপ টাইমার {1} মিনিট,Sleep timer {1} minutes
+স্লিপ টাইমার বন্ধ,Sleep timer off
+স্লিপ টাইমার শেষ,Sleep timer finished
+হয়রানি বা বুলিং,Harassment or bullying
+"হয়রানি, হুমকি বা কারো ব্যক্তিগত তথ্য অনুমতি ছাড়া প্রকাশ করা যাবে না।","No harassment, no threats, and no publishing anyone's private information without their permission."
+হাব্বি মন্তব্যহানি,All comments
+হোলি কীর্তন,Holi kirtan
+হ্যাঁ,Yes
+১–{1},1–{1}
+৩টি প্রবন্ধ · ৫টি গান · ৯২০ পয়েন্ট,3 articles · 5 songs · 920 points
+৬ সংখ্যার কোড,6-digit code
+— শেষ —,— End —
+📎 পিডিএফ সংযুক্ত,📎 PDF attached

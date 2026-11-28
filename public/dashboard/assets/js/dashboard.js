@@ -1,0 +1,493 @@
+(function (NC) {
+  'use strict';
+
+  const { escapeHTML, formatDate, relativeTime, groupMonthly, number, routeTo } = NC.utils;
+  const { pageHeader, statusBadge, emptyState, skeleton } = NC.components;
+  let charts = [];
+  let lastData = null;
+
+  const definitions = Object.freeze([
+    ['authors', 'Total Authors', 'fa-user-pen', 'violet'],
+    ['blogs', 'Total Blogs', 'fa-newspaper', 'brand'],
+    ['published', 'Published Blogs', 'fa-circle-check', 'emerald'],
+    ['drafts', 'Draft Blogs', 'fa-pen-ruler', 'amber'],
+    ['categories', 'Categories', 'fa-layer-group', 'sky'],
+    ['comments', 'Comments', 'fa-comments', 'indigo'],
+    ['pendingComments', 'Pending Comments', 'fa-message-exclamation', 'rose'],
+    ['galleries', 'Galleries', 'fa-images', 'fuchsia'],
+    ['books', 'PDF Books', 'fa-books', 'orange'],
+    ['submissions', 'Submitted Blogs', 'fa-file-pen', 'cyan'],
+    ['videos', 'Videos', 'fa-video', 'pink'],
+    ['music', 'Total Songs', 'fa-music', 'rose'],
+    ['articleViews', 'Total Article Views', 'fa-eye', 'sky'],
+    ['profiles', 'Registered users', 'fa-user-group', 'teal'],
+    // The forum, in the app's own words: threads, and the answers readers left on
+    // them. Both follow the Forum menu rather than Analytics, so a moderator who
+    // has no analytics access still sees the numbers they moderate.
+    ['discussions', 'Forum Threads', 'fa-comment-dots', 'cyan'],
+    ['answers', 'Forum Answers', 'fa-message', 'violet']
+  ]);
+
+  function permissionRoute(key) {
+    if (['published', 'drafts', 'articleViews'].includes(key)) return 'blogs';
+    if (key === 'pendingComments') return 'comments';
+    if (key === 'profiles') return 'registered-users';
+    if (['discussions', 'answers', 'forumReplies'].includes(key)) return 'forum';
+    return key;
+  }
+
+  function visibleDefinitions() {
+    const canAnalyze = NC.auth.canAccess('analytics');
+    return definitions.filter(([key]) => canAnalyze || NC.auth.canAccess(permissionRoute(key)));
+  }
+
+  function destroyCharts() {
+    charts.forEach((chart) => chart?.destroy?.());
+    charts = [];
+  }
+
+  async function fetchDashboardData() {
+    // Analytics never downloads article bodies or other heavy fields. A bounded
+    // timeline sample powers charts while Content-Range provides exact totals.
+    const allEntities = [
+      ['authors', 'id,title,image,designation,created_at'],
+      ['blogs', 'id,title,status,author_name,published_date,created_at,views_count'],
+      ['categories', 'id,title,created_at'],
+      ['comments', 'id,name,blog_title,status,created_at'],
+      ['galleries', 'id,title,created_at'],
+      ['books', 'id,title,created_at'],
+      ['submissions', 'id,title,writer_name,status,created_at'],
+      ['videos', 'id,title,created_at'],
+      ['music', 'id,title,created_at'],
+      ['profiles', 'id,name,email,created_at'],
+      // Narrow on purpose: no `body` here, so the overview never downloads the
+      // text of every thread to draw a number.
+      ['forum', 'id,title,status,category_id,user_id,views_count,replies_count,is_official,created_at,last_reply_at'],
+      ['forumReplies', 'id,discussion_id,user_id,status,created_at']
+    ];
+    const canAnalyze = NC.auth.canAccess('analytics');
+    const entities = allEntities.filter(([key]) => canAnalyze || NC.auth.canAccess(permissionRoute(key)));
+    const settled = await Promise.allSettled(entities.map(([key, select]) => NC.api.list(key, {
+      select, order: 'created_at.desc', limit: 1000, count: true
+    })));
+    const data = { errors: [], counts: {} };
+    allEntities.forEach(([key]) => { data[key] = []; data.counts[key] = 0; });
+    settled.forEach((result, index) => {
+      const key = entities[index][0];
+      if (result.status === 'fulfilled') {
+        data[key] = result.value.data;
+        data.counts[key] = result.value.count;
+      } else {
+        data.errors.push({ key, error: result.reason });
+      }
+    });
+
+    const countSpecs = [
+      ['published', 'blogs', { status: 'Publish' }],
+      ['drafts', 'blogs', { status: 'Draft' }],
+      ['pendingComments', 'comments', { status: 'Unpublish' }],
+      ['pendingSubmissions', 'submissions', { status: 'Pending' }],
+      // The one queue the forum genuinely has: threads hidden from readers.
+      ['forumHidden', 'forum', { status: 'Unpublish' }]
+    ].filter(([, route]) => canAnalyze || NC.auth.canAccess(route));
+    const countRequests = await Promise.allSettled(countSpecs.map(([, table, filters]) => NC.api.count(table, filters)));
+    countSpecs.forEach(([key, table, filters], index) => {
+      const result = countRequests[index];
+      data.counts[key] = result.status === 'fulfilled'
+        ? result.value
+        : data[table].filter((item) => Object.entries(filters).every(([field, value]) => item[field] === value)).length;
+    });
+    data.counts.articleViews = (data.blogs || []).reduce((sum, item) => sum + Number(item.views_count || 0), 0);
+    // A thread is "waiting" when it is published and nobody has answered it — the
+    // one queue the forum genuinely has, and the reason it is worth a card.
+    data.counts.forumUnanswered = (data.forum || []).filter((item) => (
+      item.status === 'Publish' && Number(item.replies_count || 0) === 0
+    )).length;
+    return data;
+  }
+
+  function metricCard([key, label, icon, tone], counts) {
+    return `
+      <article class="metric-card metric-${tone}">
+        <span class="metric-icon"><i class="fa-duotone fa-solid ${icon}" aria-hidden="true"></i></span>
+        <div class="min-w-0"><p class="metric-label">${escapeHTML(label)}</p><p class="metric-value">${number(counts[key] || 0)}</p></div>
+        <span class="metric-detail"><i class="fa-regular fa-arrow-trend-up" aria-hidden="true"></i>Live data</span>
+      </article>`;
+  }
+
+  function quickActions() {
+    const actions = [
+      ['blogs', 'new', 'Add Blog', 'fa-plus', 'primary'],
+      ['authors', 'new', 'Add Author', 'fa-user-plus', ''],
+      ['categories', 'new', 'Add Category', 'fa-layer-plus', ''],
+      ['galleries', 'new', 'Add Gallery', 'fa-image-polaroid', ''],
+      ['books', 'new', 'Add Book', 'fa-book-circle-plus', ''],
+      ['submissions', '', 'Review Submissions', 'fa-file-magnifying-glass', ''],
+      ['videos', 'new', 'Add Video', 'fa-video-plus', ''],
+      ['music', 'new', 'Add Track', 'fa-music', ''],
+      ['forum', '', 'Review the forum', 'fa-comment-dots', '']
+    ].filter(([route]) => NC.auth.canAccess(route));
+    if (!actions.length) return emptyState({ icon: 'fa-shield-lock', title: 'No content actions assigned', description: 'A Super Admin can add content menus to your role.' });
+    return `<div class="quick-actions">${actions.map(([route, action, label, icon, tone]) => `
+      <button type="button" class="quick-action ${tone === 'primary' ? 'quick-action-primary' : ''}" data-quick-route="${route}" data-quick-action="${action}">
+        <i class="fa-regular ${icon}" aria-hidden="true"></i><span>${escapeHTML(label)}</span><i class="fa-regular fa-arrow-right quick-arrow" aria-hidden="true"></i>
+      </button>`).join('')}</div>`;
+  }
+
+  function buildActivities(data) {
+    const map = [
+      ['blogs', 'Blog', 'newspaper', (item) => item.title, (item) => item.status],
+      ['comments', 'Comment', 'comments', (item) => item.blog_title || item.name, (item) => item.status],
+      ['submissions', 'Submission', 'file-pen', (item) => item.title, (item) => item.status],
+      ['books', 'PDF Book', 'books', (item) => item.title, () => 'Added'],
+      ['videos', 'Video', 'video', (item) => item.title, () => 'Added'],
+      ['music', 'Music', 'music', (item) => item.title, () => 'Added'],
+      ['forum', 'Discussion', 'comment-dots', (item) => item.title, (item) => item.status],
+      // An answer has no title of its own; it belongs to a thread, so the thread's
+      // title is what the feed shows.
+      ['forumReplies', 'Answer', 'message', (item) => data.forum.find((thread) => thread.id === item.discussion_id)?.title || 'Forum answer', (item) => item.status]
+    ].filter(([key]) => NC.auth.canAccess(key === 'forumReplies' ? 'forum' : key));
+    // The key names the data; the route names the page. They are the same thing for
+    // every menu except the forum's answers, which live on the Forum page.
+    const routeOf = (key) => (key === 'forumReplies' ? 'forum' : key);
+    return map.flatMap(([key, type, icon, title, status]) => (data[key] || []).slice(0, 8).map((item) => ({
+      id: item.id, route: routeOf(key), type, icon, title: title(item) || 'Untitled', status: status(item), created_at: item.created_at
+    }))).sort((a, b) => (new Date(b.created_at).getTime() || 0) - (new Date(a.created_at).getTime() || 0)).slice(0, 10);
+  }
+
+  function recentActivity(data) {
+    const activities = buildActivities(data);
+    if (!activities.length) return emptyState({ icon: 'fa-wave-pulse', title: 'No recent activity', description: 'New and updated content will appear here.' });
+    return `<div class="activity-list">${activities.map((item) => `
+      <button type="button" class="activity-item" data-activity-route="${escapeHTML(item.route)}" data-activity-id="${escapeHTML(item.id)}">
+        <span class="activity-icon"><i class="fa-regular fa-${escapeHTML(item.icon)}" aria-hidden="true"></i></span>
+        <span class="activity-copy"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.type)} · ${escapeHTML(relativeTime(item.created_at))}</small></span>
+        ${statusBadge(item.status)}
+      </button>`).join('')}</div>`;
+  }
+
+  function attentionPanel(data) {
+    const items = [
+      { count: data.counts.drafts, label: 'draft blogs awaiting publication', route: 'blogs', filter: 'Draft', icon: 'fa-pen-ruler', tone: 'amber' },
+      { count: data.counts.pendingComments, label: 'comments awaiting moderation', route: 'comments', filter: 'Unpublish', icon: 'fa-message-exclamation', tone: 'rose' },
+      { count: data.counts.pendingSubmissions, label: 'new submissions to review', route: 'submissions', filter: 'Pending', icon: 'fa-file-magnifying-glass', tone: 'sky' },
+      { count: data.counts.forumUnanswered, label: 'forum discussions waiting for an answer', route: 'forum', filter: 'Waiting', icon: 'fa-message-question', tone: 'sky' },
+      { count: data.counts.forumHidden, label: 'forum threads hidden from readers', route: 'forum', filter: 'Unpublish', icon: 'fa-comments', tone: 'rose' }
+    ].filter((item) => NC.auth.canAccess(item.route));
+    if (!items.length) return emptyState({ icon: 'fa-shield-lock', title: 'No review queues assigned', description: 'Your role does not include Blogs, Comments, or Submit Blogs.' });
+    if (!items.some((item) => item.count)) {
+      return `<div class="all-clear"><span><i class="fa-solid fa-circle-check" aria-hidden="true"></i></span><div><strong>Editorial queue is clear</strong><p>There is no pending content that needs attention.</p></div></div>`;
+    }
+    return `<div class="attention-list">${items.map((item) => `
+      <button type="button" class="attention-item attention-${item.tone}" data-attention-route="${item.route}" data-attention-filter="${item.filter}">
+        <span><i class="fa-regular ${item.icon}" aria-hidden="true"></i></span>
+        <strong>${number(item.count)}</strong><p>${escapeHTML(item.label)}</p><i class="fa-regular fa-chevron-right" aria-hidden="true"></i>
+      </button>`).join('')}</div>`;
+  }
+
+  /**
+   * The newest five discussions.
+   *
+   * Five, and a link to the rest: the forum has API paging of its own (the Forum
+   * page lists every thread with its filters), and the dashboard's job is to show
+   * the ones a moderator might act on without making the overview a second inbox.
+   */
+  function forumPanel(data) {
+    const threads = (data.forum || []).slice(0, 5);
+    if (!NC.auth.canAccess('forum')) return '';
+    const body = threads.length
+      ? `<div class="dashboard-forum-list">${threads.map((thread) => {
+        const waiting = thread.status === 'Publish' && Number(thread.replies_count || 0) === 0;
+        return `
+        <button type="button" class="dashboard-forum-item" data-forum-thread="${escapeHTML(thread.id)}">
+          <span class="dashboard-forum-main">
+            <strong>${escapeHTML(thread.title || 'Untitled discussion')}</strong>
+            <small>${escapeHTML(relativeTime(thread.last_reply_at || thread.created_at))} · ${number(thread.replies_count || 0)} answer${Number(thread.replies_count || 0) === 1 ? '' : 's'} · ${number(thread.views_count || 0)} views</small>
+          </span>
+          ${thread.is_official ? '<span class="status-badge status-info"><i class="fa-regular fa-badge-check" aria-hidden="true"></i>Official</span>' : ''}
+          ${waiting ? '<span class="status-badge status-warning"><i class="fa-regular fa-message-question" aria-hidden="true"></i>Waiting</span>' : ''}
+          ${thread.status === 'Publish' ? '' : '<span class="status-badge status-danger"><i class="fa-regular fa-eye-slash" aria-hidden="true"></i>Hidden</span>'}
+        </button>`;
+      }).join('')}</div>`
+      : emptyState({ icon: 'fa-comments', title: 'No discussions yet', description: 'Threads written in the app will appear here.' });
+    return `
+      <section class="surface mt-6">
+        <div class="surface-header">
+          <div><p class="eyebrow">The readers' side</p><h2>Latest forum discussions</h2></div>
+          <button type="button" class="btn btn-ghost btn-sm" data-forum-open><i class="fa-regular fa-arrow-right" aria-hidden="true"></i>Open the forum</button>
+        </div>
+        ${body}
+      </section>`;
+  }
+
+  function latestCards(data) {
+    const latestBlog = data.blogs.find((item) => item.status === 'Publish');
+    const latestSubmission = data.submissions[0];
+    const latestAuthor = data.authors[0];
+    const cards = [
+      { label: 'Latest published article', item: latestBlog, title: latestBlog?.title, meta: latestBlog ? formatDate(latestBlog.published_date || latestBlog.created_at) : '', icon: 'fa-newspaper', route: 'blogs' },
+      { label: 'Most recent submission', item: latestSubmission, title: latestSubmission?.title, meta: latestSubmission ? `${latestSubmission.writer_name || 'Unknown writer'} · ${relativeTime(latestSubmission.created_at)}` : '', icon: 'fa-file-pen', route: 'submissions' },
+      { label: 'Recently added author', item: latestAuthor, title: latestAuthor?.title, meta: latestAuthor?.designation || (latestAuthor ? formatDate(latestAuthor.created_at) : ''), icon: 'fa-user-pen', route: 'authors' }
+    ].filter((card) => NC.auth.canAccess(card.route));
+    if (!cards.length) return emptyState({ icon: 'fa-shield-lock', title: 'No content menus assigned', description: 'Latest records appear after a Super Admin adds content access to your role.' });
+    return `<div class="latest-grid">${cards.map((card) => `
+      <article class="latest-card">
+        <div class="latest-label"><i class="fa-regular ${card.icon}" aria-hidden="true"></i>${escapeHTML(card.label)}</div>
+        ${card.item ? `<h3>${escapeHTML(card.title || 'Untitled')}</h3><p>${escapeHTML(card.meta)}</p><button type="button" data-latest-route="${card.route}" data-latest-id="${escapeHTML(card.item.id)}">Open record <i class="fa-regular fa-arrow-right" aria-hidden="true"></i></button>` : `<p class="text-muted-foreground mt-4">No record yet.</p>`}
+      </article>`).join('')}</div>`;
+  }
+
+  function chartCard(title, description, canvasId, className = '') {
+    return `<article class="surface chart-card ${className}"><div class="surface-header"><div><h2>${escapeHTML(title)}</h2><p>${escapeHTML(description)}</p></div></div><div class="chart-wrap"><canvas id="${escapeHTML(canvasId)}" role="img" aria-label="${escapeHTML(title)} chart"></canvas></div></article>`;
+  }
+
+  function renderCharts(data) {
+    destroyCharts();
+    if (!window.Chart) {
+      document.querySelectorAll('.chart-wrap').forEach((node) => { node.innerHTML = NC.components.notice('Chart.js did not load. Check your connection and refresh.', 'warning'); });
+      return;
+    }
+    const css = getComputedStyle(document.documentElement);
+    const text = css.getPropertyValue('--muted-foreground').trim() || '#94a3b8';
+    const grid = css.getPropertyValue('--border').trim() || 'rgba(148,163,184,.15)';
+    const brand = '#8b5cf6';
+    const distributionItems = [
+      ['Blogs', 'blogs', brand], ['Authors', 'authors', '#22c55e'], ['Categories', 'categories', '#38bdf8'],
+      ['Galleries', 'galleries', '#d946ef'], ['Books', 'books', '#f97316'], ['Videos', 'videos', '#ec4899'], ['Music', 'music', '#f43f5e'], ['Comments', 'comments', '#6366f1'],
+      ['Threads', 'forum', '#06b6d4']
+    ].filter(([, route]) => NC.auth.canAccess('analytics') || NC.auth.canAccess(route));
+    const months = groupMonthly(data.blogs).map((item) => item.label);
+    const common = {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 500 },
+      plugins: { legend: { labels: { color: text, usePointStyle: true, boxWidth: 8, padding: 18 } } },
+      scales: {
+        x: { ticks: { color: text }, grid: { display: false }, border: { display: false } },
+        y: { beginAtZero: true, ticks: { color: text, precision: 0 }, grid: { color: grid }, border: { display: false } }
+      }
+    };
+    const growth = document.getElementById('chart-growth');
+    if (growth) charts.push(new Chart(growth, {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [
+          ['Blogs', 'blogs', data.blogs, '#8b5cf6'], ['Authors', 'authors', data.authors, '#22c55e'],
+          ['Comments', 'comments', data.comments, '#38bdf8'], ['Submissions', 'submissions', data.submissions, '#f59e0b']
+        ].filter(([, route]) => NC.auth.canAccess('analytics') || NC.auth.canAccess(route)).map(([label, , records, color]) => ({ label, data: groupMonthly(records).map((item) => item.count), borderColor: color, backgroundColor: `${color}22`, tension: .35, fill: false, pointRadius: 3, pointHoverRadius: 5 }))
+      }, options: common
+    }));
+    const status = document.getElementById('chart-status');
+    if (status) charts.push(new Chart(status, {
+      type: 'doughnut',
+      data: { labels: ['Published', 'Draft'], datasets: [{ data: [data.counts.published, data.counts.drafts], backgroundColor: ['#22c55e', '#f59e0b'], borderWidth: 0, hoverOffset: 4 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: common.plugins.legend } }
+    }));
+    const distribution = document.getElementById('chart-distribution');
+    if (distribution) charts.push(new Chart(distribution, {
+      type: 'bar',
+      data: {
+        labels: distributionItems.map(([label]) => label),
+        datasets: [{ label: 'Content', data: distributionItems.map(([, key]) => data.counts[key]), backgroundColor: distributionItems.map(([, , color]) => color), borderRadius: 8, borderSkipped: false }]
+      }, options: { ...common, plugins: { legend: { display: false } } }
+    }));
+  }
+
+
+  // --------------------------------------------------------------------------
+  // Readers — visits, people, and how much was listened to
+  // --------------------------------------------------------------------------
+  //
+  // The app counts a view as one *visit*: the same reader opening the same item
+  // again inside half an hour is still the same visit, and outside it they have
+  // come back and it counts again. A visitor is a person, however often they came
+  // back — so the two numbers differ on purpose, and this panel shows both rather
+  // than one number that could be read as the other.
+  //
+  // Every view also records whether the reader was signed in, which is the
+  // question the counts could not answer while the distinction only existed
+  // inside a device hash.
+
+  function readersSection() {
+    return `
+      <section class="surface mt-6" aria-labelledby="readers-heading">
+        <div class="surface-header">
+          <div>
+            <p class="eyebrow">Readership · last 30 days</p>
+            <h2 id="readers-heading">Readers</h2>
+            <p>One view is one visit — the same reader re-opening an article, a song or a thread within thirty minutes is counted once. A visitor is one person, however many visits they made. A song counts as a play once thirty seconds of it have been heard.</p>
+          </div>
+        </div>
+        <div data-readers-body>${NC.components.notice('Loading readership…', 'info', 'fa-eye')}</div>
+      </section>`;
+  }
+
+  /**
+   * What to say when the readership RPC is not there yet.
+   *
+   * A database that has not run migration 036 answers with a 404 for the
+   * function — which is not a missing table, so it must not be answered with
+   * "run schema.sql": the file that adds this is named instead.
+   */
+  function readersMissing(error) {
+    const absent = Boolean(error?.isRpcMissing || /PGRST202|Could not find the function/i.test(error?.message || ''));
+    if (absent) {
+      return 'Readership numbers need backend/supabase/migrations/036_view_logic.sql — it adds the counting function. Everything else on this page works without it.';
+    }
+    return error?.message || 'Readership numbers could not be loaded right now.';
+  }
+
+  function readerStat(label, value, icon, tone, hint = '') {
+    return `
+      <article class="metric-card metric-${tone}">
+        <span class="metric-icon"><i class="fa-duotone fa-solid ${icon}" aria-hidden="true"></i></span>
+        <div class="min-w-0">
+          <p class="metric-label">${escapeHTML(label)}</p>
+          <p class="metric-value">${number(value)}</p>
+          ${hint ? `<p class="metric-detail">${escapeHTML(hint)}</p>` : ''}
+        </div>
+      </article>`;
+  }
+
+  async function loadReaders(container) {
+    const body = container.querySelector('[data-readers-body]');
+    if (!body) return;
+    let summary = null;
+    let series = [];
+    try {
+      summary = await NC.api.rpc('view_summary', { p_days: 30 });
+      series = await NC.api.rpc('view_overview', { p_days: 30 });
+    } catch (error) {
+      body.innerHTML = NC.components.notice(readersMissing(error), 'warning', 'fa-eye-slash');
+      return;
+    }
+    const readers = Number(summary?.visitors || 0);
+    const views = Number(summary?.views || 0);
+    const registered = Number(summary?.registered_visitors || 0);
+    const guest = Number(summary?.guest_visitors || 0);
+    const minutes = Number(summary?.minutes_listened || 0);
+    const share = readers ? Math.round((registered / readers) * 100) : 0;
+    const rows = Array.isArray(series) ? series : [];
+
+    body.innerHTML = `
+      <section class="metrics-grid" aria-label="Readership">
+        ${readerStat('Visitors', readers, 'fa-user-group', 'sky', `${views} visit${views === 1 ? '' : 's'}`)}
+        ${readerStat('Registered visitors', registered, 'fa-id-card', 'emerald', `${share}% of visitors`)}
+        ${readerStat('Anonymous visitors', guest, 'fa-user-secret', 'amber', `${readers ? 100 - share : 0}% of visitors`)}
+        ${readerStat('Minutes listened', minutes, 'fa-headphones', 'rose', 'heard, not counted from plays')}
+      </section>
+      ${window.Chart && rows.length ? '<article class="surface mt-6"><div class="surface-header"><div><p class="eyebrow">Day by day</p><h2>Visits and visitors</h2></div></div><div class="chart-wrap"><canvas id="chart-readers" role="img" aria-label="Visits and visitors per day"></canvas></div></article>' : ''}
+      <p class="metric-detail mt-4">Visits ${number(views)} · registered ${number(Number(summary?.registered_views || 0))} · anonymous ${number(Number(summary?.guest_views || 0))}</p>`;
+
+    if (window.Chart && rows.length) renderReadersChart(rows);
+  }
+
+  function renderReadersChart(rows) {
+    const node = document.getElementById('chart-readers');
+    if (!node) return;
+    const css = getComputedStyle(document.documentElement);
+    const text = css.getPropertyValue('--muted-foreground').trim() || '#94a3b8';
+    const grid = css.getPropertyValue('--border').trim() || 'rgba(148,163,184,.15)';
+    charts.push(new Chart(node, {
+      type: 'line',
+      data: {
+        labels: rows.map((row) => row.day),
+        datasets: [
+          { label: 'Visits', data: rows.map((row) => Number(row.views || 0)), borderColor: '#8b5cf6', backgroundColor: '#8b5cf622', tension: .35, fill: false, pointRadius: 2, pointHoverRadius: 4 },
+          { label: 'Visitors', data: rows.map((row) => Number(row.visitors || 0)), borderColor: '#22c55e', backgroundColor: '#22c55e22', tension: .35, fill: false, pointRadius: 2, pointHoverRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 500 },
+        plugins: { legend: { labels: { color: text, usePointStyle: true, boxWidth: 8, padding: 18 } } },
+        scales: {
+          x: { ticks: { color: text }, grid: { display: false }, border: { display: false } },
+          y: { beginAtZero: true, ticks: { color: text, precision: 0 }, grid: { color: grid }, border: { display: false } }
+        }
+      }
+    }));
+  }
+
+  function renderContent(container, data, analyticsOnly = false) {
+    // A missing table used to be answered with one sentence — run schema.sql — whatever
+    // had failed. The overview reads sixteen tables, and eight of them are built by
+    // migrations rather than by the base file (`profiles`, `music_tracks`, the three
+    // forum tables …), so that sentence was advice an editor could follow and then meet
+    // again unchanged. schemaHint() names the table that is missing and the file that
+    // adds it.
+    const missingTables = data.errors.filter((item) => item.error?.isSchemaMissing);
+    const hint = missingTables.length
+      ? NC.api.schemaHint(missingTables.map((item) => item.key), { purpose: 'so this page can load real data' })
+      : null;
+    const errorBanner = data.errors.length ? `<div class="mb-6">${NC.components.notice(hint ? hint.message : `${data.errors.length} data source${data.errors.length === 1 ? '' : 's'} could not be loaded. Available metrics are still shown.`, 'warning', 'fa-database')}</div>` : '';
+    const metrics = visibleDefinitions();
+    const canAnalyze = NC.auth.canAccess('analytics');
+    const canSee = (route) => canAnalyze || NC.auth.canAccess(route);
+    const chartCards = [
+      (['blogs', 'authors', 'comments', 'submissions'].some(canSee) ? chartCard('Content growth', 'Permitted content records over six months.', 'chart-growth', 'chart-wide') : ''),
+      (canSee('blogs') ? chartCard('Blog status', 'Published content compared with drafts.', 'chart-status') : ''),
+      (['blogs', 'authors', 'categories', 'galleries', 'books', 'videos', 'music', 'comments'].some(canSee) ? chartCard('Content distribution', 'Current permitted records by content type.', 'chart-distribution', 'chart-full') : '')
+    ].join('');
+    container.innerHTML = `
+      ${pageHeader({
+        eyebrow: analyticsOnly ? 'Insights' : 'Editorial overview',
+        title: analyticsOnly ? 'Analytics' : `Good to see you, ${NC.state.session?.user?.name || 'Editor'}`,
+        description: analyticsOnly ? 'Real-time content trends calculated from permitted Supabase records.' : 'Here is what is happening across your Ningshing Che workspace today.',
+        breadcrumb: analyticsOnly ? [{ label: 'Analytics' }] : [],
+        actions: `<button type="button" class="btn btn-secondary" data-refresh-dashboard><i class="fa-regular fa-arrows-rotate" aria-hidden="true"></i>Refresh</button>${!analyticsOnly && NC.auth.canAccess('blogs') ? '<button type="button" class="btn btn-primary" data-quick-route="blogs" data-quick-action="new"><i class="fa-regular fa-plus" aria-hidden="true"></i>New blog</button>' : ''}`
+      })}
+      ${errorBanner}
+      ${metrics.length ? `<section class="metrics-grid" aria-label="Content metrics">${metrics.map((item) => metricCard(item, data.counts)).join('')}</section>` : `<section class="surface">${emptyState({ icon: 'fa-shield-lock', title: 'No data menus assigned', description: 'Your Dashboard access is active. A Super Admin can add content or Analytics access to this role.' })}</section>`}
+      ${chartCards ? `<section class="dashboard-chart-grid mt-6">${chartCards}</section>` : ''}
+      ${canAnalyze ? readersSection() : ''}
+      ${analyticsOnly ? '' : `
+        <section class="dashboard-columns mt-6">
+          <article class="surface"><div class="surface-header"><div><p class="eyebrow">Get things done</p><h2>Quick actions</h2></div></div>${quickActions()}</article>
+          <article class="surface"><div class="surface-header"><div><p class="eyebrow">Editorial queue</p><h2>Needs attention</h2></div></div>${attentionPanel(data)}</article>
+        </section>
+        <section class="surface mt-6"><div class="surface-header"><div><p class="eyebrow">At a glance</p><h2>Latest content</h2></div></div>${latestCards(data)}</section>
+        <section class="surface mt-6"><div class="surface-header"><div><p class="eyebrow">Live feed</p><h2>Recent activity</h2></div><button type="button" class="btn btn-ghost btn-sm" data-refresh-dashboard><i class="fa-regular fa-rotate" aria-hidden="true"></i>Refresh</button></div>${recentActivity(data)}</section>
+        ${forumPanel(data)}`}
+    `;
+    bindEvents(container, analyticsOnly);
+    renderCharts(data);
+    // Its own request: a database that has not run 036 loses this panel and
+    // nothing else on the page.
+    if (canAnalyze) loadReaders(container);
+  }
+
+  function bindEvents(container, analyticsOnly) {
+    container.querySelectorAll('[data-refresh-dashboard]').forEach((button) => button.addEventListener('click', () => render(container, analyticsOnly)));
+    container.querySelectorAll('[data-quick-route]').forEach((button) => button.addEventListener('click', () => routeTo(button.dataset.quickRoute, { action: button.dataset.quickAction })));
+    container.querySelectorAll('[data-activity-route], [data-latest-route]').forEach((button) => button.addEventListener('click', () => {
+      const route = button.dataset.activityRoute || button.dataset.latestRoute;
+      const id = button.dataset.activityId || button.dataset.latestId;
+      routeTo(route, { action: 'view', id });
+    }));
+    container.querySelectorAll('[data-attention-route]').forEach((button) => button.addEventListener('click', () => routeTo(button.dataset.attentionRoute, { filter: button.dataset.attentionFilter })));
+    // A discussion opens the page on it; the button at the panel's head opens the
+    // page itself.
+    container.querySelectorAll('[data-forum-thread]').forEach((button) => button.addEventListener('click', () => routeTo('forum', { action: 'view', id: button.dataset.forumThread })));
+    container.querySelectorAll('[data-forum-open]').forEach((button) => button.addEventListener('click', () => routeTo('forum')));
+  }
+
+  async function render(container, analyticsOnly = false, context = {}) {
+    destroyCharts();
+    container.innerHTML = `${pageHeader({ eyebrow: 'Loading', title: analyticsOnly ? 'Analytics' : 'Dashboard', description: 'Retrieving live editorial data from Supabase…' })}<div class="metrics-grid">${Array.from({ length: 8 }, () => '<div class="metric-card"><span class="skeleton-line h-14 w-full"></span></div>').join('')}</div><div class="mt-6">${skeleton(5, 4)}</div>`;
+    try {
+      const data = await fetchDashboardData();
+      if (NC.crud.isStaleNavigation(context)) return;
+      lastData = data;
+      renderContent(container, data, analyticsOnly);
+    } catch (error) {
+      NC.crud.handleLoadError(container, error, () => render(container, analyticsOnly, context), context);
+    }
+  }
+
+  window.addEventListener('nc:theme-change', () => {
+    if (lastData && ['dashboard', 'analytics'].includes(NC.utils.getHashRoute().route)) window.setTimeout(() => renderCharts(lastData), 50);
+  });
+
+  NC.views.dashboard = { render: (container, context) => render(container, false, context), destroy: destroyCharts };
+  NC.views.analytics = { render: (container, context) => render(container, true, context), destroy: destroyCharts };
+})(window.NC);

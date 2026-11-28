@@ -50,4 +50,4 @@ try {
     writeFileSync('public/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map((p) => entry(p)).join('\n')}\n</urlset>\n`);
   }
 }
-writeFileSync('public/robots.txt', `User-agent: *\nAllow: /\nDisallow: /login\nDisallow: /register\nDisallow: /profile\n\nSitemap: ${origin}/sitemap.xml\n`);
+writeFileSync('public/robots.txt', `User-agent: *\nAllow: /\nDisallow: /login\nDisallow: /register\nDisallow: /profile\nDisallow: /dashboard/\n\nSitemap: ${origin}/sitemap.xml\n`);
